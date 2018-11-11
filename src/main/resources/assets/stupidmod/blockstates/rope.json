@@ -1,0 +1,9 @@
+{
+	"variants": {
+		"normal": { "model": "stupidmod:rope" },
+		"drip=true,end=true": { "model": "stupidmod:rope_end_wet" },
+		"drip=true,end=false": { "model": "stupidmod:rope_wet" },
+		"drip=false,end=true": { "model": "stupidmod:rope_end" },
+		"drip=false,end=false": { "model": "stupidmod:rope" }
+	}
+}

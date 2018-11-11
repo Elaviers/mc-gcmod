@@ -1,0 +1,50 @@
+itemGroup.stupid_tab=Top Kek
+
+item.sulphur2.name=Sulphur
+item.noah_sulphur.name=Noah Sulphur
+item.powder.name=Black Powder
+item.meme_essence.name=Essence de la Maymay
+item.poo_cannon.name=Poo Cannon
+item.poo_powder.name=Poo Powder
+item.poo_brick.name=Poo Brick
+item.poo_protein.name=Poo Protein
+item.calibrator.name=Calibrator
+
+tile.sulphur_ore.name=Sulphur Ore
+tile.noah_ore.name=Noah Sulphur Ore
+tile.tnt_blast.name=Blast TNT
+tile.tnt_construct.name=Constructive TNT
+tile.tnt_dig.name=TNT
+tile.tnt_airstrike.name=Air-Strike TNT
+tile.meme_block.name=Maymay Block
+tile.poo_block.name=Poo Block
+tile.poo_block_fermented.name=Fermented Poo Block
+tile.rope.name=Rope
+tile.wireless_torch.name=Wireless Torch
+tile.centrifuge.name=Centrifuge
+tileentity.centrifuge.name=Centrifuge
+
+command.raredrop.usage=/raredrop [Item] <Player> <Amount> <Damage>
+command.raredrop.success=Upon killing a %s,
+command.raredrop.success2=%s received a rare drop of %s %s!
+
+item.poo.name=Poo
+item.poo_fermented.name=Fermented Poo
+item.poo0.name=Poop
+item.poo1.name=Turd
+item.poo2.name=Crap
+item.poo3.name=Butt Mud
+item.poo4.name=Cagadota
+item.poo5.name=Anal Snakes
+item.poo6.name=Diarrhea
+item.poo7.name=Brownie
+item.poo8.name=Fecal Matter
+item.poo9.name=Fudge
+item.poo10.name=Dung
+item.poo11.name=Caca
+item.poo12.name=Chocolate
+
+entity.stupidmod.PooCow.name=Cow
+entity.stupidmod.PooPig.name=Pig
+entity.stupidmod.PooSheep.name=Sheep
+entity.stupidmod.PooEntity.name=Poo Lump

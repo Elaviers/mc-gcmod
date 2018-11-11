@@ -1,0 +1,8 @@
+{
+	"sound.meme": {"category": "master","sounds": ["stupidmod:poo"]},
+	"sound.meme_block": {"category": "master","sounds": ["stupidmod:dank"]},
+	"sound.fart": {"category": "master","sounds": ["stupidmod:fart"]},
+	"sound.poo_block": {"category": "master","sounds": ["stupidmod:pooblockstep"]},
+	"sound.poo_cannon": {"category": "master","sounds": ["stupidmod:pop"]},
+	"sound.centrifuge": {"category": "master","sounds": ["stupidmod:cloop"]}
+}

@@ -1,0 +1,49 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key":
+  {
+    "X":
+    [
+      {
+        "item": "minecraft:planks",
+        "data": 0
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 1
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 2
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 3
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 4
+      },
+      {
+        "item": "minecraft:planks",
+        "data": 5
+      }
+    ],
+    "Y":
+    {
+      "item": "stupidmod:powder"
+    }
+  },
+  "result":
+  {
+    "item": "stupidmod:tnt",
+    "count": 1,
+    "data": 1
+  }
+}

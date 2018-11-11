@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    " YX",
+    "YPY",
+    "PY "
+  ],
+  "key":
+  {
+    "X":
+    {
+      "item": "minecraft:obsidian"
+    },
+    "Y":
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    "P":
+    {
+      "item": "stupidmod:powder"
+    }
+  },
+  "result":
+  {
+    "item": "stupidmod:poo_cannon",
+    "count": 1
+  }
+}

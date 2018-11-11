@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "XX",
+    "XX"
+  ],
+  "key":
+  {
+    "X":
+    {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "result":
+  {
+    "item": "stupidmod:powder",
+    "count": 1
+  }
+}

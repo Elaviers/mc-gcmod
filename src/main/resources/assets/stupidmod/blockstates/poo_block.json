@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"normal": { "model": "stupidmod:poo_block"},
+		"fermented=true": { "model": "stupidmod:poo_block_fermented" },
+		"fermented=false": { "model": "stupidmod:poo_block" }
+	}
+}

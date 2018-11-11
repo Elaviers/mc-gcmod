@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "stupidmod:blocks/tnt/tnt2_top",
+        "side" : "stupidmod:blocks/tnt/tier1/tnt2_side"
+    }
+}

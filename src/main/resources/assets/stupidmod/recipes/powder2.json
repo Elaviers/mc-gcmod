@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients":
+  [
+    {
+      "item": "stupidmod:noah_sulphur"
+    }
+  ],
+  "result":
+  {
+    "item": "stupidmod:powder",
+    "count": 2
+  }
+}
