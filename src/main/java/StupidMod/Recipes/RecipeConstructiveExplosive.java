@@ -32,19 +32,16 @@ public class RecipeConstructiveExplosive extends IForgeRegistryEntry.Impl<IRecip
             {
                 Item item = stack.getItem();
                 
-                if (blockID.isEmpty() && !(stack.getItem() instanceof ItemBlockExplosive && stack.getItemDamage() / BlockExplosive.tierCount == 1)) {
-                    blockID = item.getUnlocalizedName();
+                if (blockID.isEmpty() && !(stack.getItem() instanceof ItemBlockExplosive)) {
+                    blockID = item.getRegistryName().toString();
                     blockMeta = (short)stack.getItemDamage();
                     
                     sameBlockCount++;
                 }
                 else {
-                    short itdmg = (short)stack.getItemDamage();
-                    String wot = item.getUnlocalizedName();
-                    
-                    if (item.getUnlocalizedName().equals(blockID) && (short)stack.getItemDamage() == blockMeta)
+                    if (item.getRegistryName().toString().equals(blockID) && (short)stack.getItemDamage() == blockMeta)
                         sameBlockCount++;
-                    else if (stack.getItem() instanceof  ItemBlockExplosive) {
+                    else if (stack.getItem() instanceof  ItemBlockExplosive && stack.hasTagCompound()) {
                         TntCount++;
                         NBTTagCompound nbt = stack.getTagCompound();
                         fuse += nbt.getShort("Fuse");

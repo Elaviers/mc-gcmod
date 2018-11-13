@@ -78,9 +78,9 @@ public class BlockRegister {
         registerItemForBlock(registry, blockCentrifuge);
         registerItemForBlock(registry, blockWirelessTorch);
         
-        GameRegistry.registerTileEntity(TileEntityExplosiveData.class, new ResourceLocation("stupidmod:te_explosive"));
-        GameRegistry.registerTileEntity(TileEntityCentrifuge.class, new ResourceLocation("stupidmod:te_centrifuge"));
-        GameRegistry.registerTileEntity(TileEntityWirelessTorchData.class, new ResourceLocation("stupidmod:te_wireless_torch"));
+        GameRegistry.registerTileEntity(TileEntityExplosiveData.class, new ResourceLocation("stupidmod:tnt"));
+        GameRegistry.registerTileEntity(TileEntityCentrifuge.class, new ResourceLocation("stupidmod:centrifuge"));
+        GameRegistry.registerTileEntity(TileEntityWirelessTorchData.class, new ResourceLocation("stupidmod:wireless_torch"));
     }
     
     void registerItemForBlock(IForgeRegistry<Item> registry,  Block block)

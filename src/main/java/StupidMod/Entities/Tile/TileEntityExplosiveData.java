@@ -40,13 +40,25 @@ public class TileEntityExplosiveData extends TileEntity {
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         
+        this.writeExplosiveDataToNBT(compound, true, true);
+        
+        return compound;
+    }
+    
+    public NBTTagCompound writeExplosiveDataToNBT(NBTTagCompound compound, boolean writeConstruct, boolean writeAirstrike) {
         compound.setShort("Fuse", this.fuse);
         compound.setShort("Strength", this.strength);
-        compound.setString("Block", this.constructBlock);
-        compound.setShort("BlockMeta", this.constructMeta);
-        compound.setShort("Spread", this.airStrikeSpread);
-        compound.setShort("Pieces", this.airStrikePieces);
-        compound.setShort("Height", this.airStrikeHeight);
+        
+        if (writeConstruct) {
+            compound.setString("Block", this.constructBlock);
+            compound.setShort("BlockMeta", this.constructMeta);
+        }
+        
+        if (writeAirstrike) {
+            compound.setShort("Spread", this.airStrikeSpread);
+            compound.setShort("Pieces", this.airStrikePieces);
+            compound.setShort("Height", this.airStrikeHeight);
+        }
         
         return compound;
     }

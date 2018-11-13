@@ -47,7 +47,7 @@ public class BlockPoo extends Block {
         this.setUnlocalizedName(name);
         this.setRegistryName(name);
         
-        SoundEvent se = new SoundEvent(new ResourceLocation(StupidMod.id, "sound.poo_block"));
+        SoundEvent se = StupidMod.instance.sounds.soundPooBlock;
         this.setSoundType(new SoundType(1, 1, se, se, se, se, se));
         
         this.setHardness(1.0f);

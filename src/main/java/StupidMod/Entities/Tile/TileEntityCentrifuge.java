@@ -1,7 +1,9 @@
 package StupidMod.Entities.Tile;
 
+import StupidMod.Client.SoundCentrifuge;
 import StupidMod.Items.ItemPoo;
 import StupidMod.StupidMod;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -20,7 +22,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     private String customName;
     private NonNullList<ItemStack> inventory;
     
-    private boolean hasSound;
+    private SoundCentrifuge sound;
     private boolean spinning;
     
     public float prevAngle;
@@ -32,18 +34,32 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     private int timer;
     public static final int timerMax = 200;
     
-    public TileEntityCentrifuge()
-    {
-        inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+    public TileEntityCentrifuge() {
+        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+    }
+    
+    @Override
+    public void onLoad() {
+        if (this.world.isBlockPowered(this.pos)) {
+            this.spinning = true;
+            this.rateTarget = this.rotationRate = (float)(Math.PI * 2.5f / 20);
+        }
+        
+        if (this.sound == null) {
+            ISound existingSound = StupidMod.proxy.getSound(this.pos);
+            
+            if (existingSound != null) {
+                this.sound = (SoundCentrifuge)existingSound;
+                this.sound.entity = this;
+            } else {
+                this.sound = new SoundCentrifuge(StupidMod.instance.sounds.soundCentrifuge, this.pos, this);
+                StupidMod.proxy.playSound(this.sound);
+            }
+        }
     }
     
     @Override
     public void update() {
-        if (!hasSound && this.world.isRemote) {
-            this.hasSound = true;
-            StupidMod.proxy.createSoundForCentrifuge(this);
-        }
-    
         prevAngle = angle;
     
         if (rotationRate < rateTarget) {
@@ -160,6 +176,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
             this.rateTarget = (float)(Math.PI * 2.5f / 20);
             this.timer = timerMax;
             this.spinning = true;
+            
             return true;
         }
         

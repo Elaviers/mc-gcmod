@@ -4,6 +4,7 @@ import StupidMod.Blocks.BlockExplosive;
 import StupidMod.StupidMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,6 +35,12 @@ public class ItemBlockExplosive extends ItemBlock {
     @Override
     public int getMetadata(int damage) {
         return damage;
+    }
+    
+    @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (!stack.hasTagCompound())
+            addDefaultNbtToStack(stack);
     }
     
     @Override
@@ -95,7 +102,7 @@ public class ItemBlockExplosive extends ItemBlock {
             case 3:
                 tag.setShort("Spread", (short)4);
                 tag.setShort("Pieces", (short)5);
-                tag.setShort("Height", (short)2);
+                tag.setShort("Height", (short)30);
         }
         
         stack.setTagCompound(tag);
@@ -123,7 +130,7 @@ public class ItemBlockExplosive extends ItemBlock {
         return stack;
     }
     
-    public static ItemStack MakeAirStrikeStack(short fuse, short strength, short spread, short pieces, short height) {
+    public static ItemStack makeStackAirstrike(short fuse, short strength, short spread, short pieces, short height) {
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setShort("Fuse", fuse);;
         nbt.setShort("Strength", strength);;

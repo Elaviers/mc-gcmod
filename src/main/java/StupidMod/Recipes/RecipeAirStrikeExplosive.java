@@ -35,7 +35,7 @@ public class RecipeAirStrikeExplosive extends ShapedRecipes {
                 ItemStack stack = grid.getStackInSlot(i);
                 if (stack.getItem() == new ItemStack(StupidMod.instance.blocks.blockExplosive,1,0).getItem()) {
                     NBTTagCompound nbt = stack.getTagCompound();
-                    this.outputStack = ItemBlockExplosive.MakeAirStrikeStack(nbt.getShort("Fuse"), nbt.getShort("Strength"),(short)1,(short)3,(short)1);
+                    this.outputStack = ItemBlockExplosive.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"),(short)1,(short)3,(short)1);
                     return true;
                 }
             }

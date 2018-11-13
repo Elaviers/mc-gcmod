@@ -71,7 +71,8 @@ public class BlockCentrifuge extends Block implements ITileEntityProvider {
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
         TileEntityCentrifuge te = (TileEntityCentrifuge) world.getTileEntity(pos);
-        InventoryHelper.dropInventoryItems(world, pos, te);
+        if (te != null)
+            InventoryHelper.dropInventoryItems(world, pos, te);
         super.breakBlock(world, pos, state);
     }
     
@@ -79,7 +80,7 @@ public class BlockCentrifuge extends Block implements ITileEntityProvider {
     @Override
     public boolean eventReceived(IBlockState state, World world, BlockPos pos, int id, int param) {
         TileEntity ent = world.getTileEntity(pos);
-        return ent == null ? false : ent.receiveClientEvent(id, param);
+        return ent != null && ent.receiveClientEvent(id, param);
     }
     
     @SuppressWarnings("deprecation")
@@ -116,4 +117,6 @@ public class BlockCentrifuge extends Block implements ITileEntityProvider {
             world.addBlockEvent(pos, world.getBlockState(pos).getBlock(), 69, 0);
         }
     }
+    
+    
 }

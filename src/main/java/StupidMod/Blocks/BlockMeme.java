@@ -21,7 +21,7 @@ public class BlockMeme extends Block {
         this.setUnlocalizedName(name);
         this.setRegistryName(name);
     
-        SoundEvent se = new SoundEvent(new ResourceLocation(StupidMod.id, "sound.meme_block"));
+        SoundEvent se = StupidMod.instance.sounds.soundMemeBlock;
         this.setSoundType(new SoundType(1, 1, se, se, se, se, se));
         
         this.setHardness(3);

@@ -19,7 +19,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -44,6 +43,7 @@ public class StupidMod {
     public BlockRegister blocks;
     public EntityRegister entities;
     public RecipeRegister recipes;
+    public SoundRegister sounds;
     
     public CreativeTabs creativeTab;
 
@@ -63,11 +63,13 @@ public class StupidMod {
         blocks = new BlockRegister();
         entities = new EntityRegister();
         recipes = new RecipeRegister();
+        sounds = new SoundRegister();
         
         items.init();
         blocks.init();
         entities.init();
         recipes.init();
+        sounds.init();
     
         GameRegistry.registerWorldGenerator(new OreGenerator(), 0);
         this.replaceSpawnsWithPooAnimals();

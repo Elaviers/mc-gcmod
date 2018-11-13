@@ -12,6 +12,8 @@ public class EntityAirStrikeExplosive extends EntityExplosive {
     
     private boolean activated;
     
+    private double initialY;
+    
     public EntityAirStrikeExplosive(World world) {
         super(world);
     }
@@ -19,6 +21,7 @@ public class EntityAirStrikeExplosive extends EntityExplosive {
     public EntityAirStrikeExplosive(World world, double x, double y, double z, int fuse, int strength, int spread, int pieces, int height) {
         super(world, x, y, z, fuse, strength);
         
+        this.initialY = y;
         this.spread = spread;
         this.pieces = pieces;
         this.height = height;
@@ -38,7 +41,7 @@ public class EntityAirStrikeExplosive extends EntityExplosive {
             this.motionX *= 0.9800000190734863D;
             this.motionZ *= 0.9800000190734863D;
     
-            if((this.collided || this.motionY >= height) && !this.world.isRemote) {
+            if((this.collided || this.posY - this.initialY >= height) && !this.world.isRemote) {
                 this.setDead();
                 this.airStrike();
             }

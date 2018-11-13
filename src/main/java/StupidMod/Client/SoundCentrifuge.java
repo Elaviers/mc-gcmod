@@ -9,11 +9,11 @@ import net.minecraft.util.math.BlockPos;
 
 public class SoundCentrifuge extends MovingSound {
     
-    public TileEntityCentrifuge c;
+    public TileEntityCentrifuge entity;
     
     public SoundCentrifuge(SoundEvent soundResource, BlockPos position, TileEntityCentrifuge ent) {
         super(soundResource, SoundCategory.BLOCKS);
-        this.c = ent;
+        this.entity = ent;
         this.repeat = true;
         this.xPosF = position.getX() + .5f;
         this.yPosF = position.getY() + .5f;
@@ -24,14 +24,15 @@ public class SoundCentrifuge extends MovingSound {
     @Override
     public void update() {
         
-        if (c.isInvalid()) {
+        if (entity == null || entity.isInvalid()) {
             this.donePlaying = true;
+            StupidMod.proxy.stopSound(this);
             return;
         }
         
-        if (c.isSpinning() && volume < 1)
+        if (entity.isSpinning() && volume < 1)
             volume += .02f;
-        else if (!c.isSpinning() && volume > 0)
+        else if (!entity.isSpinning() && volume > 0)
             volume -= .02f;
         
         this.pitch = volume;

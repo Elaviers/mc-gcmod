@@ -20,18 +20,36 @@ public class ItemPooCannon extends Item {
         this.setRegistryName(name);
     }
     
+    private ItemStack findAmmo(EntityPlayer player) {
+        if (player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemPooBrick) {
+            return player.getHeldItem(EnumHand.OFF_HAND);
+        }
+        else if (player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemPooBrick) {
+            return player.getHeldItem(EnumHand.MAIN_HAND);
+        } else {
+            for (int i = 0; i < player.inventory.getSizeInventory(); ++i) {
+                ItemStack itemstack = player.inventory.getStackInSlot(i);
+                
+                if (itemstack.getItem() instanceof ItemPooBrick) {
+                    return itemstack;
+                }
+            }
+            
+            return ItemStack.EMPTY;
+        }
+    }
+    
     @Override
     public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase m, int timeLeft) {
         EntityPlayer player = (EntityPlayer)m;
         ItemStack ammoStack = null;
         
         if (!player.capabilities.isCreativeMode) {
-            if (player.inventory.hasItemStack(new ItemStack(StupidMod.instance.items.itemPooBrick)))
-                ammoStack = player.inventory.getStackInSlot(player.inventory.getSlotFor(new ItemStack(StupidMod.instance.items.itemPooBrick)));
-            else return;
+            ammoStack = this.findAmmo(player);
+            if (ammoStack.isEmpty()) return;
         }
         
-        player.playSound(new SoundEvent(new ResourceLocation("stupidmod:sound.poo_cannon")), 1, 1);
+        player.playSound(StupidMod.instance.sounds.soundPooCannon, 1, 1);
         if (!world.isRemote) {
             if(!player.capabilities.isCreativeMode)
                 ammoStack.setCount(ammoStack.getCount() - 1);

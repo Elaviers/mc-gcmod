@@ -19,9 +19,9 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
     public boolean matches(InventoryCrafting inv, World worldIn) {
         outputStack = ItemStack.EMPTY;
     
-        short strength_nonAS, fuse, blockMeta, spread, pieces, height;
+        short strength, fuse, blockMeta, spread, pieces, height;
         short strengthmod,fusemod,spreadmod,heightmod;
-        strength_nonAS = fuse = spread = pieces = height = blockMeta = 0;
+        strength = fuse = spread = pieces = height = blockMeta = 0;
         strengthmod = fusemod = spreadmod = heightmod = 0;
         
         String blockID = "";
@@ -46,7 +46,7 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
                     if (type == 3)
                         strength_AS += tag.getInteger("Strength");
                     else
-                        strength_nonAS += tag.getShort("Strength");
+                        strength += tag.getShort("Strength");
                     
                     switch (type) {
                         case 1: //Construct
@@ -79,11 +79,11 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
                 else if (currentItem == StupidMod.instance.items.itemPowder)
                     strengthmod += 4;
                 else if (currentItem == Items.STRING)
-                    fusemod++;
+                    fusemod += 20;
                 else if (currentItem == Items.ARROW)
                     spreadmod++;
                 else if (currentItem == Items.COAL)
-                    heightmod++;
+                    heightmod += 10;
             
                 else return false;
             }
@@ -91,31 +91,28 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
         if (TNTCount > 0 && (strengthmod > 0 || fusemod > 0 || (mtype == 3 && (fusemod > 0 || spreadmod > 0 || heightmod > 0)) ||TNTCount > 1))
         {
             if (mtype == 3) {
-                pieces += strength_nonAS;
-                strength_nonAS = strength_AS;
+                pieces += strength;
+                strength = strength_AS;
             }
             
-            strength_nonAS += strengthmod;
+            strength += strengthmod;
             fuse += fusemod;
             spread += spreadmod;
             height += heightmod;
             
-            NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setShort("Fuse", fuse);
-            nbt.setShort("Strength", strength_nonAS);
-            
-            if (type == 1) {
-                nbt.setString("Block", blockID);
-                nbt.setShort("BlockMeta", blockMeta);
-            } else {
-                nbt.setShort("Spread", spread);
-                nbt.setShort("Pieces", pieces);
-                nbt.setShort("Height", height);
+            switch (mtype) {
+                case 0:
+                    this.outputStack = ItemBlockExplosive.MakeStack(fuse, strength);
+                    return true;
+                
+                case 1:
+                    this.outputStack = ItemBlockExplosive.MakeStackConstructive(fuse, strength, blockID, blockMeta);
+                    return true;
+                    
+                case 3:
+                    this.outputStack = ItemBlockExplosive.makeStackAirstrike(fuse, strength, spread, pieces, height);
+                    return true;
             }
-            
-            outputStack = new ItemStack(StupidMod.instance.blocks.blockExplosive, 1, mtype == 3 ? ItemBlockExplosive.metaFromStatsAirstrike(strength_nonAS, pieces) : ItemBlockExplosive.metaFromStats(mtype, strength_nonAS));
-            outputStack.setTagCompound(nbt);
-            return true;
         }
     
         return false;
