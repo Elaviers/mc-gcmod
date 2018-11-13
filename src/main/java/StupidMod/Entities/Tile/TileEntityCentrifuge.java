@@ -22,7 +22,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     private String customName;
     private NonNullList<ItemStack> inventory;
     
-    private SoundCentrifuge sound;
+    private boolean hasSound;
     private boolean spinning;
     
     public float prevAngle;
@@ -45,17 +45,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
             this.rateTarget = this.rotationRate = (float)(Math.PI * 2.5f / 20);
         }
         
-        if (this.sound == null) {
-            ISound existingSound = StupidMod.proxy.getSound(this.pos);
-            
-            if (existingSound != null) {
-                this.sound = (SoundCentrifuge)existingSound;
-                this.sound.entity = this;
-            } else {
-                this.sound = new SoundCentrifuge(StupidMod.instance.sounds.soundCentrifuge, this.pos, this);
-                StupidMod.proxy.playSound(this.sound);
-            }
-        }
+        StupidMod.proxy.updateCentrifugeSound(this);
     }
     
     @Override

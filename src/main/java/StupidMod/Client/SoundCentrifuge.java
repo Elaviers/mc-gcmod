@@ -23,10 +23,9 @@ public class SoundCentrifuge extends MovingSound {
     
     @Override
     public void update() {
-        
         if (entity == null || entity.isInvalid()) {
             this.donePlaying = true;
-            StupidMod.proxy.stopSound(this);
+            StupidMod.proxy.removeCentrifugeSound(new BlockPos((int)this.xPosF, (int)this.yPosF, (int)this.zPosF));
             return;
         }
         
@@ -37,4 +36,6 @@ public class SoundCentrifuge extends MovingSound {
         
         this.pitch = volume;
     }
+    
+    
 }

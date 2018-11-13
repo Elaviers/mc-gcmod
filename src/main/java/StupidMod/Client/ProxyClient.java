@@ -1,27 +1,21 @@
 package StupidMod.Client;
 
+import StupidMod.Client.Render.*;
+import StupidMod.Entities.*;
 import StupidMod.Entities.Mob.EntityPooCow;
 import StupidMod.Entities.Mob.EntityPooPig;
 import StupidMod.Entities.Mob.EntityPooSheep;
-import StupidMod.Proxy;
-import StupidMod.Client.Render.*;
-import StupidMod.Entities.*;
 import StupidMod.Entities.Tile.TileEntityCentrifuge;
+import StupidMod.Proxy;
 import StupidMod.StupidMod;
 import StupidMod.Utility;
-import com.sun.javafx.geom.Vec3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.Sound;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
@@ -33,7 +27,7 @@ import java.util.Map;
 
 public class ProxyClient extends Proxy {
     
-    @SubscribeEvent
+    @Override
     protected  void registerModels(ModelRegistryEvent event) {
         StupidMod inst = StupidMod.instance;
         
@@ -155,32 +149,30 @@ public class ProxyClient extends Proxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCentrifuge.class, new RenderCentrifuge());
     }
     
-    Map<Vec3f, ISound> playingSounds = new HashMap<>();
+    Map<BlockPos, SoundCentrifuge> playingSounds = new HashMap<>();
     
     @SubscribeEvent
     public void worldUnLoaded(WorldEvent.Unload event) {
         playingSounds.clear();
     }
     
-    @Override
-    public void playSound(ISound sound) {
-        Vec3f soundPos = new Vec3f(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-        playingSounds.put(soundPos, sound);
+    //Adds and plays a new centrifuge sound or binds the existing one
+    public void updateCentrifugeSound(TileEntityCentrifuge te) {
+        BlockPos pos = te.getPos();
         
-        Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+        SoundCentrifuge existing = playingSounds.get(pos);
+        if (existing != null) {
+            existing.entity = te;
+        }
+        else {
+            existing = new SoundCentrifuge(StupidMod.instance.sounds.soundCentrifuge, te.getPos(), te);
+            Minecraft.getMinecraft().getSoundHandler().playSound(existing);
+            playingSounds.put(pos, existing);
+        }
     }
     
-    @Override
-    public ISound getSound(BlockPos pos) {
-        Vec3f soundPos = new Vec3f(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f);
-        return playingSounds.get(soundPos);
-    }
-    
-    @Override
-    public void stopSound(ISound sound) {
-        Vec3f soundPos = new Vec3f(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
-        playingSounds.remove(soundPos);
-        
-        Minecraft.getMinecraft().getSoundHandler().stopSound(sound);
+    //Removes the sound at given position
+    public void removeCentrifugeSound(BlockPos pos) {
+        playingSounds.remove(pos);
     }
 }

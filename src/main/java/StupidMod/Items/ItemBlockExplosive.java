@@ -5,10 +5,12 @@ import StupidMod.StupidMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,6 +41,14 @@ public class ItemBlockExplosive extends ItemBlock {
     
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (!stack.hasTagCompound())
+            addDefaultNbtToStack(stack);
+    }
+    
+
+    
+    @Override
+    public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn) {
         if (!stack.hasTagCompound())
             addDefaultNbtToStack(stack);
     }
