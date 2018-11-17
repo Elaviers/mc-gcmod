@@ -35,6 +35,13 @@ public class EntityRegister {
                 .id("explosive_constructive", netID++)
                 .tracker(160, 10, true)
                 .build();
+    
+        EntityEntry explosiveDig = EntityEntryBuilder.create()
+                .entity(EntityDigExplosive.class)
+                .name("DigExplosive")
+                .id("explosive_dig", netID++)
+                .tracker(256, 10, true)
+                .build();
         
         EntityEntry explosiveAirStrike = EntityEntryBuilder.create()
                 .entity(EntityAirStrikeExplosive.class)
@@ -92,6 +99,6 @@ public class EntityRegister {
                 .tracker(80, 3, true)
                 .build();
         
-        register.getRegistry().registerAll(explosiveBlast, explosiveConstructive, explosiveAirStrike, explosiveImpact, poo, pooBrick, explosivePoo, pooPig, pooSheep, pooCow);
+        register.getRegistry().registerAll(explosiveBlast, explosiveConstructive, explosiveDig, explosiveAirStrike, explosiveImpact, poo, pooBrick, explosivePoo, pooPig, pooSheep, pooCow);
     }
 }

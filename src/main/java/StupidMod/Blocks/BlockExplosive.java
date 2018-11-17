@@ -96,6 +96,8 @@ public class BlockExplosive extends Block implements ITileEntityProvider {
         
         this.setUnlocalizedName(name);
         this.setRegistryName(name);
+        
+        this.setHardness(0.5f);
     }
     
     @Nullable
@@ -122,8 +124,7 @@ public class BlockExplosive extends Block implements ITileEntityProvider {
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
         for (int i = 0; i < 12; ++i)
-            if (i / tierCount != 2)
-                items.add(new ItemStack(this, 1, i));
+            items.add(new ItemStack(this, 1, i));
     }
     
     void explode(World world, BlockPos pos, IBlockState state)

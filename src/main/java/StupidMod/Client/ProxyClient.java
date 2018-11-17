@@ -76,76 +76,17 @@ public class ProxyClient extends Proxy {
     
     @Override
     public void registerEntityRenders() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, new IRenderFactory<EntityExplosive>() {
-            @Override
-            public Render<? super EntityExplosive> createRenderFor(RenderManager manager) {
-                return new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(1));
-            }
-        });
-    
-        RenderingRegistry.registerEntityRenderingHandler(EntityConstructiveExplosive.class, new IRenderFactory<EntityExplosive>() {
-            @Override
-            public Render<? super EntityExplosive> createRenderFor(RenderManager manager) {
-                return new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(4));
-            }
-        });
-    
-        RenderingRegistry.registerEntityRenderingHandler(EntityImpactExplosive.class, new IRenderFactory<EntityImpactExplosive>() {
-            @Override
-            public Render<? super EntityImpactExplosive> createRenderFor(RenderManager manager) {
-                return new RenderImpactExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(8), 0.5f);
-            }
-        });
-        
-        RenderingRegistry.registerEntityRenderingHandler(EntityAirStrikeExplosive.class, new IRenderFactory<EntityExplosive>() {
-            @Override
-            public Render<? super EntityExplosive> createRenderFor(RenderManager manager) {
-                return new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(10));
-            }
-        });
-    
-        RenderingRegistry.registerEntityRenderingHandler(EntityPoo.class, new IRenderFactory<EntityPoo>() {
-            @Override
-            public Render<? super EntityPoo> createRenderFor(RenderManager manager) {
-                return new RenderPoo(manager);
-            }
-        });
-        
-        RenderingRegistry.registerEntityRenderingHandler(EntityPooBrick.class, new IRenderFactory<EntityPooBrick>() {
-            @Override
-            public Render<? super EntityPooBrick> createRenderFor(RenderManager manager) {
-                return new RenderPooBrick(manager);
-            }
-        });
-    
-        RenderingRegistry.registerEntityRenderingHandler(EntityPooExplosive.class, new IRenderFactory<EntityPooExplosive>() {
-            @Override
-            public Render<? super EntityPooExplosive> createRenderFor(RenderManager manager) {
-                return new RenderPooExplosive(manager);
-            }
-        });
-        
-        RenderingRegistry.registerEntityRenderingHandler(EntityPooCow.class, new IRenderFactory<EntityPooCow>() {
-            @Override
-            public Render<? super EntityPooCow> createRenderFor(RenderManager manager) {
-                return new RenderCow(manager);
-            }
-        });
-    
-        RenderingRegistry.registerEntityRenderingHandler(EntityPooPig.class, new IRenderFactory<EntityPooPig>() {
-            @Override
-            public Render<? super EntityPooPig> createRenderFor(RenderManager manager) {
-                return new RenderPig(manager);
-            }
-        });
-    
-        RenderingRegistry.registerEntityRenderingHandler(EntityPooSheep.class, new IRenderFactory<EntityPooSheep>() {
-            @Override
-            public Render<? super EntityPooSheep> createRenderFor(RenderManager manager) {
-                return new RenderSheep(manager);
-            }
-        });
-        
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(1)));
+        RenderingRegistry.registerEntityRenderingHandler(EntityConstructiveExplosive.class, manager -> new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(4)));
+        RenderingRegistry.registerEntityRenderingHandler(EntityDigExplosive.class, manager -> new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(7)));
+        RenderingRegistry.registerEntityRenderingHandler(EntityAirStrikeExplosive.class, (IRenderFactory<EntityExplosive>) manager -> new RenderExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(10)));
+        RenderingRegistry.registerEntityRenderingHandler(EntityImpactExplosive.class, manager -> new RenderImpactExplosive(manager, StupidMod.instance.blocks.blockExplosive.getStateFromMeta(8), 0.5f));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPoo.class, manager -> new RenderPoo(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooBrick.class, manager -> new RenderPooBrick(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooExplosive.class, manager -> new RenderPooExplosive(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooCow.class, manager -> new RenderCow(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooPig.class, manager -> new RenderPig(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooSheep.class, manager -> new RenderSheep(manager));
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCentrifuge.class, new RenderCentrifuge());
     }
     

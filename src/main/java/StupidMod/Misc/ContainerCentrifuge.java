@@ -66,7 +66,7 @@ public class ContainerCentrifuge extends Container {
             }
         }
         
-        // Player Inventory, Slot 0-8, Slot IDs 38-47
+        // Player Inventory, Slot 0-8, Slot IDs 39-47
         for (int x = 0; x < 9; ++x) {
             this.addSlotToContainer(new Slot(PlayerInventory, x, 8 + x * 18, 142));
         }
@@ -84,21 +84,21 @@ public class ContainerCentrifuge extends Container {
                 previous = current.copy();
                 
                 if (fromSlot < 12) {
-                    if (!this.mergeItemStack(current, 38, 47, false))
+                    if (!this.mergeItemStack(current, 39, 47, false))
                         if (!this.mergeItemStack(current, 12, 38, false))
                             return ItemStack.EMPTY;
                 } else if (!isLocked) {
                     if (!this.mergeItemStack(current, 0, 4, false))
                         return ItemStack.EMPTY;
                 }
+                else
+                    return ItemStack.EMPTY;
     
                 if (current.getCount() == 0)
                     slot.putStack(ItemStack.EMPTY);
                 else
                     slot.onSlotChanged();
-    
-                if (current.getCount() == previous.getCount())
-                    return null;
+                
                 slot.onTake(player, current);
             }
         }

@@ -3,6 +3,7 @@ package StupidMod.Entities.Tile;
 import StupidMod.Blocks.BlockExplosive;
 import StupidMod.Entities.EntityAirStrikeExplosive;
 import StupidMod.Entities.EntityConstructiveExplosive;
+import StupidMod.Entities.EntityDigExplosive;
 import StupidMod.Entities.EntityExplosive;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -70,9 +71,9 @@ public class TileEntityExplosiveData extends TileEntity {
         double z = pos.getZ() + .5f;
         world.setBlockToAir(pos);
         
-        switch(((BlockExplosive.TntType)state.getValue(BlockExplosive.TYPE)).getName())
+        switch(((BlockExplosive.TntType)state.getValue(BlockExplosive.TYPE)))
         {
-            case "blast": {
+            case BLAST: {
                 EntityExplosive tnt = new EntityExplosive(world, x, y, z, fuse, strength);
                 
                 if (!tnt.exploded()) {
@@ -82,7 +83,14 @@ public class TileEntityExplosiveData extends TileEntity {
                 break;
             }
             
-            case "construct": {
+            case DIG: {
+                EntityDigExplosive tnt = new EntityDigExplosive(world, x, y, z, fuse, strength);
+                world.spawnEntity(tnt);
+                world.playSound(null, x, y, z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                break;
+            }
+            
+            case CONSTRUCT: {
                 EntityConstructiveExplosive tnt = new EntityConstructiveExplosive(world, x, y, z, fuse, strength, Block.getBlockFromName(this.constructBlock).getStateFromMeta(this.constructMeta));
                 
                 if (!tnt.exploded()) {
@@ -92,9 +100,8 @@ public class TileEntityExplosiveData extends TileEntity {
                 break;
             }
             
-            case "airstrike": {
+            case AIRSTRIKE: {
                 EntityAirStrikeExplosive tnt = new EntityAirStrikeExplosive(world, x, y, z, this.fuse, this.strength, this.airStrikeSpread, this.airStrikePieces, this.airStrikeHeight);
-                
                 world.spawnEntity(tnt);
                 world.playSound(null, x, y, z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 break;

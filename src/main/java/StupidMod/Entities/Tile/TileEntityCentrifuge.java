@@ -42,7 +42,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     public void onLoad() {
         if (this.world.isBlockPowered(this.pos)) {
             this.spinning = true;
-            this.rateTarget = this.rotationRate = (float)(Math.PI * 2.5f / 20);
+            this.rateTarget = (float)(Math.PI * 2.5f / 20);
         }
         
         StupidMod.proxy.updateCentrifugeSound(this);

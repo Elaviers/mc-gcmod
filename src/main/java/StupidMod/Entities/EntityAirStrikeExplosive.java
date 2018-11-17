@@ -70,7 +70,7 @@ public class EntityAirStrikeExplosive extends EntityExplosive {
     }
     
     private void createNewBomb(double motionX,double motionY,double motionZ) {
-        EntityImpactExplosive bomb = new EntityImpactExplosive(world, this.posX, this.posY, this.posZ, this.explosionRadius);
+        EntityImpactExplosive bomb = new EntityImpactExplosive(world, this.posX, this.posY, this.posZ, this.strength);
         bomb.motionX = motionX;
         bomb.motionY = motionY;
         bomb.motionZ = motionZ;

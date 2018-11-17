@@ -12,8 +12,6 @@ public class EntityImpactExplosive extends Entity {
     public float prevAngleX, prevAngleY, prevAngleZ;
     public float angleX, angleY, angleZ;
     
-    //Angles are incremented by the renderer
-    
     public EntityImpactExplosive(World worldIn) {
         super(worldIn);
         this.setSize(.33f,.33f);

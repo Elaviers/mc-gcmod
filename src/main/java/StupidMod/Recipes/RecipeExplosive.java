@@ -3,12 +3,14 @@ package StupidMod.Recipes;
 import StupidMod.Blocks.BlockExplosive;
 import StupidMod.Items.ItemBlockExplosive;
 import StupidMod.StupidMod;
+import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -25,6 +27,9 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
         strengthmod = fusemod = spreadmod = heightmod = 0;
         
         String blockID = "";
+        String blockIDMod = "";
+        short blockMetaMod = 0;
+        
         short strength_AS = 0;
         
         int mtype = -1,type = -1;
@@ -84,18 +89,21 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
                     spreadmod++;
                 else if (currentItem == Items.COAL)
                     heightmod += 10;
+                else if (Block.getBlockFromItem(currentItem) != null) {
+                    blockIDMod = currentItem.getRegistryName().toString();
+                    blockMetaMod = (short)stack.getMetadata();
+                }
             
                 else return false;
             }
         }
-        if (TNTCount > 0 && (strengthmod > 0 || fusemod > 0 || (mtype == 3 && (fusemod > 0 || spreadmod > 0 || heightmod > 0)) ||TNTCount > 1))
+        if (TNTCount > 0 && (strengthmod > 0 || fusemod > 0 || (mtype == 1 && !blockIDMod.isEmpty()) || (mtype == 3 && (fusemod > 0 || spreadmod > 0 || heightmod > 0)) || TNTCount > 1))
         {
-            if (mtype == 3) {
-                pieces += strength;
-                strength = strength_AS;
-            }
+            if (type != 3)
+                strength += strengthmod;
+            else
+                strength_AS += strengthmod;
             
-            strength += strengthmod;
             fuse += fusemod;
             spread += spreadmod;
             height += heightmod;
@@ -106,11 +114,18 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
                     return true;
                 
                 case 1:
+                    if (!blockIDMod.isEmpty()) {
+                        blockID = blockIDMod;
+                        blockMeta = blockMetaMod;
+                    }
+                    
                     this.outputStack = ItemBlockExplosive.MakeStackConstructive(fuse, strength, blockID, blockMeta);
                     return true;
                     
                 case 3:
-                    this.outputStack = ItemBlockExplosive.makeStackAirstrike(fuse, strength, spread, pieces, height);
+                    pieces += strength;
+                    
+                    this.outputStack = ItemBlockExplosive.makeStackAirstrike(fuse, strength_AS, spread, pieces, height);
                     return true;
             }
         }

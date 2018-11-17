@@ -1,11 +1,8 @@
 package StupidMod.Entities;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -18,7 +15,9 @@ public class EntityExplosive extends Entity
     private static final DataParameter<Integer> FUSE = EntityDataManager.<Integer>createKey(EntityTNTPrimed.class, DataSerializers.VARINT);
     
     protected int fuse;
-    protected int explosionRadius;
+    protected int strength;
+    
+    private boolean completedFuse;
     
     public EntityExplosive(World world)
     {
@@ -34,7 +33,7 @@ public class EntityExplosive extends Entity
         super(world);
         
         this.setPosition(x, y, z);
-        this.explosionRadius = strength;
+        this.strength = strength;
         
         float f = (float) (Math.random() * (Math.PI * 2D));
         this.motionX = (double) (-((float) Math.sin((double) f)) * 0.02F);
@@ -62,7 +61,7 @@ public class EntityExplosive extends Entity
         this.setDead();
     
         if (!this.world.isRemote)
-            this.world.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, this.explosionRadius, true);
+            this.world.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, this.strength, true);
     }
     
     @Override
@@ -74,13 +73,13 @@ public class EntityExplosive extends Entity
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
         this.fuse = (int)compound.getShort("Fuse");
-        this.explosionRadius = (int)compound.getShort("Strength");
+        this.strength = (int)compound.getShort("Strength");
     }
     
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
         compound.setShort("Fuse", (short)this.fuse);
-        compound.setShort("Strength", (short)this.explosionRadius);
+        compound.setShort("Strength", (short)this.strength);
     }
     
     @Override
@@ -109,9 +108,10 @@ public class EntityExplosive extends Entity
         
         --this.fuse;
         
-        if (this.fuse <= 0)
+        if (this.fuse <= 0 && !this.completedFuse)
         {
             this.onFuseCompleted();
+            this.completedFuse = true;
         }
         else
         {

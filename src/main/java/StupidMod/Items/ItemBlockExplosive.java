@@ -45,8 +45,6 @@ public class ItemBlockExplosive extends ItemBlock {
             addDefaultNbtToStack(stack);
     }
     
-
-    
     @Override
     public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn) {
         if (!stack.hasTagCompound())
@@ -89,7 +87,7 @@ public class ItemBlockExplosive extends ItemBlock {
         switch(stack.getMetadata() % BlockExplosive.tierCount)
         {
             case 0:
-                strength = 1;
+                strength = 2;
                 break;
             case 1:
                 strength = 4;
@@ -155,9 +153,9 @@ public class ItemBlockExplosive extends ItemBlock {
     
     public static int metaFromStats(int group, int strength) {
         int tier = 0;
-        if (strength >= 9)
+        if (strength >= 8)
             tier = 2;
-        else if (strength >= 3)
+        else if (strength >= 4)
             tier = 1;
         
         return  BlockExplosive.tierCount * group + tier;

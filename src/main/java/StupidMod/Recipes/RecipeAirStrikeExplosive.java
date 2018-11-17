@@ -26,20 +26,18 @@ public class RecipeAirStrikeExplosive extends ShapedRecipes {
     public boolean matches(InventoryCrafting grid,World world) {
         this.outputStack = ItemStack.EMPTY;
         
-        if (!super.matches(grid, world)) {
+        if (!super.matches(grid, world))
             return false;
-        }
         
-        else {
-            for (int i = 0;i < grid.getSizeInventory();++i) {
-                ItemStack stack = grid.getStackInSlot(i);
-                if (stack.getItem() == new ItemStack(StupidMod.instance.blocks.blockExplosive,1,0).getItem()) {
-                    NBTTagCompound nbt = stack.getTagCompound();
-                    this.outputStack = ItemBlockExplosive.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"),(short)1,(short)3,(short)1);
-                    return true;
-                }
+        for (int i = 0;i < grid.getSizeInventory();++i) {
+            ItemStack stack = grid.getStackInSlot(i);
+            if (stack.getItem() == new ItemStack(StupidMod.instance.blocks.blockExplosive,1,0).getItem()) {
+                NBTTagCompound nbt = stack.getTagCompound();
+                this.outputStack = ItemBlockExplosive.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"),(short)1,(short)3,(short)1);
+                return true;
             }
         }
+        
         return false;
     }
     
