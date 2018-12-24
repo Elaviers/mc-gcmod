@@ -58,18 +58,18 @@ public class StupidMod {
                 return new ItemStack(blocks.blockPoo);
             }
         };
-        
+    
+        sounds = new SoundRegister();
         items = new ItemRegister();
         blocks = new BlockRegister();
         entities = new EntityRegister();
         recipes = new RecipeRegister();
-        sounds = new SoundRegister();
-        
+    
+        sounds.init();
         items.init();
         blocks.init();
         entities.init();
         recipes.init();
-        sounds.init();
     
         GameRegistry.registerWorldGenerator(new OreGenerator(), 0);
         this.replaceSpawnsWithPooAnimals();

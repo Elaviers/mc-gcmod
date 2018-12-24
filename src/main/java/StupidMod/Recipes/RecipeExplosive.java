@@ -63,8 +63,6 @@ public class RecipeExplosive extends IForgeRegistryEntry.Impl<IRecipe> implement
                                 return false;
                             break;
                             
-                        case 2: return false; //Unused (Impact skin)
-                            
                         case 3: //Airstrike
                             spread += tag.getShort("Spread");
                             pieces += tag.getShort("Pieces");
