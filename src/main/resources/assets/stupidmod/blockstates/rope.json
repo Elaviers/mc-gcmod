@@ -1,9 +1,8 @@
 {
 	"variants": {
-		"normal": { "model": "stupidmod:rope" },
-		"drip=true,end=true": { "model": "stupidmod:rope_end_wet" },
-		"drip=true,end=false": { "model": "stupidmod:rope_wet" },
-		"drip=false,end=true": { "model": "stupidmod:rope_end" },
-		"drip=false,end=false": { "model": "stupidmod:rope" }
+		"wet=true,end=true": { "model": "stupidmod:block/rope_end_wet" },
+		"wet=true,end=false": { "model": "stupidmod:block/rope_wet" },
+		"wet=false,end=true": { "model": "stupidmod:block/rope_end" },
+		"wet=false,end=false": { "model": "stupidmod:block/rope" }
 	}
 }

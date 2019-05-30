@@ -1,6 +1,6 @@
 {
 	"textures": {
-		"cannon": "stupidmod:items/cannon"
+		"cannon": "stupidmod:item/cannon"
 	},
 	"elements": [
 		{

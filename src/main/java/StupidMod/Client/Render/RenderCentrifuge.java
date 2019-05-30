@@ -1,12 +1,12 @@
-package StupidMod.Client.Render;
+package stupidmod.client.render;
 
-import StupidMod.Entities.Tile.TileEntityCentrifuge;
-import StupidMod.Client.ModelCentrifuge;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.util.ResourceLocation;
+import stupidmod.client.ModelCentrifuge;
+import stupidmod.entity.tile.TileEntityCentrifuge;
 
-public class RenderCentrifuge extends TileEntitySpecialRenderer<TileEntityCentrifuge> {
+public class RenderCentrifuge extends TileEntityRenderer<TileEntityCentrifuge> {
     private ModelCentrifuge model;
     
     public RenderCentrifuge()
@@ -15,9 +15,9 @@ public class RenderCentrifuge extends TileEntitySpecialRenderer<TileEntityCentri
     }
     
     @Override
-    public void render(TileEntityCentrifuge te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    public void render(TileEntityCentrifuge te, double x, double y, double z, float partialTicks, int destroyStage) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float)x, (float)y, (float)z);
+        GlStateManager.translatef((float)x, (float)y, (float)z);
         bindTexture(new ResourceLocation("stupidmod:textures/entity/entitycentrifuge.png"));
         
         //Interpolate angle

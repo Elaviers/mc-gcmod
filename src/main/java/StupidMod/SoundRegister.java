@@ -1,31 +1,50 @@
-package StupidMod;
+package stupidmod;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ObjectHolder;
 
+@ObjectHolder("stupidmod")
 public class SoundRegister {
-    public SoundEvent soundFart;
-    public SoundEvent soundMemeBlock;
-    public SoundEvent soundPooBlock;
-    public SoundEvent soundPooCannon;
-    public SoundEvent soundCentrifuge;
     
-    public void init()
+    private static final String
+        nameFart = "fart",
+        nameMemeBlock = "meme_block",
+        namePooBlock = "poo_block",
+        namePooCannon = "poo_cannon",
+        nameCentrifuge = "centrifuge";
+    
+    public static SoundEvent soundFart, soundMemeBlock, soundPooBlock, soundPooCannon, soundCentrifuge;
+    
+    public static void createSoundEvents()
     {
-        MinecraftForge.EVENT_BUS.register(this);
+        final String prefix = "stupidmod:sound.";
         
-        soundFart = new SoundEvent(new ResourceLocation("stupidmod:sound.fart")).setRegistryName("fart");
-        soundMemeBlock = new SoundEvent(new ResourceLocation("stupidmod:sound.meme_block")).setRegistryName("meme_block");
-        soundPooBlock = new SoundEvent(new ResourceLocation("stupidmod:sound.poo_block")).setRegistryName("poo_block");
-        soundPooCannon = new SoundEvent(new ResourceLocation("stupidmod:sound.poo_cannon")).setRegistryName("poo_cannon");
-        soundCentrifuge = new SoundEvent(new ResourceLocation("stupidmod:sound.centrifuge")).setRegistryName("centrifuge");
+        soundFart = new SoundEvent(new ResourceLocation(prefix + nameFart)).setRegistryName(nameFart);
+        soundMemeBlock = new SoundEvent(new ResourceLocation(prefix + nameMemeBlock)).setRegistryName(nameMemeBlock);
+        soundPooBlock = new SoundEvent(new ResourceLocation(prefix + namePooBlock)).setRegistryName(namePooBlock);
+        soundPooCannon = new SoundEvent(new ResourceLocation(prefix + namePooCannon)).setRegistryName(namePooCannon);
+        soundCentrifuge = new SoundEvent(new ResourceLocation(prefix + nameCentrifuge)).setRegistryName(nameCentrifuge);
     }
     
-    @SubscribeEvent
-    void registerSounds(RegistryEvent.Register<SoundEvent> register) {
-        register.getRegistry().registerAll(soundFart, soundMemeBlock, soundPooBlock, soundPooCannon, soundCentrifuge);
+    @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
+    private static class Registration
+    {
+        
+        @SubscribeEvent
+        static void registerSounds(RegistryEvent.Register<SoundEvent> register)
+        {
+            register.getRegistry().registerAll(
+                    soundFart,
+                    soundMemeBlock,
+                    soundPooBlock,
+                    soundPooCannon,
+                    soundCentrifuge
+            );
+        }
     }
+    
 }

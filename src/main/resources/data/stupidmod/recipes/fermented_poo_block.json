@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key":
+  {
+    "X":
+    {
+      "item": "stupidmod:fermented_poo"
+    }
+  },
+  "result":
+  {
+    "item": "stupidmod:poo_block"
+  }
+}

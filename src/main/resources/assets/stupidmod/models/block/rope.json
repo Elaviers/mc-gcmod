@@ -1,7 +1,8 @@
+
 {
 	"textures": {
-		"rope": "stupidmod:blocks/rope",
-		"particle": "stupidmod:blocks/rope"
+		"rope": "stupidmod:block/rope",
+		"particle": "stupidmod:block/rope"
 	},
 	"elements": [
 		{

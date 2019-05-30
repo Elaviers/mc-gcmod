@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"tier=1": { "model": "stupidmod:block/tnt_1_3" },
+		"tier=2": { "model": "stupidmod:block/tnt_2_3" },
+		"tier=3": { "model": "stupidmod:block/tnt_3_3" }
+	}
+}

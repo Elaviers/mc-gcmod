@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": { "model": "stupidmod:meme_block" }
+		"": { "model": "stupidmod:block/meme_block" }
 	}
 }

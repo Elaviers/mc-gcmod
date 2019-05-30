@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "stupidmod:items/noah_sulphur"
+		"layer0": "stupidmod:item/noah_sulphur"
 	}
 }

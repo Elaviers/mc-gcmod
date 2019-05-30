@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "stupidmod:blocks/wtorch_off"
+		"layer0": "stupidmod:block/wtorch_off"
 	}
 }

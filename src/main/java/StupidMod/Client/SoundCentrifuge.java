@@ -1,11 +1,10 @@
-package StupidMod.Client;
+package stupidmod.client;
 
-import StupidMod.Entities.Tile.TileEntityCentrifuge;
-import StupidMod.StupidMod;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import stupidmod.entity.tile.TileEntityCentrifuge;
 
 public class SoundCentrifuge extends MovingSound {
     
@@ -15,17 +14,17 @@ public class SoundCentrifuge extends MovingSound {
         super(soundResource, SoundCategory.BLOCKS);
         this.entity = ent;
         this.repeat = true;
-        this.xPosF = position.getX() + .5f;
-        this.yPosF = position.getY() + .5f;
-        this.zPosF = position.getZ() + .5f;
+        this.x = position.getX() + .5f;
+        this.y = position.getY() + .5f;
+        this.z = position.getZ() + .5f;
         this.volume = .01f;
     }
     
     @Override
-    public void update() {
-        if (entity == null || entity.isInvalid()) {
+    public void tick() {
+        if (entity == null || entity.isRemoved()) {
             this.donePlaying = true;
-            StupidMod.proxy.removeCentrifugeSound(new BlockPos((int)(this.xPosF - 0.5f), (int)(this.yPosF - 0.5f), (int)(this.zPosF - 0.5f)));
+            //StupidMod.proxy.removeCentrifugeSound(new BlockPos((int)(this.xPosF - 0.5f), (int)(this.yPosF - 0.5f), (int)(this.zPosF - 0.5f)));
             return;
         }
         

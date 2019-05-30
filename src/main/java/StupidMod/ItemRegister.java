@@ -1,51 +1,85 @@
-package StupidMod;
+package stupidmod;
 
-import StupidMod.Items.*;
 import net.minecraft.item.Item;
-import net.minecraft.world.gen.structure.StructureMineshaftPieces;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ObjectHolder;
+import stupidmod.item.*;
 
+@ObjectHolder(StupidMod.id)
 public class ItemRegister {
     
-    public ItemPoo itemPoo;
-    public ItemBasic itemSulphur, itemNoahSulphur, itemMemeEssence, itemPowder, itemPooPowder;
-    public ItemPooProtein itemPooProtein;
-    public ItemPooBrick itemPooBrick;
-    public ItemPooCannon itemPooCannon;
-    public ItemCalibrator itemCalibrator;
+    private static final String
+            namePoo = "poo",
+            nameFermentedPoo = "fermented_poo",
+            nameSulphur = "sulphur",
+            nameNoahSulphur = "noah_sulphur",
+            nameMemeEssence = "meme_essence",
+            nameBlackPowder = "black_powder",
+            namePooPowder = "poo_powder",
+            namePooProtein = "poo_protein",
+            namePooBrick = "poo_brick",
+            namePooCannon = "poo_cannon",
+            nameCalibrator = "calibrator";
     
-    public void init()
-    {
-        MinecraftForge.EVENT_BUS.register(this);
-        
-        itemPoo = new ItemPoo("poo");
-        itemSulphur = new ItemBasic("sulphur");
-        itemNoahSulphur = new ItemBasic("noah_sulphur");
-        itemMemeEssence = new ItemBasic("meme_essence");
-        itemPowder = new ItemBasic("powder");
-        itemPooPowder = new ItemBasic("poo_powder");
-        itemPooProtein = new ItemPooProtein("poo_protein");
-        itemPooBrick = new ItemPooBrick("poo_brick");
-        itemPooCannon = new ItemPooCannon("poo_cannon");
-        itemCalibrator = new ItemCalibrator("calibrator");
-        
-        itemPoo.setCreativeTab(StupidMod.instance.creativeTab);
-        itemSulphur.setCreativeTab(StupidMod.instance.creativeTab).setUnlocalizedName("sulphur2");
-        itemNoahSulphur.setCreativeTab(StupidMod.instance.creativeTab);
-        itemMemeEssence.setCreativeTab(StupidMod.instance.creativeTab);
-        itemPowder.setCreativeTab(StupidMod.instance.creativeTab);
-        itemPooPowder.setCreativeTab(StupidMod.instance.creativeTab);
-        itemPooProtein.setCreativeTab(StupidMod.instance.creativeTab);
-        itemPooBrick.setCreativeTab(StupidMod.instance.creativeTab);
-        itemPooCannon.setCreativeTab(StupidMod.instance.creativeTab);
-        itemCalibrator.setCreativeTab(StupidMod.instance.creativeTab);
-    }
+    @ObjectHolder(namePoo)
+    public static ItemPoo itemPoo;
     
-    @SubscribeEvent
-    void registerItems(RegistryEvent.Register<Item> register)
+    @ObjectHolder(nameFermentedPoo)
+    public static ItemPoo itemFermentedPoo;
+    
+    @ObjectHolder(nameSulphur)
+    public static ItemBasic itemSulphur;
+    
+    @ObjectHolder(nameNoahSulphur)
+    public static ItemBasic itemNoahSulphur;
+    
+    @ObjectHolder(nameMemeEssence)
+    public static ItemBasic itemMemeEssence;
+    
+    @ObjectHolder(nameBlackPowder)
+    public static ItemBasic itemBlackPowder;
+    
+    @ObjectHolder(namePooPowder)
+    public static ItemBasic itemPooPowder;
+
+    @ObjectHolder(namePooProtein)
+    public static ItemPooProtein itemPooProtein;
+    
+    @ObjectHolder(namePooBrick)
+    public static ItemPooBrick itemPooBrick;
+    
+    @ObjectHolder(namePooCannon)
+    public static ItemPooCannon itemPooCannon;
+    
+    @ObjectHolder(nameCalibrator)
+    public static ItemCalibrator itemCalibrator;
+    
+    //public ItemPooBrick itemPooBrick;
+    //public ItemPooCannon itemPooCannon;
+    //public ItemCalibrator itemCalibrator;
+    
+    @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
+    private static class Registration
     {
-        register.getRegistry().registerAll(itemPoo, itemSulphur, itemNoahSulphur, itemMemeEssence, itemPowder, itemPooPowder, itemPooProtein, itemPooBrick, itemPooCannon, itemCalibrator);
+        @SubscribeEvent
+        static void registerItems(RegistryEvent.Register<Item> register)
+        {
+            register.getRegistry().registerAll(
+                    new ItemPoo(namePoo),
+                    new ItemPoo(nameFermentedPoo),
+                    new ItemBasic(nameSulphur),
+                    new ItemBasic(nameNoahSulphur),
+                    new ItemBasic(nameMemeEssence),
+                    new ItemBasic(nameBlackPowder),
+                    new ItemBasic(namePooPowder),
+                    new ItemPooProtein(namePooProtein),
+                    new ItemPooBrick(namePooBrick),
+                    new ItemPooCannon(namePooCannon),
+                    new ItemCalibrator(nameCalibrator)
+            );
+            
+        }
     }
 }

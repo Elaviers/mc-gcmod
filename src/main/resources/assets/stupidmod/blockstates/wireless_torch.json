@@ -1,9 +1,6 @@
 {
 	"variants": {
-		"facing=up":  { "model": "stupidmod:wireless_torch_off" },
-        "facing=east":  { "model": "stupidmod:wireless_torch_off_wall" },
-        "facing=south":  { "model": "stupidmod:wireless_torch_off_wall", "y": 90 },
-        "facing=west":  { "model": "stupidmod:wireless_torch_off_wall", "y": 180 },
-        "facing=north":  { "model": "stupidmod:wireless_torch_off_wall", "y": 270 }
+		"lit=true":  { "model": "stupidmod:block/wireless_torch_on" },
+		"lit=false":  { "model": "stupidmod:block/wireless_torch_off" }
 	}
 }

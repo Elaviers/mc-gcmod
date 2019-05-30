@@ -1,12 +1,11 @@
-package StupidMod.Client;
+package stupidmod.client;
 
-import StupidMod.Entities.Tile.TileEntityCentrifuge;
-import StupidMod.Misc.ContainerCentrifuge;
-import StupidMod.StupidMod;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
+import stupidmod.entity.tile.TileEntityCentrifuge;
+import stupidmod.misc.ContainerCentrifuge;
 
 public class GuiCentrifuge extends GuiContainer {
     
@@ -24,7 +23,7 @@ public class GuiCentrifuge extends GuiContainer {
     
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.mc.getTextureManager().bindTexture(new ResourceLocation("stupidmod:textures/gui/centrifuge.png"));
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
@@ -36,14 +35,14 @@ public class GuiCentrifuge extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         String s = this.tileent.getDisplayName().getFormattedText();
         this.fontRenderer.drawString(s, 88 - this.fontRenderer.getStringWidth(s) / 2, 3, 4210752);
-        this.fontRenderer.drawString(this.inv.getDisplayName().getUnformattedText(), 8, 72, 4210752);
+        this.fontRenderer.drawString(this.inv.getDisplayName().getUnformattedComponentText(), 8, 72, 4210752);
     }
     
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    public void render(int mouseX, int mouseY, float partialTicks)
     {
         this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
     }
     

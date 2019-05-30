@@ -1,104 +1,174 @@
-package StupidMod;
+package stupidmod;
 
-import StupidMod.Entities.*;
-import StupidMod.Entities.Mob.EntityPooCow;
-import StupidMod.Entities.Mob.EntityPooPig;
-import StupidMod.Entities.Mob.EntityPooSheep;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.client.renderer.entity.RenderCow;
+import net.minecraft.client.renderer.entity.RenderPig;
+import net.minecraft.client.renderer.entity.RenderSheep;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.tags.Tag;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.biome.Biome;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ObjectHolder;
+import stupidmod.client.render.RenderCentrifuge;
+import stupidmod.client.render.RenderExplosive;
+import stupidmod.client.render.RenderImpactExplosive;
+import stupidmod.client.render.RenderPoo;
+import stupidmod.entity.*;
+import stupidmod.entity.mob.EntityPooCow;
+import stupidmod.entity.mob.EntityPooPig;
+import stupidmod.entity.mob.EntityPooSheep;
+import stupidmod.entity.tile.TileEntityCentrifuge;
+import stupidmod.entity.tile.TileEntityExplosiveData;
+import stupidmod.entity.tile.TileEntityWirelessTorch;
 
+@ObjectHolder(StupidMod.id)
 public class EntityRegister {
     
-    public void init()
+    private static final String
+            namePoo = "poo",
+            namePooBrick = "poo_brick",
+            nameExplosivePoo = "explosive_poo",
+            nameExplosive = "explosive",
+            nameConstructiveExplosive = "constructive_explosive",
+            nameDigExplosive = "dig_explosive",
+            nameAirstrikeExplosive = "airstrike_explosive",
+            nameImpactExplosive = "impact_explosive",
+            namePooCow = "poo_cow",
+            namePooPig = "poo_pig",
+            namePooSheep = "poo_sheep",
+            nameCentrifuge = "centrifuge",
+            nameExplosiveData = "explosive_data",
+            nameWirelessTorch = "wireless_torch";
+
+    @ObjectHolder(namePoo)
+    public static EntityType<EntityPoo> entityPoo;
+    
+    @ObjectHolder(namePoo)
+    public static EntityType<EntityPooBrick> entityPooBrick;
+    
+    @ObjectHolder(namePoo)
+    public static EntityType<EntityPooExplosive> entityPooExplosive;
+    
+    @ObjectHolder(nameExplosive)
+    public static EntityType<EntityExplosive> entityExplosive;
+    
+    @ObjectHolder(nameConstructiveExplosive)
+    public static EntityType<EntityConstructiveExplosive> entityConstructiveExplosive;
+
+    @ObjectHolder(nameDigExplosive)
+    public static EntityType<EntityDigExplosive> entityDigExplosive;
+    
+    @ObjectHolder(nameAirstrikeExplosive)
+    public static EntityType<EntityAirStrikeExplosive> entityAirstrikeExplosive;
+    
+    @ObjectHolder(nameImpactExplosive)
+    public static EntityType<EntityImpactExplosive> entityImpactExplosive;
+    
+    @ObjectHolder(namePooCow)
+    public static EntityType<EntityPooCow> entityPooCow;
+    
+    @ObjectHolder(namePooPig)
+    public static EntityType<EntityPooPig> entityPooPig;
+    
+    @ObjectHolder(namePooSheep)
+    public static EntityType<EntityPooSheep> entityPooSheep;
+    
+    @ObjectHolder(nameCentrifuge)
+    public static TileEntityType<TileEntityCentrifuge> tileEntityCentrifuge;
+    
+    @ObjectHolder(nameExplosiveData)
+    public static TileEntityType<TileEntityExplosiveData> tileEntityExplosiveData;
+    
+    @ObjectHolder(nameWirelessTorch)
+    public static TileEntityType<TileEntityWirelessTorch> tileEntityWirelessTorch;
+    
+    @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
+    private static class Registration
     {
-        MinecraftForge.EVENT_BUS.register(this);
+        @SubscribeEvent
+        static void registerEntities(RegistryEvent.Register<EntityType<?>> register)
+        {
+            register.getRegistry().registerAll(
+                    EntityType.Builder.create(EntityPoo.class, EntityPoo::new)
+                            .tracker(64, 20, false)
+                            .build(namePoo).setRegistryName(namePoo),
+                    
+                    EntityType.Builder.create(EntityPooBrick.class, EntityPooBrick::new)
+                            .tracker(64, 20, true)
+                            .build(namePooBrick).setRegistryName(namePooBrick),
+                    
+                    EntityType.Builder.create(EntityPooExplosive.class, EntityPooExplosive::new)
+                            .tracker(256, 20, true)
+                            .build(nameExplosivePoo)
+                            .setRegistryName(nameExplosivePoo),
+                    
+                    EntityType.Builder.create(EntityExplosive.class, EntityExplosive::new)
+                            .tracker(160, 10, true)
+                            .build(nameExplosive).setRegistryName(nameExplosive),
+                    
+                    EntityType.Builder.create(EntityConstructiveExplosive.class, EntityConstructiveExplosive::new)
+                            .tracker(160, 10, true)
+                            .build(nameConstructiveExplosive).setRegistryName(nameConstructiveExplosive),
+                    
+                    EntityType.Builder.create(EntityDigExplosive.class, EntityDigExplosive::new)
+                            .tracker(256, 10, true)
+                            .build(nameDigExplosive).setRegistryName(nameDigExplosive),
+                    
+                    EntityType.Builder.create(EntityAirStrikeExplosive.class, EntityAirStrikeExplosive::new)
+                            .tracker(256, 10, true)
+                            .build(nameAirstrikeExplosive).setRegistryName(nameAirstrikeExplosive),
+                    
+                    EntityType.Builder.create(EntityImpactExplosive.class, EntityImpactExplosive::new)
+                            .tracker(256, 10, true)
+                            .build(nameImpactExplosive).setRegistryName(nameImpactExplosive),
+                    
+                    EntityType.Builder.create(EntityPooCow.class, EntityPooCow::new)
+                            .tracker(80, 3, true)
+                            .build(namePooCow).setRegistryName(namePooCow),
+                    
+                    EntityType.Builder.create(EntityPooPig.class, EntityPooPig::new)
+                            .tracker(80, 3, true)
+                            .build(namePooPig).setRegistryName(namePooPig),
+                    
+                    EntityType.Builder.create(EntityPooSheep.class, EntityPooSheep::new)
+                            .tracker(80, 3, true)
+                            .build(namePooSheep).setRegistryName(namePooSheep)
+            );
+        }
+        
+        @SubscribeEvent
+        static void registerTileEntities(RegistryEvent.Register<TileEntityType<?>> register)
+        {
+            register.getRegistry().registerAll(
+                    tileEntityCentrifuge = TileEntityType.register(nameCentrifuge, TileEntityType.Builder.create(TileEntityCentrifuge::new)),
+                    tileEntityExplosiveData = TileEntityType.register(nameExplosiveData, TileEntityType.Builder.create(TileEntityExplosiveData::new)),
+                    tileEntityWirelessTorch = TileEntityType.register(nameWirelessTorch, TileEntityType.Builder.create(TileEntityWirelessTorch::new))
+            );
+        }
+        
     }
     
-    @SubscribeEvent
-    void registerEntities(RegistryEvent.Register<EntityEntry> register)
+    @OnlyIn(Dist.CLIENT)
+    public static void registerRenderers()
     {
-        int netID = 0;
-        
-        EntityEntry explosiveBlast = EntityEntryBuilder.create()
-                .entity(EntityExplosive.class)
-                .name("Explosive")
-                .id("explosive_blast", netID++)
-                .tracker(160, 10, true)
-                .build();
+        RenderingRegistry.registerEntityRenderingHandler(EntityPoo.class,                   RenderPoo::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class,             manager -> new RenderExplosive(manager, BlockRegister.blockBlastTNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityConstructiveExplosive.class, manager -> new RenderExplosive(manager, BlockRegister.blockConstructiveTNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityDigExplosive.class,          manager -> new RenderExplosive(manager, BlockRegister.blockDigTNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityAirStrikeExplosive.class,    manager -> new RenderExplosive(manager, BlockRegister.blockAirstrikeTNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityImpactExplosive.class,       manager -> new RenderImpactExplosive(manager, BlockRegister.blockDigTNT.getDefaultState(), .5f));
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooCow.class,                RenderCow::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooPig.class,                RenderPig::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPooSheep.class,              RenderSheep::new);
     
-        EntityEntry explosiveConstructive = EntityEntryBuilder.create()
-                .entity(EntityConstructiveExplosive.class)
-                .name("ConstructiveExplosive")
-                .id("explosive_constructive", netID++)
-                .tracker(160, 10, true)
-                .build();
-    
-        EntityEntry explosiveDig = EntityEntryBuilder.create()
-                .entity(EntityDigExplosive.class)
-                .name("DigExplosive")
-                .id("explosive_dig", netID++)
-                .tracker(256, 10, true)
-                .build();
-        
-        EntityEntry explosiveAirStrike = EntityEntryBuilder.create()
-                .entity(EntityAirStrikeExplosive.class)
-                .name("AirstrikeExplosive")
-                .id("explosive_airstrike", netID++)
-                .tracker(256, 10, true)
-                .build();
-    
-        EntityEntry explosiveImpact = EntityEntryBuilder.create()
-                .entity(EntityImpactExplosive.class)
-                .name("ImpactExplosive")
-                .id("explosive_impact", netID++)
-                .tracker(256, 10, true)
-                .build();
-    
-        EntityEntry poo = EntityEntryBuilder.create()
-                .entity(EntityPoo.class)
-                .name("Poo")
-                .id("poo", netID++)
-                .tracker(64, 20, false)
-                .build();
-    
-        EntityEntry pooBrick = EntityEntryBuilder.create()
-                .entity(EntityPooBrick.class)
-                .name("PooBrick")
-                .id("poo_brick", netID++)
-                .tracker(64, 80, true)
-                .build();
-    
-        EntityEntry explosivePoo = EntityEntryBuilder.create()
-                .entity(EntityPooExplosive.class)
-                .name("ExplosivePoo")
-                .id("explosive_poo", netID++)
-                .tracker(256, 20, true)
-                .build();
-    
-        EntityEntry pooPig = EntityEntryBuilder.create()
-                .entity(EntityPooPig.class)
-                .name("Pig")
-                .id("poo_pig", 90)
-                .tracker(80, 3, true)
-                .build();
-    
-        EntityEntry pooSheep = EntityEntryBuilder.create()
-                .entity(EntityPooSheep.class)
-                .name("Sheep")
-                .id("poo_sheep", 91)
-                .tracker(80, 3, true)
-                .build();
-    
-        EntityEntry pooCow = EntityEntryBuilder.create()
-                .entity(EntityPooCow.class)
-                .name("Cow")
-                .id("poo_cow", 92)
-                .tracker(80, 3, true)
-                .build();
-        
-        register.getRegistry().registerAll(explosiveBlast, explosiveConstructive, explosiveDig, explosiveAirStrike, explosiveImpact, poo, pooBrick, explosivePoo, pooPig, pooSheep, pooCow);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCentrifuge.class, new RenderCentrifuge());
     }
+    
 }

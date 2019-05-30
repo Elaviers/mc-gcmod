@@ -1,13 +1,12 @@
-package StupidMod.Misc;
+package stupidmod.misc;
 
-import StupidMod.Entities.Tile.TileEntityCentrifuge;
-import StupidMod.Items.ItemPoo;
-import StupidMod.StupidMod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import stupidmod.entity.tile.TileEntityCentrifuge;
+import stupidmod.item.ItemPoo;
 
 public class ContainerCentrifuge extends Container {
     class CoolSlot extends Slot {
@@ -38,37 +37,37 @@ public class ContainerCentrifuge extends Container {
         this.isLocked = locked;
         
         if (!isLocked) {
-            this.addSlotToContainer(new CoolSlot(ent,0,80,14, 1));
-            this.addSlotToContainer(new CoolSlot(ent,1,60,34, 1));
-            this.addSlotToContainer(new CoolSlot(ent,2,100,34, 1));
-            this.addSlotToContainer(new CoolSlot(ent,3,80,54, 1));
+            this.addSlot(new CoolSlot(ent,0,80,14, 1));
+            this.addSlot(new CoolSlot(ent,1,60,34, 1));
+            this.addSlot(new CoolSlot(ent,2,100,34, 1));
+            this.addSlot(new CoolSlot(ent,3,80,54, 1));
         }else{
-            this.addSlotToContainer(new CoolSlot(ent,0,80,14, 0));
-            this.addSlotToContainer(new CoolSlot(ent,1,60,34, 0));
-            this.addSlotToContainer(new CoolSlot(ent,2,100,34, 0));
-            this.addSlotToContainer(new CoolSlot(ent,3,80,54, 0));
+            this.addSlot(new CoolSlot(ent,0,80,14, 0));
+            this.addSlot(new CoolSlot(ent,1,60,34, 0));
+            this.addSlot(new CoolSlot(ent,2,100,34, 0));
+            this.addSlot(new CoolSlot(ent,3,80,54, 0));
         }
         
-        this.addSlotToContainer(new CoolSlot(ent,4,8,34, 0));
-        this.addSlotToContainer(new CoolSlot(ent,5,26,34, 0));
-        this.addSlotToContainer(new CoolSlot(ent,6,8,52, 0));
-        this.addSlotToContainer(new CoolSlot(ent,7,26,52, 0));
+        this.addSlot(new CoolSlot(ent,4,8,34, 0));
+        this.addSlot(new CoolSlot(ent,5,26,34, 0));
+        this.addSlot(new CoolSlot(ent,6,8,52, 0));
+        this.addSlot(new CoolSlot(ent,7,26,52, 0));
         
-        this.addSlotToContainer(new CoolSlot(ent,8,134,34, 0));
-        this.addSlotToContainer(new CoolSlot(ent,9,152,34, 0));
-        this.addSlotToContainer(new CoolSlot(ent,10,134,52, 0));
-        this.addSlotToContainer(new CoolSlot(ent,11,152,52, 0));
+        this.addSlot(new CoolSlot(ent,8,134,34, 0));
+        this.addSlot(new CoolSlot(ent,9,152,34, 0));
+        this.addSlot(new CoolSlot(ent,10,134,52, 0));
+        this.addSlot(new CoolSlot(ent,11,152,52, 0));
         
         // Player Inventory, Slot 9-35, Slot IDs 12-38
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 9; ++x) {
-                this.addSlotToContainer(new Slot(PlayerInventory, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
+                this.addSlot(new Slot(PlayerInventory, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
             }
         }
         
         // Player Inventory, Slot 0-8, Slot IDs 39-47
         for (int x = 0; x < 9; ++x) {
-            this.addSlotToContainer(new Slot(PlayerInventory, x, 8 + x * 18, 142));
+            this.addSlot(new Slot(PlayerInventory, x, 8 + x * 18, 142));
         }
     }
     

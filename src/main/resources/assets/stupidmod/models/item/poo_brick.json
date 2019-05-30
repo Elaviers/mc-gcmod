@@ -1,6 +1,6 @@
 {
 	"textures": {
-		"maintex": "stupidmod:items/poo_brick"
+		"maintex": "stupidmod:item/poo_brick"
 	},
 	"elements": [
 		{

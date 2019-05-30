@@ -1,6 +1,6 @@
 {
 	"textures": {
-		"maintex": "stupidmod:items/poo_protein"
+		"maintex": "stupidmod:item/poo_protein"
 	},
 	"elements": [
 		{
