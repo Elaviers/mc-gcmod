@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneTorch;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Particles;
@@ -33,6 +34,7 @@ import stupidmod.entity.tile.TileEntityWirelessTorch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Random;
 
@@ -47,9 +49,12 @@ public class BlockWirelessTorch extends BlockTorch implements IForgeTileEntity {
         this.setDefaultState(this.getDefaultState().with(LIT, false));
     }
     
-    boolean shouldBeOn(World worldIn, BlockPos pos, IBlockState state) {
-        return worldIn.isSidePowered(pos.offset(EnumFacing.DOWN),  EnumFacing.UP);
+    private boolean shouldBeOn(World worldIn, BlockPos pos, IBlockState state) {
+        EnumFacing face = getFacing(state).getOpposite();
+        return worldIn.isSidePowered(pos.offset(face), face);
     }
+
+    protected EnumFacing getFacing(IBlockState state) { return EnumFacing.UP;}
     
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
@@ -70,7 +75,7 @@ public class BlockWirelessTorch extends BlockTorch implements IForgeTileEntity {
     @Nullable
     @Override
     public TileEntity createTileEntity(IBlockState state, IBlockReader world) {
-        return new TileEntityWirelessTorch();
+        return new TileEntityWirelessTorch(getFacing(state));
     }
     
     @Override
@@ -94,26 +99,25 @@ public class BlockWirelessTorch extends BlockTorch implements IForgeTileEntity {
 
     @Override
     public void onReplaced(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean isMoving) {
-        for (EnumFacing enumfacing : EnumFacing.values()) {
-            world.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+        TileEntityWirelessTorch te = (TileEntityWirelessTorch) world.getTileEntity(pos);
+
+        if (!(newState.getBlock() instanceof BlockWirelessTorch))
+        {
+            te.LinkedPositions.remove(pos);
+            te.updateNetworkState(world);
         }
-    }
+        else
+        {
+            te.side = getFacing(newState);
+        }
 
-    @Override
-    public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-
-        if (state.get(LIT)) {
-            TileEntityWirelessTorch te = (TileEntityWirelessTorch) world.getTileEntity(pos);
-
-            if (!te.changingState) {
-                te.LinkedPositions.remove(pos);
-                te.updateNetworkState(world);
-            }
-
-            for (EnumFacing enumfacing : EnumFacing.values()) {
+        if (!isMoving) {
+            for(EnumFacing enumfacing : EnumFacing.values()) {
                 world.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
             }
         }
+
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     @Override
@@ -122,7 +126,7 @@ public class BlockWirelessTorch extends BlockTorch implements IForgeTileEntity {
 
         TileEntityWirelessTorch te = (TileEntityWirelessTorch)world.getTileEntity(pos);
 
-        if (!te.locked && state.get(LIT) != this.shouldBeOn(world, pos, state)) {
+        if (!te.changingState && !te.locked && state.get(LIT) != this.shouldBeOn(world, pos, state)) {
             te.updateNetworkState(world);
         }
     }

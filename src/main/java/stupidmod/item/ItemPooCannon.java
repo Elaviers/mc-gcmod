@@ -10,7 +10,9 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import stupidmod.SoundRegister;
 import stupidmod.StupidMod;
+import stupidmod.entity.EntityPooExplosive;
 
 public class ItemPooCannon extends Item {
     
@@ -49,17 +51,15 @@ public class ItemPooCannon extends Item {
             if (ammoStack.isEmpty()) return;
         }
         
-        /*
-        
-        player.playSound(StupidMod.instance.sounds.soundPooCannon, 1, 1);
+        player.playSound(SoundRegister.soundPooCannon, 1, 1);
         if (!world.isRemote) {
-            if(!player.capabilities.isCreativeMode)
+            if(!player.isCreative())
                 ammoStack.setCount(ammoStack.getCount() - 1);
             
             
             EntityPooExplosive tst = new EntityPooExplosive(world, 0, 0, 0, 4);
             tst.setPosition(MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F, 0.1, MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
-            tst.setLocationAndAngles(player.posX,player.posY+player.eyeHeight,player.posZ, player.rotationYaw, player.rotationPitch);
+            tst.setLocationAndAngles(player.posX,player.posY+player.getEyeHeight(),player.posZ, player.rotationYaw, player.rotationPitch);
             tst.setPosition(tst.posX, tst.posY, tst.posZ);
             double motx = -MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI);
             double motz = MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI);
@@ -69,8 +69,6 @@ public class ItemPooCannon extends Item {
             tst.motionZ = motz * 2;
             world.spawnEntity(tst);
         }
-        
-        */
     }
     
     @Override

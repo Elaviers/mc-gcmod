@@ -1,6 +1,7 @@
 package stupidmod.entity;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -12,21 +13,31 @@ public class EntityImpactExplosive extends Entity {
     private float spinX, spinY, spinZ;
     public float prevAngleX, prevAngleY, prevAngleZ;
     public float angleX, angleY, angleZ;
-    
-    public EntityImpactExplosive(World worldIn) {
-        super(EntityRegister.entityImpactExplosive, worldIn);
+
+    public EntityImpactExplosive(EntityType<?> type, World world)
+    {
+        super(type, world);
         this.setSize(.33f,.33f);
         this.spinX = world.rand.nextFloat() * 20 - 10;
         this.spinY = world.rand.nextFloat() * 20 - 10;
         this.spinZ = world.rand.nextFloat() * 20 - 10;
     }
+
+    public EntityImpactExplosive(World worldIn) {
+        this(EntityRegister.entityImpactExplosive, worldIn);
+    }
     
-    public EntityImpactExplosive(World world, double x, double y, double z, int explosionRadius)
+    public EntityImpactExplosive(EntityType<?> type, World world, double x, double y, double z, int explosionRadius)
     {
-        this(world);
+        this(type, world);
         
         this.setPosition(x, y, z);
         this.explosionRadius = explosionRadius;
+    }
+
+    public EntityImpactExplosive(World world, double x, double y, double z, int explosionRadius)
+    {
+        this(EntityRegister.entityImpactExplosive, world, x, y, z, explosionRadius);
     }
     
     @Override

@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import stupidmod.EntityRegister;
 import stupidmod.Utility;
 import stupidmod.block.BlockWirelessTorch;
+import stupidmod.block.BlockWirelessTorchWall;
 
 import java.util.ArrayList;
 
@@ -21,16 +22,20 @@ public class TileEntityWirelessTorch extends TileEntity {
     
     public EnumFacing side;
     
-    public TileEntityWirelessTorch() {
+    public TileEntityWirelessTorch(EnumFacing side) {
         super(EntityRegister.tileEntityWirelessTorch);
+
+        this.LinkedPositions = new ArrayList<BlockPos>();
+
+        this.side = side;
     }
     
     @Override
     public NBTTagCompound write(NBTTagCompound compound) {
         super.write(compound);
-    
+
         compound.setInt("Side", side.getIndex());
-        
+
         if (this.LinkedPositions == null) return compound;
         
         compound.setTag("Torches", this.getTorchList());
@@ -41,9 +46,9 @@ public class TileEntityWirelessTorch extends TileEntity {
     @Override
     public void read(NBTTagCompound compound) {
         super.read(compound);
-    
+
         side = EnumFacing.byIndex(compound.getInt("Side"));
-    
+
         if (!compound.hasKey("Torches")) return;
     
         this.setTorchList(compound.getList("Torches", Constants.NBT.TAG_COMPOUND));
@@ -79,8 +84,6 @@ public class TileEntityWirelessTorch extends TileEntity {
     
     public void setTorchList(NBTTagList positions)
     {
-        this.LinkedPositions = new ArrayList<BlockPos>();
-        
         for (int i = 0; i < positions.size(); ++i)
         {
             NBTTagCompound nbt = positions.getCompound(i);
@@ -98,16 +101,19 @@ public class TileEntityWirelessTorch extends TileEntity {
     }
     
     private void removeInvalidPositions(World world) {
-        for (int i = 0; i < this.LinkedPositions.size(); i++) {
-            if (!(world.getBlockState(this.LinkedPositions.get(i)).getBlock() instanceof BlockWirelessTorch)) {
+        for (int i = 0; i < this.LinkedPositions.size();) {
+            if (!(world.getBlockState(this.LinkedPositions.get(i)).getBlock() instanceof BlockWirelessTorch))
                 this.LinkedPositions.remove(i);
-            }
+            else i++;
         }
     }
     
     boolean positionIsPowered(World world, BlockPos pos) {
         TileEntityWirelessTorch te = (TileEntityWirelessTorch)world.getTileEntity(pos);
-        return world.isSidePowered(pos.offset(te.side), te.side);
+
+        EnumFacing opposite = te.side.getOpposite();
+
+        return world.isSidePowered(pos.offset(opposite), opposite);
     }
     
     public void updateNetworkState(World world) {

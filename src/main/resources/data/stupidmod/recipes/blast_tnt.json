@@ -3,18 +3,23 @@
   "pattern":
   [
     "XXX",
-    "XXX",
+    "XYX",
     "XXX"
   ],
   "key":
   {
     "X":
     {
-      "item": "stupidmod:fermented_poo"
+      "tag": "minecraft:planks"
+    }
+    ,
+    "Y":
+    {
+      "item": "stupidmod:black_powder"
     }
   },
   "result":
   {
-    "item": "stupidmod:fermented_poo_block"
+    "item": "stupidmod:blast_tnt"
   }
 }

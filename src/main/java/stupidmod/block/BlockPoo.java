@@ -7,6 +7,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import stupidmod.BlockRegister;
 import stupidmod.SoundRegister;
@@ -37,7 +39,7 @@ public class BlockPoo extends Block {
         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
             if (world.getBlockState(pos.offset(enumfacing).down()).getMaterial() == Material.WATER)
                 if (world.getLight(pos) < 5)
-                    //if (world.rand.nextInt(5) == 0)
+                    if (world.rand.nextInt(5) == 0)
                         world.setBlockState(pos, BlockRegister.blockPooFermented.getDefaultState());
     }
 }

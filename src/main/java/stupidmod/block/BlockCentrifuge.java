@@ -4,8 +4,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,13 +23,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.NetworkHooks;
+import stupidmod.client.GuiCentrifuge;
 import stupidmod.entity.tile.TileEntityCentrifuge;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockCentrifuge extends Block implements IForgeTileEntity {
-    
     public BlockCentrifuge(String name) {
         super(Properties.create(Material.WOOD));
         
@@ -77,15 +81,13 @@ public class BlockCentrifuge extends Block implements IForgeTileEntity {
     
     @Override
     public boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        /*// if (!world.isRemote) {
-        TileEntityCentrifuge te = (TileEntityCentrifuge)world.getTileEntity(pos);
-        if (te != null) {
-            if (te.isSpinning())
-                player.openGui(StupidMod.instance, 1, world, pos.getX(), pos.getY(), pos.getZ());
-            else
-                player.openGui(StupidMod.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+         if (!world.isRemote) {
+            TileEntityCentrifuge te = (TileEntityCentrifuge)world.getTileEntity(pos);
+
+            if (te != null) {
+                NetworkHooks.openGui((EntityPlayerMP)player, te, data -> data.writeBlockPos(pos));
+            }
         }
-        //}*/
         
         return true;
     }
@@ -97,16 +99,16 @@ public class BlockCentrifuge extends Block implements IForgeTileEntity {
         }
         this.neighborChanged(state, world, pos, state.getBlock(), new BlockPos(0,0,0));
     }
-    
+
     @Override
-    public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
-        if (!player.isCreative()) {
-            TileEntityCentrifuge te = (TileEntityCentrifuge) world.getTileEntity(pos);
-            
-            if (te != null)
-                InventoryHelper.dropInventoryItems(world, pos, te);
-            
-            super.onBlockHarvested(world, pos, state, player);
+    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+            if (tileentity instanceof IInventory) {
+                InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory)tileentity);
+            }
+
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
         }
     }
     

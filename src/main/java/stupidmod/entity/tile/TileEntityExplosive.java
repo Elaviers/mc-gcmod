@@ -17,7 +17,7 @@ import stupidmod.entity.EntityConstructiveExplosive;
 import stupidmod.entity.EntityDigExplosive;
 import stupidmod.entity.EntityExplosive;
 
-public class TileEntityExplosiveData extends TileEntity {
+public class TileEntityExplosive extends TileEntity {
     
     private short fuse;
     private short strength;
@@ -28,10 +28,13 @@ public class TileEntityExplosiveData extends TileEntity {
     private short airStrikeHeight;
     private short airStrikePieces;
     
-    public TileEntityExplosiveData() {
+    public TileEntityExplosive() {
         super(EntityRegister.tileEntityExplosiveData);
         
         this.strength = 2;
+        this.airStrikeHeight = 20;
+        this.airStrikePieces = 5;
+        this.airStrikeSpread = 3;
     }
     
     @Override
@@ -39,10 +42,18 @@ public class TileEntityExplosiveData extends TileEntity {
         super.read(compound);
         this.fuse = compound.getShort("Fuse");
         this.strength = compound.getShort("Strength");
-        this.constructState = NBTUtil.readBlockState(compound.getCompound("Block"));
-        this.airStrikeSpread = compound.getShort("Spread");
-        this.airStrikePieces = compound.getShort("Pieces");
-        this.airStrikeHeight = compound.getShort("Height");
+
+        if (compound.hasKey("Block"))
+            this.constructState = NBTUtil.readBlockState(compound.getCompound("Block"));
+
+        if (compound.hasKey("Spread"))
+            this.airStrikeSpread = compound.getShort("Spread");
+
+        if (compound.hasKey("Pieces"))
+            this.airStrikePieces = compound.getShort("Pieces");
+
+        if (compound.hasKey("Height"))
+            this.airStrikeHeight = compound.getShort("Height");
     }
     
     @Override

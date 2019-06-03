@@ -4,6 +4,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +12,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import stupidmod.BlockRegister;
+import stupidmod.RecipeRegister;
 import stupidmod.item.ItemBlockExplosive;
 
 public class RecipeAirStrikeExplosive extends ShapedRecipe {
@@ -39,7 +41,7 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
             ItemStack stack = inv.getStackInSlot(i);
             if (stack.getItem() == new ItemStack(BlockRegister.blockBlastTNT).getItem()) {
                 NBTTagCompound nbt = stack.getTag();
-                this.outputStack = ItemBlockExplosive.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"),(short)1,(short)3,(short)1);
+                this.outputStack = ItemBlockExplosive.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"), (short)3,(short)5,(short)20);
                 return true;
             }
         }
@@ -60,4 +62,9 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
     
     @Override
     public boolean isDynamic() { return true; }
+
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return RecipeRegister.recipeAirStrikeExplosive;
+    }
 }

@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeHidden;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.RecipeSerializers;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,21 +16,17 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import stupidmod.ItemRegister;
+import stupidmod.RecipeRegister;
 import stupidmod.block.BlockExplosive;
 import stupidmod.item.ItemBlockExplosive;
 
-public class RecipeExplosive implements IRecipe {
+public class RecipeExplosive extends IRecipeHidden {
     ItemStack outputStack = ItemStack.EMPTY;
-    
-    ResourceLocation id;
-    
-    public RecipeExplosive(ResourceLocation location)
-    {
-        this.id = location;
-    }
+
+    public RecipeExplosive(ResourceLocation location) { super (location); }
     
     @Override
-    public boolean matches(IInventory inv, World worldIn) {
+    public boolean matches(IInventory inv, World world) {
         outputStack = ItemStack.EMPTY;
     
         short strength, fuse, spread, pieces, height;
@@ -112,18 +109,18 @@ public class RecipeExplosive implements IRecipe {
             
             switch (finalType) {
                 case BLAST:
-                    this.outputStack = ItemBlockExplosive.makeStackBlast(fuse, strength);
+                    this.outputStack = ItemBlockExplosive.makeStackBlast(fuse, (short)(strength + strength_AS));
                     return true;
                 
                 case CONSTRUCTIVE:
                     if (blockStateMod != null)
                         blockState = blockStateMod;
                     
-                    this.outputStack = ItemBlockExplosive.makeStackConstructive(fuse, strength, blockState);
+                    this.outputStack = ItemBlockExplosive.makeStackConstructive(fuse, (short)(strength + strength_AS), blockState);
                     return true;
                     
                 case DIG:
-                    this.outputStack = ItemBlockExplosive.makeStackDig(fuse, strength);
+                    this.outputStack = ItemBlockExplosive.makeStackDig(fuse, (short)(strength + strength_AS));
                     return true;
                     
                 case AIRSTRIKE:
@@ -143,25 +140,8 @@ public class RecipeExplosive implements IRecipe {
     }
     
     @Override
-    public boolean canFit(int width, int height) {
-        return width * height > 1;
-    }
+    public boolean canFit(int width, int height) { return width * height >= 2; }
     
     @Override
-    public ItemStack getRecipeOutput() {
-        return this.outputStack;
-    }
-    
-    @Override
-    public boolean isDynamic() { return true; }
-    
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
-    }
-    
-    @Override
-    public IRecipeSerializer<?> getSerializer() {
-        return new RecipeSerializers.SimpleSerializer<>("explosive", RecipeExplosive::new);
-    }
+    public IRecipeSerializer<?> getSerializer() { return RecipeRegister.recipeExplosive; }
 }

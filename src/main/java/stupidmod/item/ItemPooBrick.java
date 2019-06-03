@@ -5,8 +5,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import stupidmod.StupidMod;
+import stupidmod.entity.EntityPooBrick;
 
 public class ItemPooBrick extends Item {
     
@@ -20,8 +22,8 @@ public class ItemPooBrick extends Item {
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         if (!world.isRemote) {
             player.getHeldItem(hand).shrink(1);
-            /*EntityPooBrick tst = new EntityPooBrick(world);
-            tst.setLocationAndAngles(player.posX,player.posY+player.eyeHeight,player.posZ, player.rotationYaw, player.rotationPitch);
+            EntityPooBrick tst = new EntityPooBrick(world);
+            tst.setLocationAndAngles(player.posX,player.posY+player.getEyeHeight(),player.posZ, player.rotationYaw, player.rotationPitch);
             tst.posX -= MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
             tst.posY -= 0.1;
             tst.posZ -= MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
@@ -33,7 +35,6 @@ public class ItemPooBrick extends Item {
             tst.motionY = moty;
             tst.motionZ = motz;
             world.spawnEntity(tst);
-            */
         }
         
         return super.onItemRightClick(world,player,hand);

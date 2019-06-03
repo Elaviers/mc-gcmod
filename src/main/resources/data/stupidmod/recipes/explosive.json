@@ -1,25 +1,3 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern":
-  [
-    "XXX",
-    "XYX",
-    "XXX"
-  ],
-  "key":
-  {
-    "X":
-    {
-      "tag": "minecraft:planks"
-    }
-    ,
-    "Y":
-    {
-      "item": "stupidmod:black_powder"
-    }
-  },
-  "result":
-  {
-    "item": "stupidmod:blast_tnt"
-  }
+  "type": "stupidmod:crafting_explosive"
 }

@@ -1,15 +1,22 @@
 package stupidmod.item;
 
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -48,6 +55,11 @@ public class ItemBlockExplosive extends ItemBlock {
         }
     
         stack.setTag(tag);
+    }
+
+    @Override
+    public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn) {
+        super.onCreated(stack, worldIn, playerIn);
     }
 
     @Override
@@ -107,7 +119,7 @@ public class ItemBlockExplosive extends ItemBlock {
         nbt.setShort("Fuse", fuse);;
         nbt.setShort("Strength", strength);;
         
-        ItemStack stack = new ItemStack(BlockRegister.blockBlastTNT);
+        ItemStack stack = new ItemStack(BlockRegister.blockDigTNT);
         stack.setTag(nbt);
         return stack;
     }
@@ -124,5 +136,40 @@ public class ItemBlockExplosive extends ItemBlock {
         stack.setTag(nbt);
         return stack;
     }
-    
+
+    @Override
+    public EnumActionResult tryPlace(BlockItemUseContext context) {
+        if (!context.canPlace()) {
+            return EnumActionResult.FAIL;
+        } else {
+            IBlockState iblockstate = this.getStateForPlacement(context);
+            if (iblockstate == null) {
+                return EnumActionResult.FAIL;
+            } else if (!this.placeBlock(context, iblockstate)) {
+                return EnumActionResult.FAIL;
+            } else {
+                BlockPos blockpos = context.getPos();
+                World world = context.getWorld();
+                EntityPlayer entityplayer = context.getPlayer();
+                ItemStack itemstack = context.getItem();
+                IBlockState iblockstate1 = world.getBlockState(blockpos);
+                Block block = iblockstate1.getBlock();
+                if (block == iblockstate.getBlock()) {
+                    this.onBlockPlaced(blockpos, world, entityplayer, itemstack, iblockstate1);
+                    block.onBlockPlacedBy(world, blockpos, iblockstate1, entityplayer, itemstack);
+                    if (entityplayer instanceof EntityPlayerMP) {
+                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)entityplayer, blockpos, itemstack);
+                    }
+                }
+
+                SoundType soundtype = iblockstate1.getSoundType(world, blockpos, context.getPlayer());
+                world.playSound(entityplayer, blockpos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+
+                if (!entityplayer.isCreative())
+                    itemstack.shrink(1);
+
+                return EnumActionResult.SUCCESS;
+            }
+        }
+    }
 }

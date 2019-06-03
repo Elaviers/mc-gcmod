@@ -25,7 +25,7 @@ public class EntityConstructiveExplosive extends EntityExplosive {
         
         if (!this.world.isRemote)
         {
-            ExplosionConstructive explosion = new ExplosionConstructive(this.world, null, this.posX, this.posY, this.posZ, this.strength, false, true);
+            ExplosionConstructive explosion = new ExplosionConstructive(this.world, null, this.posX, this.posY, this.posZ, this.strength, false, true, this.blockState);
 
             if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.world, explosion.doppelganger)) return;
             explosion.doExplosionA();

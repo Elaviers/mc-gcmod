@@ -10,6 +10,7 @@ import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
+import stupidmod.entity.tile.TileEntityWirelessTorch;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -34,17 +36,16 @@ public class BlockWirelessTorchWall extends BlockWirelessTorch {
         
         this.setDefaultState(this.getDefaultState().with(FACING, EnumFacing.NORTH));
     }
-    
+
+    @Override
+    protected EnumFacing getFacing(IBlockState state) {
+        return state.get(FACING);
+    }
+
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
         super.fillStateContainer(builder);
         builder.add(FACING);
-    }
-    
-    @Override
-    boolean shouldBeOn(World worldIn, BlockPos pos, IBlockState state) {
-        EnumFacing enumfacing = ((EnumFacing)state.get(FACING)).getOpposite();
-        return worldIn.isSidePowered(pos.offset(enumfacing), enumfacing);
     }
 
     //

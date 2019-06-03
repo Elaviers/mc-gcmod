@@ -1,0 +1,9 @@
+{
+  "type": "smelting",
+  "ingredient": {
+    "item": "stupidmod:poo_powder"
+  },
+  "result": "stupidmod:poo_brick",
+  "experience": 5,
+  "cookingtime": 200
+}

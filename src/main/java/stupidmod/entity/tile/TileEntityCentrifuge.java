@@ -1,6 +1,8 @@
 package stupidmod.entity.tile;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -12,14 +14,18 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IInteractionObject;
 import stupidmod.EntityRegister;
 import stupidmod.ItemRegister;
+import stupidmod.client.CentrifugeSoundManager;
 import stupidmod.item.ItemPoo;
+import stupidmod.misc.ContainerCentrifuge;
 
 import javax.annotation.Nullable;
 
-public class TileEntityCentrifuge extends TileEntity implements ITickable, IInventory {
-    
+public class TileEntityCentrifuge extends TileEntity implements ITickable, IInventory, IInteractionObject {
+    public static final String GUI_ID = "stupidmod:centrifuge";
+
     private ITextComponent customName;
     private NonNullList<ItemStack> inventory;
     
@@ -47,7 +53,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
             this.rateTarget = (float)(Math.PI * 2.5f / 20);
         }
         
-        //StupidMod.proxy.updateCentrifugeSound(this);
+        CentrifugeSoundManager.updateCentrifugeSound(this);
     }
     
     @Override
@@ -105,7 +111,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     
     @Override
     public ITextComponent getName() {
-        return this.hasCustomName() ? this.customName : new TextComponentTranslation("tileentity.centrifuge.name");
+        return this.hasCustomName() ? this.customName : new TextComponentTranslation("tileentity.stupidmod.centrifuge");
     }
     
     @Override
@@ -237,7 +243,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     
     @Override
     public void openInventory(EntityPlayer player) {
-    ;;
+
     }
     
     @Override
@@ -268,5 +274,15 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
     @Override
     public void clear() {
         this.inventory.clear();
+    }
+
+    @Override
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+        return new ContainerCentrifuge(playerInventory, this, this.spinning);
+    }
+
+    @Override
+    public String getGuiID() {
+        return GUI_ID;
     }
 }

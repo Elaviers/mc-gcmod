@@ -14,13 +14,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
 import net.minecraftforge.common.util.LazyOptional;
-import stupidmod.entity.tile.TileEntityExplosiveData;
+import stupidmod.entity.tile.TileEntityExplosive;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,13 +54,13 @@ public class BlockExplosive extends Block implements IForgeTileEntity {
     
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, @Nullable EntityLivingBase player, ItemStack stack) {
-        TileEntityExplosiveData te = (TileEntityExplosiveData) world.getTileEntity(pos);
+        TileEntityExplosive te = (TileEntityExplosive) world.getTileEntity(pos);
         te.read(stack.getTag());
     }
     
-    void explode(World world, BlockPos pos, IBlockState state)
+    public void explode(World world, BlockPos pos, IBlockState state)
     {
-        TileEntityExplosiveData te = (TileEntityExplosiveData)world.getTileEntity(pos);
+        TileEntityExplosive te = (TileEntityExplosive)world.getTileEntity(pos);
         te.explode(world, pos, state);
     }
     
@@ -87,11 +86,6 @@ public class BlockExplosive extends Block implements IForgeTileEntity {
     
         return false;
     }
-
-    @Override
-    public void onExplosionDestroy(World world, BlockPos pos, Explosion explosionIn) {
-        this.explode(world, pos, world.getBlockState(pos));
-    }
     
     //Tile Ent
     
@@ -114,6 +108,6 @@ public class BlockExplosive extends Block implements IForgeTileEntity {
     @Nullable
     @Override
     public TileEntity createTileEntity(IBlockState state, IBlockReader world) {
-        return new TileEntityExplosiveData();
+        return new TileEntityExplosive();
     }
 }

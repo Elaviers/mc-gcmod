@@ -3,6 +3,7 @@ package stupidmod.recipe;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,6 +11,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import stupidmod.BlockRegister;
+import stupidmod.RecipeRegister;
 import stupidmod.item.ItemBlockExplosive;
 
 public class RecipeDigExplosive extends ShapelessRecipe {
@@ -52,5 +54,10 @@ public class RecipeDigExplosive extends ShapelessRecipe {
     @Override
     public boolean isDynamic() {
         return true;
+    }
+
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return RecipeRegister.recipeDigExplosive;
     }
 }
