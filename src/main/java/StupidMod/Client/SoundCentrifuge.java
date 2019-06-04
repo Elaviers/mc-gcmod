@@ -6,6 +6,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import stupidmod.StupidMod;
 import stupidmod.entity.tile.TileEntityCentrifuge;
 
 @OnlyIn(Dist.CLIENT)
@@ -30,7 +31,7 @@ public class SoundCentrifuge extends MovingSound {
     public void tick() {
         if (entity == null || entity.isRemoved()) {
             this.donePlaying = true;
-            CentrifugeSoundManager.removeCentrifugeSound(new BlockPos((int)(this.x - 0.5f), (int)(this.y - 0.5f), (int)(this.z - 0.5f)));
+            StupidMod.proxy.clRemoveCentrifugeSound(new BlockPos((int)(this.x - 0.5f), (int)(this.y - 0.5f), (int)(this.z - 0.5f)));
             return;
         }
         

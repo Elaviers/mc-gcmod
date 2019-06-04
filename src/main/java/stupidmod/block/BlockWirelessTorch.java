@@ -1,32 +1,20 @@
 package stupidmod.block;
 
-import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedstoneTorch;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Particles;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReaderBase;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.extensions.IForgeTileEntity;
 import net.minecraftforge.common.util.LazyOptional;
@@ -34,8 +22,6 @@ import stupidmod.entity.tile.TileEntityWirelessTorch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.ObjectInputStream;
-import java.util.List;
 import java.util.Random;
 
 public class BlockWirelessTorch extends BlockTorch implements IForgeTileEntity {
@@ -103,7 +89,7 @@ public class BlockWirelessTorch extends BlockTorch implements IForgeTileEntity {
 
         if (!(newState.getBlock() instanceof BlockWirelessTorch))
         {
-            te.LinkedPositions.remove(pos);
+            te.linkedPositions.remove(pos);
             te.updateNetworkState(world);
         }
         else

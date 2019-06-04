@@ -7,6 +7,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import stupidmod.Proxy;
 import stupidmod.SoundRegister;
 import stupidmod.StupidMod;
 import stupidmod.entity.tile.TileEntityCentrifuge;
@@ -14,19 +15,20 @@ import stupidmod.entity.tile.TileEntityCentrifuge;
 import java.util.HashMap;
 import java.util.Map;
 
-@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class CentrifugeSoundManager {
+public class ClientProxy extends Proxy {
+    @OnlyIn(Dist.CLIENT)
+    private Map<BlockPos, SoundCentrifuge> playingSounds = new HashMap<>();
 
-    static Map<BlockPos, SoundCentrifuge> playingSounds = new HashMap<>();
-
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void worldUnLoaded(WorldEvent.Unload event) {
-        playingSounds.clear();
+    static void worldUnloaded(WorldEvent.Unload event) {
+        ((ClientProxy)StupidMod.proxy).playingSounds.clear();
     }
 
-    //Adds and plays a new centrifuge sound or binds the existing one
-    public static  void updateCentrifugeSound(TileEntityCentrifuge te) {
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void clUpdateCentrifugeSound(TileEntityCentrifuge te) {
         BlockPos pos = te.getPos();
 
         SoundCentrifuge sound = playingSounds.get(pos);
@@ -40,8 +42,9 @@ public class CentrifugeSoundManager {
         }
     }
 
-    //Removes the sound at given position
-    public static void removeCentrifugeSound(BlockPos pos) {
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void clRemoveCentrifugeSound(BlockPos pos) {
         playingSounds.remove(pos);
     }
 

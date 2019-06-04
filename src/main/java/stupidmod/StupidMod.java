@@ -2,30 +2,29 @@ package stupidmod;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Biomes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.DesertBiome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.CompositeFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.MinableConfig;
 import net.minecraft.world.gen.placement.CountRangeConfig;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import stupidmod.client.ClientProxy;
 import stupidmod.misc.GuiHandler;
 
 @Mod(StupidMod.id)
 public class StupidMod {
     public static final String id = "stupidmod";
+
+    public static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> Proxy::new);
     
     public StupidMod()
     {
@@ -89,12 +88,6 @@ public class StupidMod {
     private void clientSetup(FMLClientSetupEvent event)
     {
         EntityRegister.registerRenderers();
-    }
-
-    @SubscribeEvent
-    public void onServerStart(FMLServerStartingEvent event)
-    {
-    
     }
     
     public static final ItemGroup GROUP = new ItemGroup("stupidmod") {

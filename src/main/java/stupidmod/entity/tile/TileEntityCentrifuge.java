@@ -17,7 +17,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IInteractionObject;
 import stupidmod.EntityRegister;
 import stupidmod.ItemRegister;
-import stupidmod.client.CentrifugeSoundManager;
+import stupidmod.StupidMod;
 import stupidmod.item.ItemPoo;
 import stupidmod.misc.ContainerCentrifuge;
 
@@ -53,7 +53,7 @@ public class TileEntityCentrifuge extends TileEntity implements ITickable, IInve
             this.rateTarget = (float)(Math.PI * 2.5f / 20);
         }
         
-        CentrifugeSoundManager.updateCentrifugeSound(this);
+        StupidMod.proxy.clUpdateCentrifugeSound(this);
     }
     
     @Override

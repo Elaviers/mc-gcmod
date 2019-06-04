@@ -10,12 +10,11 @@ import net.minecraftforge.common.util.Constants;
 import stupidmod.EntityRegister;
 import stupidmod.Utility;
 import stupidmod.block.BlockWirelessTorch;
-import stupidmod.block.BlockWirelessTorchWall;
 
 import java.util.ArrayList;
 
 public class TileEntityWirelessTorch extends TileEntity {
-    public ArrayList<BlockPos> LinkedPositions;
+    public ArrayList<BlockPos> linkedPositions;
     
     public boolean locked = false;
     public boolean changingState = false;
@@ -25,7 +24,7 @@ public class TileEntityWirelessTorch extends TileEntity {
     public TileEntityWirelessTorch(EnumFacing side) {
         super(EntityRegister.tileEntityWirelessTorch);
 
-        this.LinkedPositions = new ArrayList<BlockPos>();
+        this.linkedPositions = new ArrayList<BlockPos>();
 
         this.side = side;
     }
@@ -36,7 +35,7 @@ public class TileEntityWirelessTorch extends TileEntity {
 
         compound.setInt("Side", side.getIndex());
 
-        if (this.LinkedPositions == null) return compound;
+        if (this.linkedPositions == null) return compound;
         
         compound.setTag("Torches", this.getTorchList());
         
@@ -70,9 +69,9 @@ public class TileEntityWirelessTorch extends TileEntity {
     {
         NBTTagList list = new NBTTagList();
         
-        for (int i = 0;i < LinkedPositions.size();i++) {
+        for (int i = 0; i < linkedPositions.size(); i++) {
             NBTTagCompound tag = new NBTTagCompound();
-            BlockPos pos = LinkedPositions.get(i);
+            BlockPos pos = linkedPositions.get(i);
             tag.setInt("x", pos.getX());
             tag.setInt("y", pos.getY());
             tag.setInt("z", pos.getZ());
@@ -84,26 +83,28 @@ public class TileEntityWirelessTorch extends TileEntity {
     
     public void setTorchList(NBTTagList positions)
     {
+        this.linkedPositions.clear();
+
         for (int i = 0; i < positions.size(); ++i)
         {
             NBTTagCompound nbt = positions.getCompound(i);
-            this.LinkedPositions.add(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")));
+            this.linkedPositions.add(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")));
         }
     }
     
     public void removeInvalidPositionsFromNetwork() {
         this.removeInvalidPositions(world);
         
-        for (int i = 0; i < this.LinkedPositions.size(); ++i) {
-            TileEntityWirelessTorch te = (TileEntityWirelessTorch)world.getTileEntity(this.LinkedPositions.get(i));
-            te.LinkedPositions = this.LinkedPositions;
+        for (int i = 0; i < this.linkedPositions.size(); ++i) {
+            TileEntityWirelessTorch te = (TileEntityWirelessTorch)world.getTileEntity(this.linkedPositions.get(i));
+            te.linkedPositions = this.linkedPositions;
         }
     }
     
     private void removeInvalidPositions(World world) {
-        for (int i = 0; i < this.LinkedPositions.size();) {
-            if (!(world.getBlockState(this.LinkedPositions.get(i)).getBlock() instanceof BlockWirelessTorch))
-                this.LinkedPositions.remove(i);
+        for (int i = 0; i < this.linkedPositions.size();) {
+            if (!(world.getBlockState(this.linkedPositions.get(i)).getBlock() instanceof BlockWirelessTorch))
+                this.linkedPositions.remove(i);
             else i++;
         }
     }
@@ -121,8 +122,8 @@ public class TileEntityWirelessTorch extends TileEntity {
         
         this.removeInvalidPositions(world);
         
-        for (int i = 0; i < this.LinkedPositions.size(); ++i) {
-            if (this.positionIsPowered(world, this.LinkedPositions.get(i))) {
+        for (int i = 0; i < this.linkedPositions.size(); ++i) {
+            if (this.positionIsPowered(world, this.linkedPositions.get(i))) {
                 netPowered = true;
                 break;
             }
@@ -132,9 +133,9 @@ public class TileEntityWirelessTorch extends TileEntity {
     }
     
     private void setNetworkState(World world, boolean state) {
-        if (LinkedPositions == null)return;
+        if (linkedPositions == null)return;
         
-        for (BlockPos pos : LinkedPositions) {
+        for (BlockPos pos : linkedPositions) {
             TileEntityWirelessTorch td = Utility.setIndividualState(world, pos, state);
             td.locked = state && !this.positionIsPowered(world, pos);
         }

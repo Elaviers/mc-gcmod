@@ -39,7 +39,7 @@ public class EntityRegister {
             namePooPig = "poo_pig",
             namePooSheep = "poo_sheep",
             nameCentrifuge = "centrifuge",
-            nameExplosiveData = "explosive_data",
+            nameExplosiveTE = "explosive",
             nameWirelessTorch = "wireless_torch";
 
     @ObjectHolder(namePoo)
@@ -78,7 +78,7 @@ public class EntityRegister {
     @ObjectHolder(nameCentrifuge)
     public static TileEntityType<TileEntityCentrifuge> tileEntityCentrifuge;
     
-    @ObjectHolder(nameExplosiveData)
+    @ObjectHolder(nameExplosiveTE)
     public static TileEntityType<TileEntityExplosive> tileEntityExplosiveData;
     
     @ObjectHolder(nameWirelessTorch)
@@ -143,7 +143,7 @@ public class EntityRegister {
         {
             register.getRegistry().registerAll(
                     tileEntityCentrifuge = TileEntityType.register(nameCentrifuge, TileEntityType.Builder.create(TileEntityCentrifuge::new)),
-                    tileEntityExplosiveData = TileEntityType.register(nameExplosiveData, TileEntityType.Builder.create(TileEntityExplosive::new)),
+                    tileEntityExplosiveData = TileEntityType.register(nameExplosiveTE, TileEntityType.Builder.create(TileEntityExplosive::new)),
                     tileEntityWirelessTorch = TileEntityType.register(nameWirelessTorch, TileEntityType.Builder.create(() -> new TileEntityWirelessTorch(EnumFacing.UP)))
             );
         }
