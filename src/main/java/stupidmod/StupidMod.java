@@ -1,24 +1,20 @@
 package stupidmod;
 
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.CompositeFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.MinableConfig;
+import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.placement.CountRangeConfig;
+import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import stupidmod.client.ClientProxy;
-import stupidmod.misc.GuiHandler;
 
 @Mod(StupidMod.id)
 public class StupidMod {
@@ -31,23 +27,21 @@ public class StupidMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> GuiHandler::openGui);
+        //ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> GuiHandler::openGui);
     }
     
     
     
     private void setup(FMLCommonSetupEvent event)
     {
-        RecipeRegister.registerRecipes();
-
         //Gen
-        CompositeFeature sulphurFeature = Biome.createCompositeFeature(
-                Feature.MINABLE,
-                new MinableConfig(
-                        MinableConfig.IS_ROCK,
-                        BlockRegister.blockSulphurOre.getDefaultState(),
+        ConfiguredFeature sulphurFeature = Biome.createDecoratedFeature(
+                Feature.ORE,
+                new OreFeatureConfig(
+                        OreFeatureConfig.FillerBlockType.NATURAL_STONE,
+                        StupidModBlocks.SULPHUR_ORE.getDefaultState(),
                         20),
-                Biome.COUNT_RANGE,
+                Placement.COUNT_RANGE,
                 new CountRangeConfig(
                         12,
                         0,
@@ -55,14 +49,14 @@ public class StupidMod {
                         48
                 )
         );
-    
-        CompositeFeature noahSulphurFeature = Biome.createCompositeFeature(
-                Feature.MINABLE,
-                new MinableConfig(
-                        MinableConfig.IS_ROCK,
-                        BlockRegister.blockNoahSulphurOre.getDefaultState(),
+
+        ConfiguredFeature noahSulphurFeature = Biome.createDecoratedFeature(
+                Feature.ORE,
+                new OreFeatureConfig(
+                        OreFeatureConfig.FillerBlockType.NATURAL_STONE,
+                        StupidModBlocks.NOAH_SULPHUR_ORE.getDefaultState(),
                         5),
-                Biome.COUNT_RANGE,
+                Placement.COUNT_RANGE,
                 new CountRangeConfig(
                         5,
                         0,
@@ -75,25 +69,26 @@ public class StupidMod {
         Utility.addOverworldOreFeature(GenerationStage.Decoration.UNDERGROUND_ORES, noahSulphurFeature);
     
         Utility.removeSpawn(EntityType.COW);
-        Utility.addOverworldCreatureSpawn(EnumCreatureType.CREATURE, new Biome.SpawnListEntry(EntityRegister.entityPooCow, 8, 4, 4));
+        Utility.addOverworldCreatureSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(StupidModEntities.POO_COW, 8, 4, 4));
     
         Utility.removeSpawn(EntityType.PIG);
-        Utility.addOverworldCreatureSpawn(EnumCreatureType.CREATURE, new Biome.SpawnListEntry(EntityRegister.entityPooPig, 10, 4, 4));
+        Utility.addOverworldCreatureSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(StupidModEntities.POO_PIG, 10, 4, 4));
     
         Utility.removeSpawn(EntityType.SHEEP);
-        Utility.addOverworldCreatureSpawn(EnumCreatureType.CREATURE, new Biome.SpawnListEntry(EntityRegister.entityPooSheep, 12, 4, 4));
+        Utility.addOverworldCreatureSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(StupidModEntities.POO_SHEEP, 12, 4, 4));
         
     }
     
     private void clientSetup(FMLClientSetupEvent event)
     {
-        EntityRegister.registerRenderers();
+        StupidModEntities.registerRenderers();
+        StupidModContainers.RegisterScreenFactories();
     }
     
     public static final ItemGroup GROUP = new ItemGroup("stupidmod") {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(BlockRegister.blockPoo);
+            return new ItemStack(StupidModBlocks.POO);
         }
     };
     

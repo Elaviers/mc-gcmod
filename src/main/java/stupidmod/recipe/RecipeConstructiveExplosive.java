@@ -1,36 +1,25 @@
 package stupidmod.recipe;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeHidden;
+import net.minecraft.item.crafting.SpecialRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.RecipeSerializers;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import stupidmod.RecipeRegister;
-import stupidmod.block.BlockExplosive;
-import stupidmod.item.ItemBlockExplosive;
+import stupidmod.StupidModRecipes;
 
-public class RecipeConstructiveExplosive extends IRecipeHidden {
+public class RecipeConstructiveExplosive extends SpecialRecipe {
     ItemStack outputStack = ItemStack.EMPTY;
     
     public RecipeConstructiveExplosive(ResourceLocation location)
     {
         super(location);
     }
-    
+
+
+
     @Override
-    public boolean matches(IInventory inv, World world) {
+    public boolean matches(CraftingInventory inv, World world) {
 
 
         //This is WAY too OP because I can't make it take more than 1 item out of the grid when crafting
@@ -55,7 +44,7 @@ public class RecipeConstructiveExplosive extends IRecipeHidden {
 
                     if (ib.getBlock() instanceof BlockExplosive) {
                         TntCount++;
-                        NBTTagCompound nbt = stack.getTag();
+                        NBTTagCompound nbt = stack.getCompound();
                         fuse += nbt.getShort("Fuse");
                         strength += nbt.getShort("Strength");
                     }
@@ -86,8 +75,8 @@ public class RecipeConstructiveExplosive extends IRecipeHidden {
     }
 
     @Override
-    public ItemStack getCraftingResult(IInventory inv) {
-        return this.outputStack.copy();
+    public ItemStack getCraftingResult(CraftingInventory inv) {
+        return null;
     }
 
     @Override
@@ -97,7 +86,7 @@ public class RecipeConstructiveExplosive extends IRecipeHidden {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return RecipeRegister.recipeConstructiveExplosive;
+        return StupidModRecipes.CONSTRUCTIVE_EXPLOSIVE;
     }
 
 

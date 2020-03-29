@@ -8,9 +8,9 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import stupidmod.Proxy;
-import stupidmod.SoundRegister;
+import stupidmod.StupidModSounds;
 import stupidmod.StupidMod;
-import stupidmod.entity.tile.TileEntityCentrifuge;
+import stupidmod.entity.tile.CentrifugeTileEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientProxy extends Proxy {
     @OnlyIn(Dist.CLIENT)
-    private Map<BlockPos, SoundCentrifuge> playingSounds = new HashMap<>();
+    private Map<BlockPos, CentrifugeSound> playingSounds = new HashMap<>();
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
@@ -28,15 +28,15 @@ public class ClientProxy extends Proxy {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void clUpdateCentrifugeSound(TileEntityCentrifuge te) {
+    public void clUpdateCentrifugeSound(CentrifugeTileEntity te) {
         BlockPos pos = te.getPos();
 
-        SoundCentrifuge sound = playingSounds.get(pos);
+        CentrifugeSound sound = playingSounds.get(pos);
         if (sound != null) {
             sound.entity = te;
         }
         else {
-            sound = new SoundCentrifuge(SoundRegister.soundCentrifuge, te);
+            sound = new CentrifugeSound(StupidModSounds.CENTRIFUGE, te);
             Minecraft.getInstance().getSoundHandler().play(sound);
             playingSounds.put(pos, sound);
         }

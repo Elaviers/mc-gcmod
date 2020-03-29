@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+      "XXX",
+      "XYX",
+      "XXX"
+    ],
+    "key":
+    {
+      "X":
+      {
+        "item": "stupidmod:poo"
+      },
+      "Y":
+      {
+        "item": "minecraft:music_disc_mall"
+      }
+    },
+    "result":
+    {
+      "item": "stupidmod:music_disc_powerful_constipation"
+    }
+  }

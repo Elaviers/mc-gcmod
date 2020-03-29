@@ -1,30 +1,28 @@
 package stupidmod;
 
-import net.minecraft.block.BlockTorch;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.CompositeFeature;
-import stupidmod.block.BlockWirelessTorch;
-import stupidmod.entity.tile.TileEntityWirelessTorch;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import stupidmod.block.WirelessTorchBlock;
+import stupidmod.entity.tile.WirelessTorchTileEntity;
 
 import java.util.List;
 
 public class Utility {
     
-    static public TileEntityWirelessTorch setIndividualState(World world, BlockPos pos, boolean state) {
+    static public WirelessTorchTileEntity setIndividualState(World world, BlockPos pos, boolean state) {
         System.out.println("Setting block at " + pos + " to " + state);
 
-        TileEntityWirelessTorch td = (TileEntityWirelessTorch)world.getTileEntity(pos);
+        WirelessTorchTileEntity td = (WirelessTorchTileEntity)world.getTileEntity(pos);
         td.changingState = true;
         
-        world.setBlockState(pos, world.getBlockState(pos).with(BlockWirelessTorch.LIT, state));
+        world.setBlockState(pos, world.getBlockState(pos).with(WirelessTorchBlock.LIT, state));
         
         td.changingState = false;
         return td;
@@ -57,7 +55,7 @@ public class Utility {
             Biomes.WOODED_BADLANDS_PLATEAU, Biomes.WOODED_HILLS, Biomes.WOODED_MOUNTAINS
     };
     
-    public static void addOverworldOreFeature(GenerationStage.Decoration decoration, CompositeFeature<?, ?> feature)
+    public static void addOverworldOreFeature(GenerationStage.Decoration decoration, ConfiguredFeature<?> feature)
     {
         for (int i = 0; i < overworldBiomes.length; i++)
         {
@@ -66,9 +64,9 @@ public class Utility {
         
     }
     
-    static void removeIfCreature(Biome biome, EntityType<? extends EntityLiving> type)
+    static void removeIfCreature(Biome biome, EntityType<? extends MobEntity> type)
     {
-        List<Biome.SpawnListEntry> spawns = biome.getSpawns(EnumCreatureType.CREATURE);
+        List<Biome.SpawnListEntry> spawns = biome.getSpawns(EntityClassification.CREATURE);
         
         for (int i = 0; i < spawns.size();)
         {
@@ -79,7 +77,7 @@ public class Utility {
         }
     }
     
-    public static void removeSpawn(EntityType<? extends EntityLiving> type)
+    public static void removeSpawn(EntityType<? extends MobEntity> type)
     {
         
         for (int i = 0; i < creatureSpawnBiomes.length; i++)
@@ -87,10 +85,10 @@ public class Utility {
     
     }
     
-    public static void addOverworldCreatureSpawn(EnumCreatureType type, Biome.SpawnListEntry entry)
+    public static void addOverworldCreatureSpawn(EntityClassification type, Biome.SpawnListEntry entry)
     {
         for (int i = 0; i < creatureSpawnBiomes.length; i++)
-            creatureSpawnBiomes[i].getSpawns(EnumCreatureType.CREATURE).add(entry);
+            creatureSpawnBiomes[i].getSpawns(EntityClassification.CREATURE).add(entry);
     }
     
 }

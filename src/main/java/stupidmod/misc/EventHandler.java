@@ -7,7 +7,7 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import stupidmod.StupidMod;
-import stupidmod.block.BlockExplosive;
+import stupidmod.block.ExplosiveBlock;
 
 import java.util.List;
 
@@ -22,8 +22,8 @@ public class EventHandler {
         for (BlockPos p : affectedBlocks) {
             Block b = world.getBlockState(p).getBlock();
 
-            if (b instanceof BlockExplosive) {
-                ((BlockExplosive) b).explode(world, p, world.getBlockState(p));
+            if (b instanceof ExplosiveBlock) {
+                ((ExplosiveBlock) b).explode(world, p, world.getBlockState(p));
             }
         }
     }

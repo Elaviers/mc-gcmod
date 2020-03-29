@@ -1,19 +1,18 @@
 package stupidmod.recipe;
 
-import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import stupidmod.BlockRegister;
-import stupidmod.RecipeRegister;
-import stupidmod.item.ItemBlockExplosive;
+import stupidmod.StupidModBlocks;
+import stupidmod.StupidModRecipes;
+import stupidmod.item.ExplosiveBlockItem;
 
 public class RecipeAirStrikeExplosive extends ShapedRecipe {
     ItemStack outputStack = ItemStack.EMPTY;
@@ -25,13 +24,13 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
         super(location, "misc", 3, 3,
                 NonNullList.from(Ingredient.EMPTY,
                         ING_FEATHER, ING_FEATHER, ING_FEATHER,
-                        ING_FEATHER, Ingredient.fromItems(BlockRegister.blockBlastTNT.asItem()), ING_FEATHER,
+                        ING_FEATHER, Ingredient.fromItems(StupidModBlocks.BLAST_TNT.asItem()), ING_FEATHER,
                         ING_FEATHER, ING_FEATHER, ING_FEATHER),
-                new ItemStack(BlockRegister.blockAirstrikeTNT));
+                new ItemStack(StupidModBlocks.AIR_STRIKE_TNT));
     }
     
     @Override
-    public boolean matches(IInventory inv, World world) {
+    public boolean matches(CraftingInventory inv, World world) {
         this.outputStack = ItemStack.EMPTY;
     
         if (!super.matches(inv, world))
@@ -39,9 +38,9 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
     
         for (int i = 0;i < inv.getSizeInventory();++i) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (stack.getItem() == new ItemStack(BlockRegister.blockBlastTNT).getItem()) {
-                NBTTagCompound nbt = stack.getTag();
-                this.outputStack = ItemBlockExplosive.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"), (short)3,(short)5,(short)20);
+            if (stack.getItem() == new ItemStack(StupidModBlocks.BLAST_TNT).getItem()) {
+                CompoundNBT nbt = stack.getTag();
+                this.outputStack = ExplosiveBlockItem.makeStackAirstrike(nbt.getShort("Fuse"), nbt.getShort("Strength"), (short)3,(short)5,(short)20);
                 return true;
             }
         }
@@ -50,7 +49,7 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
     }
     
     @Override
-    public ItemStack getCraftingResult(IInventory inv) {
+    public ItemStack getCraftingResult(CraftingInventory inv) {
         return this.outputStack.copy();
     }
     
@@ -65,6 +64,6 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return RecipeRegister.recipeAirStrikeExplosive;
+        return StupidModRecipes.AIR_STRIKE_EXPLOSIVE;
     }
 }

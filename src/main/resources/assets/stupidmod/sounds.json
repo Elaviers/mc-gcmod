@@ -4,5 +4,15 @@
 	"sound.fart": {"category": "master","sounds": ["stupidmod:fart"]},
 	"sound.poo_block": {"category": "master","sounds": ["stupidmod:pooblockstep"]},
 	"sound.poo_cannon": {"category": "master","sounds": ["stupidmod:pop"]},
-	"sound.centrifuge": {"category": "master","sounds": ["stupidmod:cloop"]}
+	"sound.centrifuge": {"sounds": ["stupidmod:cloop"]},
+	"music_disc.big_willies": {"category": "record", "sounds": [{"name":"stupidmod:music_bigwillies","stream":"true"}]}, 
+	"music_disc.godly_piss": {"category": "record", "sounds": [{"name":"stupidmod:music_godlypiss","stream":"true"}]}, 
+	"music_disc.massive_crap": {"category": "record", "sounds": [{"name":"stupidmod:music_massivecrap","stream":"true"}]}, 
+	"music_disc.pea_sized_anus": {"category": "record", "sounds": [{"name":"stupidmod:music_peasizedanus","stream":"true"}]}, 
+	"music_disc.pooey_loo": {"category": "record", "sounds": [{"name":"stupidmod:music_pooeyloo","stream":"true"}]}, 
+	"music_disc.powerful_constipation": {"category": "record", "sounds": [{"name":"stupidmod:music_powerfulconstipation","stream":"true"}]}, 
+	"music_disc.red_weewee": {"category": "record", "sounds": [{"name":"stupidmod:music_redweewee","stream":"true"}]}, 
+	"music_disc.smelly_methane": {"category": "record", "sounds": [{"name":"stupidmod:music_smellymethane","stream":"true"}]}, 
+	"music_disc.symphony_of_stupidity": {"category": "record", "sounds": [{"name":"stupidmod:music_sos","stream":"true"}]}, 
+	"music_disc.toilet_water": {"category": "record", "sounds": [{"name":"stupidmod:music_toiletwater","stream":"true"}]}
 }
