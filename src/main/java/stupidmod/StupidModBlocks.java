@@ -83,7 +83,7 @@ public class StupidModBlocks {
 
     @ObjectHolder(nameWirelessTorchWall)
     public static WirelessTorchWallBlock WIRELESS_TORCH_WALL;
-    
+
     @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class Registration {
     
@@ -95,7 +95,9 @@ public class StupidModBlocks {
 
             soundTypePoo = new SoundType(1.f, 1.f, StupidModSounds.POO_BLOCK, StupidModSounds.POO_BLOCK, StupidModSounds.POO_BLOCK, StupidModSounds.POO_BLOCK, StupidModSounds.POO_BLOCK);
             soundTypeMeme = new SoundType(1.f, 1.f, StupidModSounds.MEME_BLOCK, StupidModSounds.MEME_BLOCK, StupidModSounds.MEME_BLOCK, StupidModSounds.MEME_BLOCK, StupidModSounds.MEME_BLOCK);
-            
+
+            WIRELESS_TORCH = new WirelessTorchBlock(nameWirelessTorch);
+
             register.getRegistry().registerAll(
                     new ExplosiveBlock(nameBlastTNT, ExplosiveBlock.Type.BLAST),
                     new ExplosiveBlock(nameConstructiveTNT, ExplosiveBlock.Type.CONSTRUCTIVE),
@@ -108,8 +110,8 @@ public class StupidModBlocks {
                     new PooBlock(namePooBlock, soundTypePoo),
                     new PooBlock(nameFermentedPooBlock, soundTypePoo),
                     new CentrifugeBlock(nameCentrifuge),
-                    new WirelessTorchBlock(nameWirelessTorch),
-                    new WirelessTorchWallBlock(nameWirelessTorchWall)
+                    WIRELESS_TORCH,
+                    new WirelessTorchWallBlock(nameWirelessTorchWall, WIRELESS_TORCH)
             );
             
         }

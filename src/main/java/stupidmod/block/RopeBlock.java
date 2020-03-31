@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -77,10 +78,13 @@ public class RopeBlock extends Block {
 
                 if (world.getBlockState(checkPos).isAir(world, pos))
                 {
-                    if (!player.isCreative())
-                        stack.shrink(1);
+                    if (!world.isRemote) {
+                        if (!player.isCreative())
+                            stack.shrink(1);
 
-                    world.setBlockState(checkPos, StupidModBlocks.ROPE.getDefaultState());
+                        world.setBlockState(checkPos, StupidModBlocks.ROPE.getDefaultState());
+                    }
+
                     return true;
                 }
             }

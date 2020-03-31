@@ -1,47 +1,47 @@
 {
-	"textures": {
-		"maintex": "stupidmod:item/poo_brick"
-	},
-	"elements": [
-		{
-			"comment": "MAIN",
-			"from": [4,6,6],
-			"to": [12,10,10],
-			"faces": {
-				"north": {"uv": [0,2,2,4], "texture": "#maintex"},
-				"east": {"uv": [2,2,6,4], "texture": "#maintex"},
-				"south": {"uv": [6,2,8,4], "texture": "#maintex"},
-				"west": {"uv": [8,2,12,4], "texture": "#maintex"},
-				"up": {"uv": [2,0,6,2], "texture": "#maintex"},
-				"down": {"uv": [6,0,10,2], "texture": "#maintex"}
-			}
-		}
-	],
-	"display": {
-		"gui": {
-			"rotation": [-45,-45,0],
-			"translation": [0,0,0],
-			"scale": [1.75, 1.75, 1.75]
-		},
-		"ground": {
-			"rotation": [0,0,0],
-			"translation": [0,0,0],
-			"scale": [1,1,1]
-		},
-		"head" : {
-			"rotation": [0,0,0],
-			"translation": [0,0,0],
-			"scale": [1,1,1]
-		},
-		"firstperson": {
-			"rotation": [0,0,0],
-			"translation": [0,0,0],
-			"scale": [2,2,2]
-		},
-		"thirdperson": {
-			"rotation": [0,0,0],
-			"translation": [0,0,-2.5],
-			"scale": [1,1,1]
-		}
-	}
+  "textures": {
+    "maintex": "stupidmod:item/poo_brick"
+  },
+  "elements": [
+    {
+      "comment": "MAIN",
+      "from": [4,6,6],
+      "to": [12,10,10],
+      "faces": {
+        "north": {"uv": [0,2,2,4], "texture": "#maintex"},
+        "east": {"uv": [2,2,6,4], "texture": "#maintex"},
+        "south": {"uv": [6,2,8,4], "texture": "#maintex"},
+        "west": {"uv": [8,2,12,4], "texture": "#maintex"},
+        "up": {"uv": [2,0,6,2], "texture": "#maintex"},
+        "down": {"uv": [6,0,10,2], "texture": "#maintex"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [30,135,0],
+      "translation": [0,0,0],
+      "scale": [1.75, 1.75, 1.75]
+    },
+    "ground": {
+      "rotation": [0,0,0],
+      "translation": [0,0,0],
+      "scale": [1,1,1]
+    },
+    "head" : {
+      "rotation": [0,0,0],
+      "translation": [0,0,0],
+      "scale": [1,1,1]
+    },
+    "firstperson_righthand": {
+      "rotation": [0,15,0],
+      "translation": [1,0,0],
+      "scale": [1,1,1]
+    },
+    "thirdperson_righthand": {
+      "rotation": [0,15,0],
+      "translation": [0,0,0],
+      "scale": [1,1,1]
+    }
+  }
 }

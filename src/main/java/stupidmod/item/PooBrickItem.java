@@ -24,15 +24,17 @@ public class PooBrickItem extends Item {
         if (!world.isRemote) {
             player.getHeldItem(hand).shrink(1);
             PooBrickEntity tst = new PooBrickEntity(StupidModEntities.POO_BRICK, world);
-            tst.setLocationAndAngles(player.posX,player.posY+player.getEyeHeight(),player.posZ, player.rotationYaw, player.rotationPitch);
-            tst.posX -= MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
-            tst.posY -= 0.1;
-            tst.posZ -= MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
-            tst.setPosition(tst.posX, tst.posY, tst.posZ);
-            double motx = -MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI);
-            double motz = MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI);
-            double moty = -MathHelper.sin(tst.rotationPitch / 180.0F * (float)Math.PI);
-            tst.setMotion(motx, moty, motz);
+            tst.setLocationAndAngles(
+                    player.posX - MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F,
+                    player.posY + player.getEyeHeight() - 0.1,
+                    player.posZ - MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F,
+                    player.rotationYaw, player.rotationPitch);
+
+            tst.setMotion(
+                    -MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI),
+                    -MathHelper.sin(tst.rotationPitch / 180.0F * (float)Math.PI),
+                    MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI));
+
             world.addEntity(tst);
         }
         

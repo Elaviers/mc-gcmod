@@ -2,7 +2,9 @@ package stupidmod.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -15,6 +17,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +30,6 @@ import stupidmod.entity.tile.ExplosiveTileEntity;
 import javax.annotation.Nullable;
 
 public class ExplosiveBlock extends Block {
-
     public enum Type
     {
         BLAST,
@@ -41,7 +43,7 @@ public class ExplosiveBlock extends Block {
     public static final IntegerProperty TIER = IntegerProperty.create("tier", 1, 3);
     
     public ExplosiveBlock(String name, Type type) {
-        super(Properties.create(Material.WOOD));
+        super(Properties.create(Material.TNT).sound(SoundType.WOOD));
         
         this.setRegistryName(name);
         this.type = type;
@@ -56,11 +58,6 @@ public class ExplosiveBlock extends Block {
         world.removeBlock(pos, false);
 
         te.explode(world, pos, state);
-    }
-
-    @Override
-    public void catchFire(BlockState state, World world, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        explode(world, pos, state);
     }
 
     @Override
@@ -84,18 +81,21 @@ public class ExplosiveBlock extends Block {
         ItemStack itemstack = player.getHeldItem(hand);
         Item item = itemstack.getItem();
         if (item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE) {
-            explode(world, pos, state);
-            if (item == Items.FLINT_AND_STEEL) {
-                itemstack.damageItem(1, player, (playerEntity) -> {
-                    playerEntity.sendBreakAnimation(hand);
-                });
-            } else {
-                itemstack.shrink(1);
+            if (!world.isRemote) {
+                explode(world, pos, state);
+                if (item == Items.FLINT_AND_STEEL) {
+                    itemstack.damageItem(1, player, (playerEntity) -> {
+                        playerEntity.sendBreakAnimation(hand);
+                    });
+                } else {
+                    itemstack.shrink(1);
+                }
             }
+
             return true;
         }
     
-        return false;
+        return super.onBlockActivated(state, world, pos, player, hand, rt);
     }
 
     @Override
