@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import stupidmod.StupidMod;
 import stupidmod.entity.ImpactExplosiveEntity;
 
 import javax.annotation.Nullable;
@@ -18,7 +19,7 @@ import javax.annotation.Nullable;
 public class ImpactExplosiveEntityRenderer extends EntityRenderer<ImpactExplosiveEntity> {
     final float size;
     final BlockState rState;
-    
+
     public ImpactExplosiveEntityRenderer(EntityRendererManager renderManager, BlockState state, float size) {
         super(renderManager);
         

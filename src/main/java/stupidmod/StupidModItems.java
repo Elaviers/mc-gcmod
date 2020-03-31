@@ -31,7 +31,9 @@ public class StupidModItems {
             nameDiscRedWeewee = "music_disc_red_weewee",
             nameDiscSmellyMethane = "music_disc_smelly_methane",
             nameDiscSymphonyOfStupidity = "music_disc_symphony_of_stupidity",
-            nameDiscToiletWater = "music_disc_toilet_water";
+            nameDiscToiletWater = "music_disc_toilet_water",
+            nameDiscFlightOfTheChineseCommuter = "music_disc_flight_of_the_chinese_commuter",
+            nameDiscRageOverACloggedCommode = "music_disc_rage_over_a_clogged_commode";
     
     @ObjectHolder(namePoo)
     public static PooItem POO;
@@ -95,6 +97,12 @@ public class StupidModItems {
 
     @ObjectHolder(nameDiscToiletWater)
     public static PooDiscItem DISC_TOILET_WATER;
+
+    @ObjectHolder(nameDiscFlightOfTheChineseCommuter)
+    public static PooDiscItem DISC_FLIGHT_OF_THE_CHINESE_COMMUTER;
+
+    @ObjectHolder(nameDiscRageOverACloggedCommode)
+    public static PooDiscItem DISC_RAGE_OVER_A_CLOGGED_COMMODE;
     
     @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class Registration
@@ -114,16 +122,18 @@ public class StupidModItems {
                     new PooBrickItem(namePooBrick),
                     new PooCannonItem(namePooCannon),
                     new CalibratorItem(nameCalibrator),
-                    new PooDiscItem(nameDiscBigWillies, StupidModSounds.MUSIC_BIG_WILLIES, 0),
-                    new PooDiscItem(nameDiscGodlyPiss, StupidModSounds.MUSIC_GODLY_PISS, 1),
-                    new PooDiscItem(nameDiscMassiveCrap, StupidModSounds.MUSIC_MASSIVE_CRAP, 2),
-                    new PooDiscItem(nameDiscPeaSizedAnus, StupidModSounds.MUSIC_PEA_SIZED_ANUS, 3),
-                    new PooDiscItem(nameDiscPooeyLoo, StupidModSounds.MUSIC_POOEY_LOO, 4),
-                    new PooDiscItem(nameDiscPowerfulConstipation, StupidModSounds.MUSIC_POWERFUL_CONSTIPATION, 5),
-                    new PooDiscItem(nameDiscRedWeewee, StupidModSounds.MUSIC_RED_WEEWEE, 6),
-                    new PooDiscItem(nameDiscSmellyMethane, StupidModSounds.MUSIC_SMELLY_METHANE, 7),
-                    new PooDiscItem(nameDiscSymphonyOfStupidity, StupidModSounds.MUSIC_SYMPHONY_OF_STUPIDITY, 8),
-                    new PooDiscItem(nameDiscToiletWater, StupidModSounds.MUSIC_TOILET_WATER, 9)
+                    new PooDiscItem(nameDiscBigWillies, StupidModSounds.MUSIC_BIG_WILLIES, 1),
+                    new PooDiscItem(nameDiscGodlyPiss, StupidModSounds.MUSIC_GODLY_PISS, 2),
+                    new PooDiscItem(nameDiscMassiveCrap, StupidModSounds.MUSIC_MASSIVE_CRAP, 3),
+                    new PooDiscItem(nameDiscPeaSizedAnus, StupidModSounds.MUSIC_PEA_SIZED_ANUS, 4),
+                    new PooDiscItem(nameDiscPooeyLoo, StupidModSounds.MUSIC_POOEY_LOO, 5),
+                    new PooDiscItem(nameDiscPowerfulConstipation, StupidModSounds.MUSIC_POWERFUL_CONSTIPATION, 6),
+                    new PooDiscItem(nameDiscRedWeewee, StupidModSounds.MUSIC_RED_WEEWEE, 7),
+                    new PooDiscItem(nameDiscSmellyMethane, StupidModSounds.MUSIC_SMELLY_METHANE, 8),
+                    new PooDiscItem(nameDiscSymphonyOfStupidity, StupidModSounds.MUSIC_SYMPHONY_OF_STUPIDITY, 9),
+                    new PooDiscItem(nameDiscToiletWater, StupidModSounds.MUSIC_TOILET_WATER, 10),
+                    new PooDiscItem(nameDiscFlightOfTheChineseCommuter, StupidModSounds.MUSIC_FLIGHT_OF_THE_CHINESE_COMMUTER, 11),
+                    new PooDiscItem(nameDiscRageOverACloggedCommode, StupidModSounds.MUSIC_RAGE_OVER_A_CLOGGED_COMMODE, 12)
             );
             
         }

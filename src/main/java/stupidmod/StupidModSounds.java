@@ -25,7 +25,9 @@ public class StupidModSounds {
             nameMusicRedWeewee = "music_disc.red_weewee",
             nameMusicSmellyMethane = "music_disc.smelly_methane",
             nameMusicSymphonyOfStupidity = "music_disc.symphony_of_stupidity",
-            nameMusicToiletWater = "music_disc.toilet_water";
+            nameMusicToiletWater = "music_disc.toilet_water",
+            nameMusicFlightOfTheChineseCommuter = "music_disc.flight_of_the_chinese_commuter",
+            nameMusicRageOverACloggedCommode = "music_disc.rage_over_a_clogged_commode";
 
     @ObjectHolder(nameFart)
     public static SoundEvent FART;
@@ -72,6 +74,12 @@ public class StupidModSounds {
     @ObjectHolder(nameMusicToiletWater)
     public static SoundEvent MUSIC_TOILET_WATER;
 
+    @ObjectHolder(nameMusicFlightOfTheChineseCommuter)
+    public static SoundEvent MUSIC_FLIGHT_OF_THE_CHINESE_COMMUTER;
+
+    @ObjectHolder(nameMusicRageOverACloggedCommode)
+    public static SoundEvent MUSIC_RAGE_OVER_A_CLOGGED_COMMODE;
+
     public static void createSoundEvents()
     {
         FART = new SoundEvent(new ResourceLocation(StupidMod.id, nameFart)).setRegistryName(nameFart);
@@ -86,8 +94,11 @@ public class StupidModSounds {
         MUSIC_POOEY_LOO = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicPooeyLoo)).setRegistryName(nameMusicPooeyLoo);
         MUSIC_POWERFUL_CONSTIPATION = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicPowerfulConstipation)).setRegistryName(nameMusicPowerfulConstipation);
         MUSIC_RED_WEEWEE = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicRedWeewee)).setRegistryName(nameMusicRedWeewee);
+        MUSIC_SMELLY_METHANE = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicSmellyMethane)).setRegistryName(nameMusicSmellyMethane);
         MUSIC_SYMPHONY_OF_STUPIDITY = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicSymphonyOfStupidity)).setRegistryName(nameMusicSymphonyOfStupidity);
         MUSIC_TOILET_WATER = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicToiletWater)).setRegistryName(nameMusicToiletWater);
+        MUSIC_FLIGHT_OF_THE_CHINESE_COMMUTER = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicFlightOfTheChineseCommuter)).setRegistryName(nameMusicFlightOfTheChineseCommuter);
+        MUSIC_RAGE_OVER_A_CLOGGED_COMMODE = new SoundEvent(new ResourceLocation(StupidMod.id, nameMusicRageOverACloggedCommode)).setRegistryName(nameMusicRageOverACloggedCommode);
     }
     
     @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -98,7 +109,8 @@ public class StupidModSounds {
         {
             register.getRegistry().registerAll(
                 FART, MEME_BLOCK, POO_BLOCK, POO_CANNON, CENTRIFUGE, MUSIC_BIG_WILLIES, MUSIC_GODLY_PISS, MUSIC_MASSIVE_CRAP, MUSIC_PEA_SIZED_ANUS,
-                    MUSIC_POOEY_LOO, MUSIC_POWERFUL_CONSTIPATION, MUSIC_RED_WEEWEE, MUSIC_SYMPHONY_OF_STUPIDITY, MUSIC_TOILET_WATER
+                    MUSIC_POOEY_LOO, MUSIC_POWERFUL_CONSTIPATION, MUSIC_RED_WEEWEE, MUSIC_SMELLY_METHANE, MUSIC_SYMPHONY_OF_STUPIDITY,
+                    MUSIC_TOILET_WATER, MUSIC_FLIGHT_OF_THE_CHINESE_COMMUTER, MUSIC_RAGE_OVER_A_CLOGGED_COMMODE
             );
         }
     }

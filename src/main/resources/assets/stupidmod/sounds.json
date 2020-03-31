@@ -14,5 +14,7 @@
 	"music_disc.red_weewee": {"category": "record", "sounds": [{"name":"stupidmod:music_redweewee","stream":"true"}]}, 
 	"music_disc.smelly_methane": {"category": "record", "sounds": [{"name":"stupidmod:music_smellymethane","stream":"true"}]}, 
 	"music_disc.symphony_of_stupidity": {"category": "record", "sounds": [{"name":"stupidmod:music_sos","stream":"true"}]}, 
-	"music_disc.toilet_water": {"category": "record", "sounds": [{"name":"stupidmod:music_toiletwater","stream":"true"}]}
+	"music_disc.toilet_water": {"category": "record", "sounds": [{"name":"stupidmod:music_toiletwater","stream":"true"}]},
+	"music_disc.flight_of_the_chinese_commuter": {"category": "record", "sounds": [{"name":"stupidmod:music_fotcc","stream":"true"}]}, 
+	"music_disc.rage_over_a_clogged_commode": {"category": "record", "sounds": [{"name":"stupidmod:music_rageoveracloggedcommode","stream":"true"}]}
 }

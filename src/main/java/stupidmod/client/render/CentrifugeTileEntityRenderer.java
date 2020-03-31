@@ -23,7 +23,7 @@ public class CentrifugeTileEntityRenderer extends TileEntityRenderer<CentrifugeT
 
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)x, (float)y, (float)z);
-        bindTexture(new ResourceLocation("stupidmod:textures/entity/entitycentrifuge.png"));
+        bindTexture(new ResourceLocation("stupidmod:textures/entity/centrifuge.png"));
         
         //Interpolate angle
         float angle = te.prevAngle + partialTicks * (te.angle - te.prevAngle);

@@ -119,6 +119,5 @@ public class CentrifugeBlock extends Block {
     public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
         return new CentrifugeTileEntity();
-
     }
 }

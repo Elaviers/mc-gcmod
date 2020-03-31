@@ -10,15 +10,15 @@
     {
       "X":
       {
-        "item": "stupidmod:poo"
+        "tag": "minecraft:planks"
       },
       "Y":
       {
-        "item": "minecraft:music_disc_blocks"
+        "item": "stupidmod:black_powder"
       }
     },
     "result":
     {
-      "item": "stupidmod:music_disc_godly_piss"
+      "item": "stupidmod:blast_tnt"
     }
   }

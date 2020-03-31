@@ -28,13 +28,13 @@ public class RecipeExplosive extends SpecialRecipe {
         outputStack = ItemStack.EMPTY;
     
         short strength, fuse, spread, pieces, height;
-        short strengthmod,fusemod,spreadmod,heightmod;
+        short powder,string,arrow,coal;
         strength = fuse = spread = pieces = height = 0;
-        strengthmod = fusemod = spreadmod = heightmod = 0;
+        powder = string = arrow = coal = 0;
     
         BlockState blockState = null;
         BlockState blockStateMod = null;
-        
+
         short strength_AS = 0;
         
         ExplosiveBlock.Type finalType = null;
@@ -52,7 +52,7 @@ public class RecipeExplosive extends SpecialRecipe {
                     fuse += tag.getShort("Fuse");
     
                     ExplosiveBlock.Type type = ((ExplosiveBlock)((BlockItem)currentItem).getBlock()).type;
-                    
+
                     if (type == ExplosiveBlock.Type.AIRSTRIKE)
                         strength_AS += tag.getShort("Strength");
                     else
@@ -78,53 +78,53 @@ public class RecipeExplosive extends SpecialRecipe {
                 
                     TNTCount++;
                 }
-                else if (currentItem == Items.GUNPOWDER)
-                    strengthmod++;
-                else if (currentItem == StupidModItems.BLACK_POWDER)
-                    strengthmod += 4;
+                if (currentItem == StupidModItems.BLACK_POWDER)
+                    powder++;
                 else if (currentItem == Items.STRING)
-                    fusemod += 20;
+                    string++;
                 else if (currentItem == Items.ARROW)
-                    spreadmod++;
+                    arrow++;
                 else if (currentItem == Items.COAL)
-                    heightmod += 10;
+                    coal++;
                 else {
                     Block block = Block.getBlockFromItem(currentItem);
                     blockStateMod = block.getDefaultState();
                 }
             }
         }
-        if (TNTCount > 0 && (strengthmod > 0 || fusemod > 0 || (finalType == ExplosiveBlock.Type.CONSTRUCTIVE && blockStateMod != null) || (finalType == ExplosiveBlock.Type.AIRSTRIKE && (fusemod > 0 || spreadmod > 0 || heightmod > 0)) || TNTCount > 1))
+        if (TNTCount > 0 && (powder > 0 || string > 0 || (finalType == ExplosiveBlock.Type.CONSTRUCTIVE && blockStateMod != null) || (finalType == ExplosiveBlock.Type.AIRSTRIKE && (string > 0 || arrow > 0 || coal > 0)) || TNTCount > 1))
         {
-            if (finalType != ExplosiveBlock.Type.AIRSTRIKE)
-                strength += strengthmod;
+            if (finalType != ExplosiveBlock.Type.AIRSTRIKE) {
+                strength += strength_AS + powder * 2;
+            }
             else
-                strength_AS += strengthmod;
+            {
+                pieces += strength;
+                strength = (short)(strength_AS + powder);
+            }
             
-            fuse += fusemod;
-            spread += spreadmod;
-            height += heightmod;
+            fuse += string * 20;
+            spread += arrow;
+            height += coal * 5;
             
             switch (finalType) {
                 case BLAST:
-                    this.outputStack = ExplosiveBlockItem.makeStackBlast(fuse, (short)(strength + strength_AS));
+                    this.outputStack = ExplosiveBlockItem.makeStackBlast(fuse, strength);
                     return true;
                 
                 case CONSTRUCTIVE:
                     if (blockStateMod != null)
                         blockState = blockStateMod;
                     
-                    this.outputStack = ExplosiveBlockItem.makeStackConstructive(fuse, (short)(strength + strength_AS), blockState);
+                    this.outputStack = ExplosiveBlockItem.makeStackConstructive(fuse, strength, blockState);
                     return true;
                     
                 case DIG:
-                    this.outputStack = ExplosiveBlockItem.makeStackDig(fuse, (short)(strength + strength_AS));
+                    this.outputStack = ExplosiveBlockItem.makeStackDig(fuse, strength);
                     return true;
                     
                 case AIRSTRIKE:
-                    pieces += strength;
-                    
-                    this.outputStack = ExplosiveBlockItem.makeStackAirstrike(fuse, strength_AS, spread, pieces, height);
+                    this.outputStack = ExplosiveBlockItem.makeStackAirstrike(fuse, strength, spread, pieces, height);
                     return true;
             }
         }

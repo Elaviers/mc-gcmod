@@ -29,7 +29,7 @@ public class WirelessTorchTileEntity extends TileEntity {
     
     @Override
     public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+         super.write(compound);
 
         compound.putInt("Side", side.getIndex());
 

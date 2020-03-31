@@ -8,8 +8,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 import stupidmod.StupidModBlocks;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class PooBlock extends Block {
@@ -38,5 +40,11 @@ public class PooBlock extends Block {
                 if (world.getLight(pos) < 5)
                     if (world.rand.nextInt(5) == 0)
                         world.setBlockState(pos, StupidModBlocks.FERMENTED_POO.getDefaultState());
+    }
+
+    @Nullable
+    @Override
+    public ToolType getHarvestTool(BlockState state) {
+        return ToolType.SHOVEL;
     }
 }

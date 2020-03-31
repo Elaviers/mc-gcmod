@@ -9,6 +9,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import stupidmod.StupidModContainers;
+import stupidmod.StupidModItems;
 import stupidmod.entity.tile.CentrifugeTileEntity;
 import stupidmod.item.PooItem;
 
@@ -29,7 +30,7 @@ public class CentrifugeContainer extends Container {
     
         @Override
         public boolean isItemValid(ItemStack stack) {
-            return stack.getItem() instanceof PooItem;
+            return stack.getItem() == StupidModItems.FERMENTED_POO;
         }
     }
     
@@ -90,15 +91,12 @@ public class CentrifugeContainer extends Container {
     
     @Override
     public ItemStack transferStackInSlot(PlayerEntity player, int fromSlot) {
-        ItemStack previous = null;
-        Slot slot = (Slot) this.inventorySlots.get(fromSlot);
+        Slot slot = this.inventorySlots.get(fromSlot);
         
         if (slot != null && slot.getHasStack()) {
             ItemStack current = slot.getStack();
             
             if (current != ItemStack.EMPTY) {
-                previous = current.copy();
-                
                 if (fromSlot < 12) {
                     if (!this.mergeItemStack(current, 39, 47, false))
                         if (!this.mergeItemStack(current, 12, 38, false))

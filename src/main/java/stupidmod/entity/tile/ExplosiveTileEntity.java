@@ -19,9 +19,9 @@ import stupidmod.entity.ExplosiveEntity;
 public class ExplosiveTileEntity extends TileEntity {
     private short fuse;
     private short strength;
-    
+
     private BlockState constructState;
-    
+
     private short airStrikeSpread;
     private short airStrikeHeight;
     private short airStrikePieces;
@@ -30,14 +30,17 @@ public class ExplosiveTileEntity extends TileEntity {
         super(StupidModEntities.TE_EXPLOSIVE);
         
         this.strength = 2;
-        this.airStrikeHeight = 20;
-        this.airStrikePieces = 5;
-        this.airStrikeSpread = 3;
+        this.fuse = 0;
     }
     
     @Override
     public void read(CompoundNBT compound) {
         super.read(compound);
+        this.readExplosiveData(compound);
+    }
+
+    public void readExplosiveData(CompoundNBT compound)
+    {
         this.fuse = compound.getShort("Fuse");
         this.strength = compound.getShort("Strength");
 
@@ -57,27 +60,26 @@ public class ExplosiveTileEntity extends TileEntity {
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);
-        
-        this.writeExplosiveDataToNBT(compound, true, true);
+        this.writeExplosiveData(compound);
         
         return compound;
     }
     
-    public CompoundNBT writeExplosiveDataToNBT(CompoundNBT compound, boolean writeConstruct, boolean writeAirstrike) {
+    public void writeExplosiveData(CompoundNBT compound) {
         compound.putShort("Fuse", this.fuse);
         compound.putShort("Strength", this.strength);
         
-        if (writeConstruct) {
+        if (this.constructState != null)
             compound.put("Block", NBTUtil.writeBlockState(this.constructState));
-        }
         
-        if (writeAirstrike) {
+        if (this.airStrikeSpread > 0)
             compound.putShort("Spread", this.airStrikeSpread);
+
+        if (this.airStrikePieces > 0)
             compound.putShort("Pieces", this.airStrikePieces);
+
+        if (this.airStrikeHeight > 0)
             compound.putShort("Height", this.airStrikeHeight);
-        }
-        
-        return compound;
     }
     
     public void explode(World world, BlockPos pos, BlockState state) {

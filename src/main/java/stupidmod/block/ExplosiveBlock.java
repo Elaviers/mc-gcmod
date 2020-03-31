@@ -5,11 +5,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -51,13 +53,8 @@ public class ExplosiveBlock extends Block {
     {
         ExplosiveTileEntity te = (ExplosiveTileEntity)world.getTileEntity(pos);
 
-        //The block snapshot stuff is disgusting but I have to do it or the game will try to get the invalidated tile entity to write stuff...
-        boolean prevCaptureSnapshots = world.captureBlockSnapshots;
-        world.captureBlockSnapshots = false;
         world.removeBlock(pos, false);
-        world.captureBlockSnapshots = prevCaptureSnapshots;
 
-        //Tile Entity is removed from world now, do explosion
         te.explode(world, pos, state);
     }
 
@@ -89,8 +86,8 @@ public class ExplosiveBlock extends Block {
         if (item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE) {
             explode(world, pos, state);
             if (item == Items.FLINT_AND_STEEL) {
-                itemstack.damageItem(1, player, (p_220287_1_) -> {
-                    p_220287_1_.sendBreakAnimation(hand);
+                itemstack.damageItem(1, player, (playerEntity) -> {
+                    playerEntity.sendBreakAnimation(hand);
                 });
             } else {
                 itemstack.shrink(1);
@@ -126,8 +123,11 @@ public class ExplosiveBlock extends Block {
     //Tile Ent
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity player, ItemStack stack) {
-        ExplosiveTileEntity te = (ExplosiveTileEntity) world.getTileEntity(pos);
-        te.read(stack.getTag());
+        if (!world.isRemote) {
+            ExplosiveTileEntity te = (ExplosiveTileEntity) world.getTileEntity(pos);
+            te.readExplosiveData(stack.getTag());
+            te.markDirty();
+        }
 
         super.onBlockPlacedBy(world, pos, state, player, stack);
     }
@@ -143,4 +143,24 @@ public class ExplosiveBlock extends Block {
         return new ExplosiveTileEntity();
     }
 
+    @Override
+    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBlockHarvested(worldIn, pos, state, player);
+
+        if (!player.isCreative()) {
+            ExplosiveTileEntity te = (ExplosiveTileEntity) worldIn.getTileEntity(pos);
+            CompoundNBT tag = new CompoundNBT();
+            te.writeExplosiveData(tag);
+            ItemStack stack = new ItemStack(this.asItem(), 1);
+            stack.setTag(tag);
+            worldIn.addEntity(
+                    new ItemEntity(
+                            worldIn,
+                            pos.getX() + 0.5f,
+                            pos.getY() + 0.5f,
+                            pos.getZ() + 0.5f,
+                            stack)
+            );
+        }
+    }
 }

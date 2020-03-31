@@ -1,24 +1,19 @@
-modLoader="javafml" #mandatory
-loaderVersion="[25,)" #mandatory (24 is current forge version)
-[[mods]] #mandatory
-modId="stupidmod" #mandatory
-version="${file.jarVersion}" #mandatory
-displayName="Stupid Mod" #mandatory
-#updateJSONURL="http://myurl.me/" #optional
-#logoFile="examplemod.png" #optional
-#credits="Thanks for this example mod goes to Java" #optional
-authors="Elaviers" #optional
-description='''
-Assorted fecal features
-'''
+modLoader="javafml"
+loaderVersion="[28,)"
+[[mods]]
+    modId="stupidmod"
+    version="${version}"
+    displayName="Stupid Mod"
+    authors="Elaviers, BABYRITZER, Zyve"
+    description="Assorted fecal features"
 
-[[dependencies.stupidmod]] #optional
-    modId="forge" #mandatory
-    mandatory=true #mandatory
-    versionRange="[25,)" #mandatory
+[[dependencies.stupidmod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28,)"
     ordering="NONE"
     side="BOTH"
-# Here's another dependency
+
 [[dependencies.stupidmod]]
     modId="minecraft"
     mandatory=true

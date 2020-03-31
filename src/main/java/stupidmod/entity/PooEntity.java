@@ -8,13 +8,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 import stupidmod.StupidModEntities;
 import stupidmod.StupidModItems;
 
-public class PooEntity extends Entity {
+public class PooEntity extends Entity implements IEntityAdditionalSpawnData {
     
     public float size, prevSize;
     float targetSize;
@@ -25,16 +27,24 @@ public class PooEntity extends Entity {
     public PooEntity(EntityType<? extends PooEntity> type, World world) {
         super(type, world);
         this.preventEntitySpawning = true;
-        
-        this.targetSize = this.world.rand.nextFloat() * .8f + .8f;
-        this.size = 0.001f;
-        
-        this.timer = 1200;
+
+        this.shrinkRate = 0f;
+
+        if (world.isRemote) {
+            this.size = this.targetSize = 0.001f;
+            this.timer = 100000f;
+        }
+        else
+        {
+            this.size = 0.001f;
+            this.targetSize = this.world.rand.nextFloat() * .8f + .8f;
+            this.timer = 1200 * this.targetSize;
+        }
     }
     
     public PooEntity(World world, double x, double y, double z) {
         this(StupidModEntities.POO, world);
-        
+
         this.setPosition(x, y, z);
     }
 
@@ -42,18 +52,21 @@ public class PooEntity extends Entity {
         this.remove();
         
         if (this.doDrop)
-            this.entityDropItem(new ItemStack(StupidModItems.POO, this.size > 1.1f ? 2 : 1));
+            this.entityDropItem(new ItemStack(StupidModItems.POO, this.targetSize > 1.1f ? 2 : 1));
     }
     
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
         if (!(source.getTrueSource() instanceof PlayerEntity)) {
-            this.remove();
+            this.doDrop = false;
+            this.shrinkRate = size;
             return false;
         }
         
         PlayerEntity player = (PlayerEntity)source.getTrueSource();
-        
+
+        this.targetSize = this.size;
+
         if (player.isCreative()) {
             this.doDrop = false;
             this.shrinkRate = size / 2;
@@ -135,5 +148,18 @@ public class PooEntity extends Entity {
     @Override
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
+    public void writeSpawnData(PacketBuffer buffer) {
+        buffer.writeFloat(this.targetSize);
+        buffer.writeFloat(this.timer);
+    }
+
+    @Override
+    public void readSpawnData(PacketBuffer buffer) {
+        this.targetSize = buffer.readFloat();
+        this.timer = buffer.readFloat();
+        this.shrinkRate = 0;
     }
 }

@@ -23,7 +23,7 @@ public class WirelessTorchBlock extends TorchBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     
     public WirelessTorchBlock(String name) {
-        super(Properties.create(Material.WOOD).tickRandomly());
+        super(Properties.create(Material.WOOD).hardnessAndResistance(0).tickRandomly().doesNotBlockMovement());
         
         this.setRegistryName(name);
         
@@ -32,7 +32,7 @@ public class WirelessTorchBlock extends TorchBlock {
     
     private boolean shouldBeOn(World worldIn, BlockPos pos, BlockState state) {
         Direction face = getFacing(state).getOpposite();
-        return worldIn.isSidePowered(pos.offset(face), face);
+        return worldIn.isSidePowered(pos.offset(Direction.DOWN), face);
     }
 
     protected Direction getFacing(BlockState state) { return Direction.UP;}

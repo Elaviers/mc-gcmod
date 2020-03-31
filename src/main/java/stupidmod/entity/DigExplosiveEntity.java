@@ -48,7 +48,7 @@ public class DigExplosiveEntity extends ExplosiveEntity {
     @Override
     protected void onFuseCompleted() {
         this.explosionY = this.posY + 0.5;
-        this.setMotion(0d, 1d, 01);
+        this.setMotion(0d, 1d, 0f);
     }
 
     @Override

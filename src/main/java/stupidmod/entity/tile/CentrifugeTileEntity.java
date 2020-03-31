@@ -8,11 +8,16 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 import stupidmod.StupidMod;
 import stupidmod.StupidModEntities;
 import stupidmod.StupidModItems;
@@ -21,13 +26,11 @@ import stupidmod.misc.CentrifugeContainer;
 
 import javax.annotation.Nullable;
 
-public class CentrifugeTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
-    public static final String GUI_ID = "stupidmod:centrifuge";
+public class CentrifugeTileEntity extends LockableLootTileEntity implements ITickableTileEntity {
+    @CapabilityInject(IItemHandler.class)
+    static Capability<IItemHandler> CAP_ITEM_HANDLER;
 
-    private ITextComponent customName;
     private NonNullList<ItemStack> inventory;
-    
-    private boolean hasSound;
     
     public float prevAngle;
     public float angle;
@@ -43,21 +46,6 @@ public class CentrifugeTileEntity extends LockableTileEntity implements ISidedIn
         this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
         this.rateTarget = -1000;
-    }
-
-    @Override
-    public int[] getSlotsForFace(Direction direction) {
-        return new int[0];
-    }
-
-    @Override
-    public boolean canInsertItem(int i, ItemStack itemStack, @Nullable Direction direction) {
-        return false;
-    }
-
-    @Override
-    public boolean canExtractItem(int i, ItemStack itemStack, Direction direction) {
-        return false;
     }
 
     @Override
@@ -77,44 +65,38 @@ public class CentrifugeTileEntity extends LockableTileEntity implements ISidedIn
 
     @Override
     public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        return this.inventory.get(index);
-    }
-
-    @Override
-    public ItemStack decrStackSize(int index, int count) {
-        return ItemStackHelper.getAndSplit(this.inventory, index, count);
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return ItemStackHelper.getAndRemove(this.inventory, index);
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
-        this.inventory.set(index, stack);
-
-        this.markDirty();
-    }
-
-    @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        if (this.world.getTileEntity(this.pos) != this) {
-            return false;
+        for (ItemStack itemstack : this.inventory)
+        {
+            if (!itemstack.isEmpty())
+            {
+                return false;
+            }
         }
-        else {
-            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
-        }
+
+        return true;
     }
 
     @Override
     public void clear() {
         this.inventory.clear();
+    }
+
+    @Override
+    protected NonNullList<ItemStack> getItems() {
+        return this.inventory;
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> items) {
+        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+
+        for (int i = 0; i < items.size(); i++)
+        {
+            if (i < this.inventory.size())
+            {
+                this.getItems().set(i, items.get(i));
+            }
+        }
     }
 
     @Override
@@ -157,7 +139,7 @@ public class CentrifugeTileEntity extends LockableTileEntity implements ISidedIn
     private void applyProcess() {
         for (int i = 0;i < 4;i++) {
             ItemStack stack = this.getStackInSlot(i);
-            if (stack != null && stack.getItem() instanceof PooItem) {
+            if (stack != null && stack.getItem() == StupidModItems.FERMENTED_POO) {
                 int pos1 = -1,pos2 = -1;
                 for (int pos = 0;pos < 4;pos++) {
                     if (this.getStackInSlot(pos+4).isEmpty() && pos1 < 0)
@@ -201,14 +183,23 @@ public class CentrifugeTileEntity extends LockableTileEntity implements ISidedIn
         return false;
     }
 
+    @Override
     public void read(CompoundNBT compound) {
         super.read(compound);
-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+
+        if (!this.checkLootAndRead(compound)) {
+            ItemStackHelper.loadAllItems(compound, this.inventory);
+        }
     }
 
+    @Override
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);
-        ItemStackHelper.saveAllItems(compound, this.inventory);
+
+        if (!this.checkLootAndWrite(compound)) {
+            ItemStackHelper.saveAllItems(compound, this.inventory);
+        }
+
         return compound;
     }
 
@@ -218,4 +209,6 @@ public class CentrifugeTileEntity extends LockableTileEntity implements ISidedIn
 
         super.onLoad();
     }
+
+
 }

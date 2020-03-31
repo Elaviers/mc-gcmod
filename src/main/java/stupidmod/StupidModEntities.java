@@ -166,7 +166,7 @@ public class StupidModEntities {
             register.getRegistry().registerAll(
                     TileEntityType.Builder.create(CentrifugeTileEntity::new, StupidModBlocks.CENTRIFUGE).build(null).setRegistryName(nameCentrifuge),
                     TileEntityType.Builder.create(ExplosiveTileEntity::new, StupidModBlocks.AIR_STRIKE_TNT, StupidModBlocks.BLAST_TNT, StupidModBlocks.CONSTRUCTIVE_TNT, StupidModBlocks.DIG_TNT).build(null).setRegistryName(nameExplosiveTE),
-                    TileEntityType.Builder.create(WirelessTorchTileEntity::new, StupidModBlocks.WIRELESS_TORCH).build(null).setRegistryName(nameWirelessTorch)
+                    TileEntityType.Builder.create(WirelessTorchTileEntity::new, StupidModBlocks.WIRELESS_TORCH, StupidModBlocks.WIRELESS_TORCH_WALL).build(null).setRegistryName(nameWirelessTorch)
 
             );
         }
@@ -183,7 +183,7 @@ public class StupidModEntities {
         RenderingRegistry.registerEntityRenderingHandler(ConstructiveExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.CONSTRUCTIVE_TNT.getDefaultState()));
         RenderingRegistry.registerEntityRenderingHandler(DigExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.DIG_TNT.getDefaultState()));
         RenderingRegistry.registerEntityRenderingHandler(AirStrikeExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.AIR_STRIKE_TNT.getDefaultState()));
-        RenderingRegistry.registerEntityRenderingHandler(ImpactExplosiveEntity.class, manager -> new ImpactExplosiveEntityRenderer(manager, StupidModBlocks.DIG_TNT.getDefaultState(), .5f));
+        RenderingRegistry.registerEntityRenderingHandler(ImpactExplosiveEntity.class, manager -> new ImpactExplosiveEntityRenderer(manager, StupidModBlocks.BLAST_TNT.getDefaultState(), .5f));
         RenderingRegistry.registerEntityRenderingHandler(PooCowEntity.class,                CowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PooPigEntity.class,                PigRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PooSheepEntity.class,              SheepRenderer::new);
