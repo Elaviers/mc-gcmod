@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -63,7 +64,7 @@ public class RopeBlock extends Block {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rt) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rt) {
         ItemStack stack = player.getHeldItem(hand);
 
         if (stack.getItem() == StupidModBlocks.ROPE_ITEM)
@@ -77,11 +78,14 @@ public class RopeBlock extends Block {
 
                 if (world.getBlockState(checkPos).isAir(world, pos))
                 {
-                    if (!player.isCreative())
-                        stack.shrink(1);
+                    if (!world.isRemote) {
+                        if (!player.isCreative())
+                            stack.shrink(1);
 
-                    world.setBlockState(checkPos, StupidModBlocks.ROPE.getDefaultState());
-                    return true;
+                        world.setBlockState(checkPos, StupidModBlocks.ROPE.getDefaultState());
+                    }
+
+                    return ActionResultType.SUCCESS;
                 }
             }
         }

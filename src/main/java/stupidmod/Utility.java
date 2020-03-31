@@ -55,7 +55,7 @@ public class Utility {
             Biomes.WOODED_BADLANDS_PLATEAU, Biomes.WOODED_HILLS, Biomes.WOODED_MOUNTAINS
     };
     
-    public static void addOverworldOreFeature(GenerationStage.Decoration decoration, ConfiguredFeature<?> feature)
+    public static void addOverworldOreFeature(GenerationStage.Decoration decoration, ConfiguredFeature feature)
     {
         for (int i = 0; i < overworldBiomes.length; i++)
         {

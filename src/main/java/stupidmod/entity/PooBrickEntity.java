@@ -63,9 +63,9 @@ public class PooBrickEntity extends Entity {
 
     @Override
     public void tick() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.prevPosX = this.getPosX();
+        this.prevPosY = this.getPosY();
+        this.prevPosZ = this.getPosZ();
         this.prevAngleX = this.angleX;
         this.prevAngleY = this.angleY;
         this.prevAngleZ = this.angleZ;

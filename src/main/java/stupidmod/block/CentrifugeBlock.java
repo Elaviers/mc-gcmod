@@ -3,7 +3,9 @@ package stupidmod.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -12,10 +14,13 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -24,34 +29,50 @@ import stupidmod.entity.tile.CentrifugeTileEntity;
 import javax.annotation.Nullable;
 
 public class CentrifugeBlock extends Block {
+    private static VoxelShape BASE = Block.makeCuboidShape(2, 0, 2, 14, 2, 14);
+    private static VoxelShape BASE_2 = Block.makeCuboidShape(4, 2, 4, 12, 3, 12);
+    private static VoxelShape ROD = Block.makeCuboidShape(7, 0, 7, 9, 13, 9);
+    private static VoxelShape TOP = Block.makeCuboidShape(0, 13, 0, 16, 16, 16);
+    private static VoxelShape SHAPE = VoxelShapes.or(VoxelShapes.or(VoxelShapes.or(BASE, BASE_2), ROD), TOP);
+
     public CentrifugeBlock(String name) {
-        super(Properties.create(Material.WOOD));
+        super(Properties.create(Material.MISCELLANEOUS).sound(SoundType.METAL));
         
         this.setRegistryName(name);
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+        return SHAPE;
     }
 
     @Override
-    public int getOpacity(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public boolean causesSuffocation(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
+        return false;
+    }
+
+    @Override
+    public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube(BlockState p_220081_1_, IBlockReader p_220081_2_, BlockPos p_220081_3_) {
+        return false;
+    }
+
+    @Override
+    public int getOpacity(BlockState p_200011_1_, IBlockReader p_200011_2_, BlockPos p_200011_3_) {
         return 0;
     }
-    
+
     @Override
     public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.INVISIBLE;
-    }
-    
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rt) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rt) {
          if (!world.isRemote) {
 
              INamedContainerProvider containerProvider = getContainer(state, world, pos);
@@ -62,7 +83,7 @@ public class CentrifugeBlock extends Block {
              }
         }
         
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     @Nullable
@@ -110,7 +131,7 @@ public class CentrifugeBlock extends Block {
     }
 
     @Override
-    public boolean hasTileEntity() {
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 

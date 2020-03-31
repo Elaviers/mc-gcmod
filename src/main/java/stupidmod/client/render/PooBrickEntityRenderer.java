@@ -1,8 +1,11 @@
 package stupidmod.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -10,11 +13,9 @@ import stupidmod.StupidMod;
 import stupidmod.client.PooBrickModel;
 import stupidmod.entity.PooBrickEntity;
 
-import javax.annotation.Nullable;
-
 @OnlyIn(Dist.CLIENT)
 public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity> {
-    private final ResourceLocation TEXTURE = new ResourceLocation(StupidMod.id, "textures/item/poo_brick.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(StupidMod.id, "textures/item/poo_brick.png");
 
     PooBrickModel model = new PooBrickModel();
 
@@ -22,23 +23,24 @@ public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity> {
         super(renderManager);
     }
 
-    @Nullable
     @Override
-    protected ResourceLocation getEntityTexture(PooBrickEntity entity) { return TEXTURE; }
+    public ResourceLocation getEntityTexture(PooBrickEntity entity) {
+        return TEXTURE;
+    }
 
     @Override
-    public void doRender(PooBrickEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)x, (float)y + .125f, (float)z);
+    public void render(PooBrickEntity pooBrick, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer types, int packedLight) {
+        matrixStack.push();
+        matrixStack.translate(0.0, 0.125, 0.0);
 
-        GlStateManager.rotatef(entity.prevAngleX + partialTicks * (entity.angleX - entity.prevAngleX), 1,0,0);
-        GlStateManager.rotatef(entity.prevAngleY + partialTicks * (entity.angleY - entity.prevAngleY), 0,1,0);
-        GlStateManager.rotatef(entity.prevAngleZ + partialTicks * (entity.angleZ - entity.prevAngleZ), 0,0,1);
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(pooBrick.prevAngleX + partialTicks * (pooBrick.angleX - pooBrick.prevAngleX)));
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(pooBrick.prevAngleY + partialTicks * (pooBrick.angleY - pooBrick.prevAngleY)));
+        matrixStack.rotate(Vector3f.ZP.rotationDegrees(pooBrick.prevAngleZ + partialTicks * (pooBrick.angleZ - pooBrick.prevAngleZ)));
 
-        this.bindEntityTexture(entity);
-        this.model.render();
+        this.model.render(matrixStack, types.getBuffer(this.model.getRenderType(this.getEntityTexture(pooBrick))), packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
 
-        GlStateManager.popMatrix();
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        matrixStack.pop();
+
+        super.render(pooBrick, entityYaw, partialTicks, matrixStack, types, packedLight);
     }
 }

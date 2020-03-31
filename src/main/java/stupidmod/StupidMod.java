@@ -26,45 +26,38 @@ public class StupidMod {
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-
-        //ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> GuiHandler::openGui);
     }
-    
-    
     
     private void setup(FMLCommonSetupEvent event)
     {
         //Gen
-        ConfiguredFeature sulphurFeature = Biome.createDecoratedFeature(
-                Feature.ORE,
+        ConfiguredFeature sulphurFeature = Feature.ORE.withConfiguration(
                 new OreFeatureConfig(
                         OreFeatureConfig.FillerBlockType.NATURAL_STONE,
                         StupidModBlocks.SULPHUR_ORE.getDefaultState(),
-                        20),
-                Placement.COUNT_RANGE,
+                        20)
+        ).withPlacement(Placement.COUNT_RANGE.configure(
                 new CountRangeConfig(
                         12,
                         0,
                         0,
-                        48
-                )
-        );
+                        48)
+        ));
 
-        ConfiguredFeature noahSulphurFeature = Biome.createDecoratedFeature(
-                Feature.ORE,
+        ConfiguredFeature noahSulphurFeature = Feature.ORE.withConfiguration(
                 new OreFeatureConfig(
                         OreFeatureConfig.FillerBlockType.NATURAL_STONE,
                         StupidModBlocks.NOAH_SULPHUR_ORE.getDefaultState(),
-                        5),
-                Placement.COUNT_RANGE,
+                        5)
+        ).withPlacement(Placement.COUNT_RANGE.configure(
                 new CountRangeConfig(
                         5,
                         0,
                         0,
-                        20
-                )
-        );
-    
+                        20)
+        ));
+
+
         Utility.addOverworldOreFeature(GenerationStage.Decoration.UNDERGROUND_ORES, sulphurFeature);
         Utility.addOverworldOreFeature(GenerationStage.Decoration.UNDERGROUND_ORES, noahSulphurFeature);
     
@@ -81,6 +74,7 @@ public class StupidMod {
     
     private void clientSetup(FMLClientSetupEvent event)
     {
+        StupidModBlocks.registerRenderLayers();
         StupidModEntities.registerRenderers();
         StupidModContainers.RegisterScreenFactories();
     }

@@ -65,9 +65,9 @@ public class ExplosiveEntity extends Entity {
     }
     
     public void tick() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.prevPosX = this.getPosX();
+        this.prevPosY = this.getPosY();
+        this.prevPosZ = this.getPosZ();
         if (!this.hasNoGravity()) {
             this.setMotion(this.getMotion().add(0d, -0.04d, 0d));
         }
@@ -88,7 +88,7 @@ public class ExplosiveEntity extends Entity {
         else
         {
             this.handleWaterMovement();
-            this.world.addParticle(ParticleTypes.SMOKE, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
+            this.world.addParticle(ParticleTypes.SMOKE, this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), 0.0D, 0.0D, 0.0D);
         }
     }
     
@@ -107,7 +107,7 @@ public class ExplosiveEntity extends Entity {
         this.remove();
         
         if (!this.world.isRemote)
-            this.world.createExplosion(this, this.posX, this.posY + (double)(this.getHeight() / 16.0F), this.posZ, this.strength, Explosion.Mode.BREAK);
+            this.world.createExplosion(this, this.getPosX(), this.getPosY() + (double)(this.getHeight() / 16.0F), this.getPosZ(), this.strength, Explosion.Mode.BREAK);
     }
     
     protected void writeAdditional(CompoundNBT compound) {

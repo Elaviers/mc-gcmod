@@ -38,21 +38,21 @@ public class AirStrikeExplosiveEntity extends ExplosiveEntity {
         if (!activated)
             super.tick();
         else {
-            this.prevPosX = this.posX;
-            this.prevPosY = this.posY;
-            this.prevPosZ = this.posZ;
+            this.prevPosX = this.getPosX();
+            this.prevPosY = this.getPosY();
+            this.prevPosZ = this.getPosZ();
 
             this.setMotion(this.getMotion().add(0d, 0.5d, 0d));
 
             this.move(MoverType.SELF, this.getMotion());
             this.setMotion(this.getMotion().mul(0.98d, 0d, 0.98d));
     
-            if((this.collided || this.posY - this.initialY >= height) && !this.world.isRemote) {
+            if((this.collided || this.getPosY() - this.initialY >= height) && !this.world.isRemote) {
                 this.remove();
                 this.airStrike();
             }
     
-            this.world.addParticle(ParticleTypes.SMOKE, this.posX, this.posY - 0.25D, this.posZ, 0.0D, -0.25D, 0.0D);
+            this.world.addParticle(ParticleTypes.SMOKE, this.getPosX(), this.getPosY() - 0.25D, this.getPosZ(), 0.0D, -0.25D, 0.0D);
         }
     }
     
@@ -63,7 +63,7 @@ public class AirStrikeExplosiveEntity extends ExplosiveEntity {
     
     protected void airStrike()
     {
-        this.world.createExplosion(this, this.posX, this.posY, this.posZ, 5, Explosion.Mode.BREAK);
+        this.world.createExplosion(this, this.getPosX(), this.getPosY(), this.getPosZ(), 5, Explosion.Mode.BREAK);
         double AngleStep = 2 * Math.PI / this.pieces;
         double xmot, ymot, zmot;
         float mod = (spread - 1) * .25f + .5f;
@@ -76,7 +76,7 @@ public class AirStrikeExplosiveEntity extends ExplosiveEntity {
     }
     
     private void createNewBomb(double motionX,double motionY,double motionZ) {
-        ImpactExplosiveEntity bomb = new ImpactExplosiveEntity(world, this.posX, this.posY, this.posZ, this.strength);
+        ImpactExplosiveEntity bomb = new ImpactExplosiveEntity(world, this.getPosX(), this.getPosY(), this.getPosZ(), this.strength);
         bomb.setMotion(motionX, motionY, motionZ);
         world.addEntity(bomb);
     }

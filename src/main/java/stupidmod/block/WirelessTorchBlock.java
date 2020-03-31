@@ -1,8 +1,6 @@
 package stupidmod.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.TorchBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.BooleanProperty;
@@ -11,7 +9,10 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import stupidmod.entity.tile.WirelessTorchTileEntity;
@@ -19,20 +20,51 @@ import stupidmod.entity.tile.WirelessTorchTileEntity;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class WirelessTorchBlock extends TorchBlock {
+public class WirelessTorchBlock extends Block {
+    protected static final VoxelShape SHAPE = Block.makeCuboidShape(6, 0, 6, 10, 10, 10);
+
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    
-    public WirelessTorchBlock(String name) {
-        super(Properties.create(Material.WOOD).hardnessAndResistance(0).tickRandomly().doesNotBlockMovement());
-        
-        this.setRegistryName(name);
-        
+
+    public WirelessTorchBlock(Properties properties)
+    {
+        super(properties);
         this.setDefaultState(this.getDefaultState().with(LIT, false));
     }
-    
+
+    public WirelessTorchBlock(String name) {
+        this(Properties.create(Material.MISCELLANEOUS).sound(SoundType.METAL).hardnessAndResistance(0).tickRandomly().doesNotBlockMovement());
+        this.setRegistryName(name);
+    }
+
+    @Override
+    public boolean isTransparent(BlockState p_220074_1_) {
+        return true;
+    }
+
+
+
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        return SHAPE;
+    }
+
+    public BlockState updatePostPlacement(BlockState state, Direction direction, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+        return direction == Direction.DOWN && !this.isValidPosition(state, world, pos) ?
+                Blocks.AIR.getDefaultState() :
+                super.updatePostPlacement(state, direction, facingState, world, pos, facingPos);
+    }
+
+    public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+        return hasEnoughSolidSide(world, pos.down(), Direction.UP);
+    }
+
+    @Override
+    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
     private boolean shouldBeOn(World worldIn, BlockPos pos, BlockState state) {
-        Direction face = getFacing(state).getOpposite();
-        return worldIn.isSidePowered(pos.offset(Direction.DOWN), face);
+        Direction facing = getFacing(state);
+        return worldIn.isSidePowered(pos.offset(facing.getOpposite()), facing);
     }
 
     protected Direction getFacing(BlockState state) { return Direction.UP;}
@@ -58,8 +90,14 @@ public class WirelessTorchBlock extends TorchBlock {
 
     ///
 
+
     @Override
-    public int tickRate(IWorldReader p_149738_1_) {
+    public int getLightValue(BlockState state) {
+        return (boolean)state.get(LIT) ? 14 : 0;
+    }
+
+    @Override
+    public int tickRate(IWorldReader world) {
         return 2;
     }
 

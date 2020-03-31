@@ -59,8 +59,8 @@ public class PooCannonItem extends Item {
             
             PooExplosiveEntity tst = new PooExplosiveEntity(world, 0, 0, 0, 4);
             tst.setPosition(MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F, 0.1, MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
-            tst.setLocationAndAngles(player.posX,player.posY+player.getEyeHeight(),player.posZ, player.rotationYaw, player.rotationPitch);
-            tst.setPosition(tst.posX, tst.posY, tst.posZ);
+            tst.setLocationAndAngles(player.getPosX(),player.getPosY()+player.getEyeHeight(),player.getPosZ(), player.rotationYaw, player.rotationPitch);
+            tst.setPosition(tst.getPosX(), tst.getPosY(), tst.getPosZ());
             double motx = -MathHelper.sin(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI);
             double motz = MathHelper.cos(tst.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(tst.rotationPitch / 180.0F * (float)Math.PI);
             double moty = -MathHelper.sin(tst.rotationPitch / 180.0F * (float)Math.PI);

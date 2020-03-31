@@ -93,9 +93,9 @@ public class PooEntity extends Entity implements IEntityAdditionalSpawnData {
         if (!this.world.isRemote && this.size <= 0)
             this.breakPoo();
         
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.prevPosX = this.getPosX();
+        this.prevPosY = this.getPosY();
+        this.prevPosZ = this.getPosZ();
         this.prevSize = this.size;
         
         if (this.shrinkRate > 0)

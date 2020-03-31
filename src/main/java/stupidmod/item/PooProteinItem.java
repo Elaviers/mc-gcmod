@@ -27,12 +27,6 @@ public class PooProteinItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
-    }
-
-    @Override
     public ItemStack onItemUseFinish(ItemStack stack, World world, LivingEntity player) {
         if (!world.isRemote) {
             Collection<EffectInstance> effects = player.getActivePotionEffects();
@@ -63,43 +57,4 @@ public class PooProteinItem extends Item {
 
         return super.onItemUseFinish(stack, world, player);
     }
-
-    /*
-    @Override
-    protected void onFoodEaten(ItemStack stack, World world, PlayerEntity player) {
-        if (!world.isRemote) {
-            Collection<EffectInstance> effects = player.getActivePotionEffects();
-            
-            int durationJump = 200;
-            int durationStrength = 200;
-            int durationHaste = 200;
-            int durationSpeed = 200;
-            
-            for (EffectInstance effect : effects) {
-                if (effect.getAmplifier() >= 4) {
-                    if (effect.getPotion() == Effects.JUMP_BOOST)
-                        durationJump += effect.getDuration();
-                    else if (effect.getPotion() == Effects.STRENGTH)
-                        durationStrength += effect.getDuration();
-                    else if (effect.getPotion() == Effects.HASTE)
-                        durationHaste += effect.getDuration();
-                    else if (effect.getPotion() == Effects.SPEED)
-                        durationSpeed += effect.getDuration();
-                }
-            }
-            
-            player.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, durationJump, 4));
-            player.addPotionEffect(new EffectInstance(Effects.STRENGTH, durationStrength, 4));
-            player.addPotionEffect(new EffectInstance(Effects.HASTE, durationHaste, 4));
-            player.addPotionEffect(new EffectInstance(Effects.SPEED, durationSpeed, 4));
-        }
-    }
-    
-    @Override
-    public int getUseDuration(ItemStack stack) {
-        return 12;
-    }
-    
-
-    */
 }

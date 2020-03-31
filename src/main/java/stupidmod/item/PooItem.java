@@ -10,6 +10,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import stupidmod.StupidModItems;
 import stupidmod.StupidMod;
 
@@ -35,8 +36,8 @@ public class PooItem extends Item {
 
                 return ActionResultType.SUCCESS;
             } else {
-                BlockState iblockstate = world.getBlockState(blockpos);
-                boolean flag = iblockstate.func_224755_d(world, blockpos, context.getFace());   //FACE IS SOLID
+                BlockState blockState = world.getBlockState(blockpos);
+                boolean flag = blockState.isSolidSide(world, blockpos, context.getFace());
                 if (flag && BoneMealItem.growSeagrass(context.getItem(), world, blockpos1, context.getFace())) {
                     if (!world.isRemote) {
                         world.playEvent(2005, blockpos1, 0);
@@ -61,12 +62,12 @@ public class PooItem extends Item {
         if (state.getBlock() instanceof IGrowable) {
             IGrowable igrowable = (IGrowable)state.getBlock();
             if (igrowable.canGrow(world, pos, state, world.isRemote)) {
-                if (!world.isRemote) {
+                if (world instanceof ServerWorld) {
                     int gCount = 0;
 
                     if (igrowable.canUseBonemeal(world, world.rand, pos, state)) {
                         do {
-                            igrowable.grow(world, world.rand, pos, state);
+                            igrowable.grow((ServerWorld) world, world.rand, pos, state);
                             gCount++;
                         }
                         while (gCount < 10 && igrowable.canUseBonemeal(world, world.rand, pos, state));

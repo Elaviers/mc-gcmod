@@ -20,7 +20,7 @@ public class DigExplosiveEntity extends ExplosiveEntity {
     }
     
     void makeExplosion() {
-        this.world.createExplosion(this, this.posX, this.posY + (double)(this.getHeight() / 16.0F), this.posZ, this.strength, Explosion.Mode.BREAK);
+        this.world.createExplosion(this, this.getPosX(), this.getPosY() + (double)(this.getHeight() / 16.0F), this.getPosZ(), this.strength, Explosion.Mode.BREAK);
     }
     
     @Override
@@ -28,11 +28,11 @@ public class DigExplosiveEntity extends ExplosiveEntity {
         super.tick();
         
         if (!this.world.isRemote) {
-            if (this.posY < this.explosionY) {
+            if (this.getPosY() < this.explosionY) {
                 if (this.fuse % 2 == 0)
                     this.makeExplosion();
     
-                if (this.posY == this.prevPosY) {
+                if (this.getPosY() == this.prevPosY) {
                     if (this.stuckTicks >= 10)
                         this.remove();
                     else
@@ -47,7 +47,7 @@ public class DigExplosiveEntity extends ExplosiveEntity {
     
     @Override
     protected void onFuseCompleted() {
-        this.explosionY = this.posY + 0.5;
+        this.explosionY = this.getPosY() + 0.5;
         this.setMotion(0d, 1d, 0f);
     }
 

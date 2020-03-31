@@ -47,9 +47,9 @@ public class ImpactExplosiveEntity extends Entity {
     
     @Override
     public void tick() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.prevPosX = this.getPosX();
+        this.prevPosY = this.getPosY();
+        this.prevPosZ = this.getPosZ();
         this.prevAngleX = this.angleX;
         this.prevAngleY = this.angleY;
         this.prevAngleZ = this.angleZ;
@@ -69,7 +69,7 @@ public class ImpactExplosiveEntity extends Entity {
         {
             this.remove();
             if(!this.world.isRemote)
-                this.world.createExplosion(this, this.posX, this.posY + (double)(this.getHeight() / 16.0F), this.posZ, this.explosionRadius, Explosion.Mode.BREAK);
+                this.world.createExplosion(this, this.getPosX(), this.getPosY() + (double)(this.getHeight() / 16.0F), this.getPosZ(), this.explosionRadius, Explosion.Mode.BREAK);
         }
         
     }

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 public class MemeBlock extends Block {
 
     public MemeBlock(String name, SoundType sound) {
-        super(Properties.create(Material.ORGANIC).sound(sound).hardnessAndResistance(3));
+        super(Properties.create(Material.CLAY).sound(sound).hardnessAndResistance(3));
         
         this.setRegistryName(name);
     }

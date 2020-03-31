@@ -3,6 +3,7 @@ package stupidmod;
 import net.minecraft.client.renderer.entity.CowRenderer;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.client.renderer.entity.SheepRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntityType;
@@ -176,19 +177,19 @@ public class StupidModEntities {
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers()
     {
-        RenderingRegistry.registerEntityRenderingHandler(PooEntity.class,                   PooEntityRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(PooBrickEntity.class,              PooBrickEntityRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(PooExplosiveEntity.class,          PooExplosiveEntityRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(ExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.BLAST_TNT.getDefaultState()));
-        RenderingRegistry.registerEntityRenderingHandler(ConstructiveExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.CONSTRUCTIVE_TNT.getDefaultState()));
-        RenderingRegistry.registerEntityRenderingHandler(DigExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.DIG_TNT.getDefaultState()));
-        RenderingRegistry.registerEntityRenderingHandler(AirStrikeExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.AIR_STRIKE_TNT.getDefaultState()));
-        RenderingRegistry.registerEntityRenderingHandler(ImpactExplosiveEntity.class, manager -> new ImpactExplosiveEntityRenderer(manager, StupidModBlocks.BLAST_TNT.getDefaultState(), .5f));
-        RenderingRegistry.registerEntityRenderingHandler(PooCowEntity.class,                CowRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(PooPigEntity.class,                PigRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(PooSheepEntity.class,              SheepRenderer::new);
-    
-        ClientRegistry.bindTileEntitySpecialRenderer(CentrifugeTileEntity.class, new CentrifugeTileEntityRenderer());
+        RenderingRegistry.registerEntityRenderingHandler(POO,                    PooEntityRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(POO_BRICK,              PooBrickEntityRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(POO_EXPLOSIVE,          PooExplosiveEntityRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EXPLOSIVE,              manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.BLAST_TNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(CONSTRUCTIVE_EXPLOSIVE, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.CONSTRUCTIVE_TNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(DIG_EXPLOSIVE,          manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.DIG_TNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(AIR_STRIKE_EXPLOSIVE,   manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.AIR_STRIKE_TNT.getDefaultState()));
+        RenderingRegistry.registerEntityRenderingHandler(IMPACT_EXPLOSIVE,       manager -> new ImpactExplosiveEntityRenderer(manager, StupidModBlocks.BLAST_TNT.getDefaultState(), .5f));
+        RenderingRegistry.registerEntityRenderingHandler(POO_COW,                CowRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(POO_PIG,                PigRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(POO_SHEEP,              SheepRenderer::new);
+
+        ClientRegistry.bindTileEntityRenderer(TE_CENTRIFUGE, CentrifugeTileEntityRenderer::new);
     }
     
 }

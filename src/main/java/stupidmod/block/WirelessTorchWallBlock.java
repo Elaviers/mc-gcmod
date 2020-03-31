@@ -3,6 +3,7 @@ package stupidmod.block;
 import net.minecraft.block.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.DirectionProperty;
@@ -19,6 +20,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import stupidmod.StupidModBlocks;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -26,9 +28,9 @@ import java.util.Random;
 public class WirelessTorchWallBlock extends WirelessTorchBlock {
     public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
     
-    public WirelessTorchWallBlock(String name) {
-        super(name);
-        
+    public WirelessTorchWallBlock(String name, WirelessTorchBlock lootFrom) {
+        super(Properties.create(Material.WOOD).sound(SoundType.METAL).hardnessAndResistance(0).tickRandomly().doesNotBlockMovement().lootFrom(lootFrom));
+        this.setRegistryName(name);
         this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH));
     }
 
