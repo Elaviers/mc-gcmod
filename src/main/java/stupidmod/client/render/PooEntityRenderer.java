@@ -36,13 +36,12 @@ public class PooEntityRenderer extends EntityRenderer<PooEntity> {
         GlStateManager.translatef((float)x, (float)y, (float)z);
 
         float size = entity.prevSize + partialTicks * (entity.size - entity.prevSize);
-        if (size <= 0)
-            return;
+        if (size > 0) {
+            GlStateManager.scalef(size, size, size);
 
-        GlStateManager.scalef(size,size,size);
-
-        this.bindEntityTexture(entity);
-        model.render();
+            this.bindEntityTexture(entity);
+            model.render();
+        }
 
         GlStateManager.popMatrix();
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
