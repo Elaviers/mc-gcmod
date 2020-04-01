@@ -29,20 +29,12 @@ public class ConstructiveExplosiveEntity extends ExplosiveEntity {
         
         if (!this.world.isRemote)
         {
-            Explosion explosion = new Explosion(world, this, this.getPosX(), this.getPosY() + (double)(this.getHeight() / 16.0F), this.getPosZ(), this.strength, false, Explosion.Mode.NONE);
-            explosion.doExplosionA();
-            explosion.doExplosionB(true);
+            Explosion explosion = this.world.createExplosion(this, this.getPosX(), this.getPosY() + (double)(this.getHeight() / 16.0F), this.getPosZ(), this.strength, false, Explosion.Mode.BREAK);
 
             for(BlockPos pos : explosion.getAffectedBlockPositions())
             {
                 world.setBlockState(pos, this.blockState);
             }
-
-            //ExplosionConstructive explosion = new ExplosionConstructive(this.world, null, this.getPosX(), this.getPosY(), this.getPosZ(), this.strength, false, true, this.blockState);
-
-            //if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this.world, explosion.doppelganger)) return;
-            //explosion.doExplosionA();
-            //explosion.doExplosionB(true);
         }
     }
 

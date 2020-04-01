@@ -78,7 +78,7 @@ public class RecipeExplosive extends SpecialRecipe {
                 
                     TNTCount++;
                 }
-                if (currentItem == StupidModItems.BLACK_POWDER)
+                else if (currentItem == StupidModItems.BLACK_POWDER)
                     powder++;
                 else if (currentItem == Items.STRING)
                     string++;

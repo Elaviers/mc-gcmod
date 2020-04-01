@@ -2,6 +2,7 @@ package stupidmod.entity.tile;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
@@ -101,6 +102,9 @@ public class ExplosiveTileEntity extends TileEntity {
         }
         else if (b == StupidModBlocks.CONSTRUCTIVE_TNT)
         {
+            if (this.constructState == null)
+                this.constructState = Blocks.AIR.getDefaultState();
+
             ConstructiveExplosiveEntity tnt = new ConstructiveExplosiveEntity(world, x, y, z, fuse, strength, this.constructState);
             
             if (!tnt.exploded()) {
