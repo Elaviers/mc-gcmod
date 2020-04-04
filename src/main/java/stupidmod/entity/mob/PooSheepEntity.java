@@ -15,7 +15,7 @@ public class PooSheepEntity extends SheepEntity {
     
     public PooSheepEntity(EntityType<? extends PooSheepEntity> type, World world) {
         super(StupidModEntities.POO_SHEEP, world);
-        PooDropTimer = this.rand.nextInt(1000)+450;
+        PooDropTimer = this.rand.nextInt(2000) + 160;
     }
     
     @Override
@@ -31,8 +31,8 @@ public class PooSheepEntity extends SheepEntity {
             this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.8F + 0.1F);
             
             this.world.addEntity(new PooEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ()));
-            if (this.isChild())this.PooDropTimer = this.rand.nextInt(550) + 150;
-            else this.PooDropTimer = this.rand.nextInt(1334) + 200;
+            if (this.isChild())this.PooDropTimer = this.rand.nextInt(550) + 400;
+            else this.PooDropTimer = this.rand.nextInt(1334) + 800;
         }
     }
     
@@ -45,4 +45,6 @@ public class PooSheepEntity extends SheepEntity {
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+
 }

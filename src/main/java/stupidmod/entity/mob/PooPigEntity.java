@@ -15,7 +15,7 @@ public class PooPigEntity extends PigEntity {
     
     public PooPigEntity(EntityType<? extends PooPigEntity> type, World world) {
         super(StupidModEntities.POO_PIG, world);
-        PooDropTimer = this.rand.nextInt(1200)+800;
+        PooDropTimer = this.rand.nextInt(800) + 160;
     }
     
     @Override

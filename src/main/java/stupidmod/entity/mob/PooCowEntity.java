@@ -15,7 +15,7 @@ public class PooCowEntity extends CowEntity {
     
     public PooCowEntity(EntityType<? extends PooCowEntity> type, World world) {
         super(type, world);
-        PooDropTimer = this.rand.nextInt(400)+800;
+        PooDropTimer = this.rand.nextInt(1600) + 160;
     }
     
     @Override
@@ -26,8 +26,8 @@ public class PooCowEntity extends CowEntity {
             this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.8F + 0.1F);
             
             this.world.addEntity(new PooEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ()));
-            if (this.isChild())this.PooDropTimer = this.rand.nextInt(400) + 100;
-            else this.PooDropTimer = this.rand.nextInt(1200) + 150;
+            if (this.isChild())this.PooDropTimer = this.rand.nextInt(1000) + 300;
+            else this.PooDropTimer = this.rand.nextInt(1200) + 600;
         }
     }
     
@@ -40,4 +40,6 @@ public class PooCowEntity extends CowEntity {
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+
 }

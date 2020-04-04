@@ -9,12 +9,15 @@ import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.placement.CountRangeConfig;
 import net.minecraft.world.gen.placement.Placement;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import stupidmod.client.ClientProxy;
+
+import java.util.List;
 
 @Mod(StupidMod.id)
 public class StupidMod {
@@ -30,15 +33,14 @@ public class StupidMod {
     
     private void setup(FMLCommonSetupEvent event)
     {
-        //Gen
         ConfiguredFeature sulphurFeature = Feature.ORE.withConfiguration(
                 new OreFeatureConfig(
                         OreFeatureConfig.FillerBlockType.NATURAL_STONE,
                         StupidModBlocks.SULPHUR_ORE.getDefaultState(),
-                        20)
+                        32)
         ).withPlacement(Placement.COUNT_RANGE.configure(
                 new CountRangeConfig(
-                        12,
+                        1,
                         0,
                         0,
                         48)
@@ -57,19 +59,32 @@ public class StupidMod {
                         20)
         ));
 
+        BiomeDictionary.getBiomes(BiomeDictionary.Type.OVERWORLD).forEach(biome ->
+            {
+                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, sulphurFeature);
+                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, noahSulphurFeature);
 
-        Utility.addOverworldOreFeature(GenerationStage.Decoration.UNDERGROUND_ORES, sulphurFeature);
-        Utility.addOverworldOreFeature(GenerationStage.Decoration.UNDERGROUND_ORES, noahSulphurFeature);
-    
-        Utility.removeSpawn(EntityType.COW);
-        Utility.addOverworldCreatureSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(StupidModEntities.POO_COW, 8, 4, 4));
-    
-        Utility.removeSpawn(EntityType.PIG);
-        Utility.addOverworldCreatureSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(StupidModEntities.POO_PIG, 10, 4, 4));
-    
-        Utility.removeSpawn(EntityType.SHEEP);
-        Utility.addOverworldCreatureSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(StupidModEntities.POO_SHEEP, 12, 4, 4));
-        
+                List<Biome.SpawnListEntry> spawns = biome.getSpawns(EntityClassification.CREATURE);
+
+                for (int i = 0; i < spawns.size();)
+                {
+                    Biome.SpawnListEntry entry = spawns.get(i);
+
+                    if (entry.entityType == EntityType.COW)
+                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_COW, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
+                    else if (entry.entityType == EntityType.PIG)
+                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_PIG, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
+                    else if (entry.entityType == EntityType.SHEEP)
+                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_SHEEP, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
+                    else {
+                        i++;
+                        continue;
+                    }
+
+                    spawns.remove(i);
+                }
+            }
+        );
     }
     
     private void clientSetup(FMLClientSetupEvent event)
