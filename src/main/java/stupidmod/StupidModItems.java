@@ -1,6 +1,9 @@
 package stupidmod;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -9,7 +12,7 @@ import stupidmod.item.*;
 
 @ObjectHolder(StupidMod.id)
 public class StupidModItems {
-    
+
     private static final String
             namePoo = "poo",
             nameFermentedPoo = "fermented_poo",
@@ -33,38 +36,41 @@ public class StupidModItems {
             nameDiscSymphonyOfStupidity = "music_disc_symphony_of_stupidity",
             nameDiscToiletWater = "music_disc_toilet_water",
             nameDiscFlightOfTheChineseCommuter = "music_disc_flight_of_the_chinese_commuter",
-            nameDiscRageOverACloggedCommode = "music_disc_rage_over_a_clogged_commode";
-    
+            nameDiscRageOverACloggedCommode = "music_disc_rage_over_a_clogged_commode",
+            namePooCowSpawnEgg = "poo_cow_spawn_egg",
+            namePooPigSpawnEgg = "poo_pig_spawn_egg",
+            namePooSheepSpawnEgg = "poo_sheep_spawn_egg";
+
     @ObjectHolder(namePoo)
     public static PooItem POO;
-    
+
     @ObjectHolder(nameFermentedPoo)
     public static PooItem FERMENTED_POO;
-    
+
     @ObjectHolder(nameSulphur)
     public static BasicItem SULPHUR;
-    
+
     @ObjectHolder(nameNoahSulphur)
     public static BasicItem NOAH_SULPHUR;
-    
+
     @ObjectHolder(nameMemeEssence)
     public static BasicItem MEME_ESSENCE;
-    
+
     @ObjectHolder(nameBlackPowder)
     public static BasicItem BLACK_POWDER;
-    
+
     @ObjectHolder(namePooPowder)
     public static BasicItem POO_POWDER;
 
     @ObjectHolder(namePooProtein)
     public static PooProteinItem POO_PROTEIN;
-    
+
     @ObjectHolder(namePooBrick)
     public static PooBrickItem POO_BRICK;
-    
+
     @ObjectHolder(namePooCannon)
     public static PooCannonItem POO_CANNON;
-    
+
     @ObjectHolder(nameCalibrator)
     public static CalibratorItem CALIBRATOR;
 
@@ -103,13 +109,24 @@ public class StupidModItems {
 
     @ObjectHolder(nameDiscRageOverACloggedCommode)
     public static PooDiscItem DISC_RAGE_OVER_A_CLOGGED_COMMODE;
-    
+
+    @ObjectHolder(namePooCowSpawnEgg)
+    public static SpawnEggItem POO_COW_SPAWN_EGG;
+
+    @ObjectHolder(namePooPigSpawnEgg)
+    public static SpawnEggItem POO_PIG_SPAWN_EGG;
+
+    @ObjectHolder(namePooSheepSpawnEgg)
+    public static SpawnEggItem POO_SHEEP_SPAWN_EGG;
+
     @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class Registration
     {
         @SubscribeEvent
         static void registerItems(RegistryEvent.Register<Item> register)
         {
+            StupidModEntities.createEntities();
+
             register.getRegistry().registerAll(
                     new PooItem(namePoo),
                     new PooItem(nameFermentedPoo),
@@ -133,9 +150,11 @@ public class StupidModItems {
                     new PooDiscItem(nameDiscSymphonyOfStupidity, StupidModSounds.MUSIC_SYMPHONY_OF_STUPIDITY, 9),
                     new PooDiscItem(nameDiscToiletWater, StupidModSounds.MUSIC_TOILET_WATER, 10),
                     new PooDiscItem(nameDiscFlightOfTheChineseCommuter, StupidModSounds.MUSIC_FLIGHT_OF_THE_CHINESE_COMMUTER, 11),
-                    new PooDiscItem(nameDiscRageOverACloggedCommode, StupidModSounds.MUSIC_RAGE_OVER_A_CLOGGED_COMMODE, 12)
+                    new PooDiscItem(nameDiscRageOverACloggedCommode, StupidModSounds.MUSIC_RAGE_OVER_A_CLOGGED_COMMODE, 12),
+                    new SpawnEggItem(StupidModEntities.POO_COW, 4470310, 10592673, (new Item.Properties()).group(StupidMod.GROUP)).setRegistryName(namePooCowSpawnEgg),
+                    new SpawnEggItem(StupidModEntities.POO_PIG, 15771042, 14377823, (new Item.Properties()).group(StupidMod.GROUP)).setRegistryName(namePooPigSpawnEgg),
+                    new SpawnEggItem(StupidModEntities.POO_SHEEP, 15198183, 16758197, (new Item.Properties()).group(StupidMod.GROUP)).setRegistryName(namePooSheepSpawnEgg)
             );
-            
         }
     }
 }

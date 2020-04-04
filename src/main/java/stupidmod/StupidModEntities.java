@@ -84,6 +84,87 @@ public class StupidModEntities {
     @ObjectHolder(nameWirelessTorch)
     public static TileEntityType<WirelessTorchTileEntity> TE_WIRELESS_TORCH;
 
+    public static void createEntities()
+    {
+        POO = EntityType.Builder.<PooEntity>create(PooEntity::new, EntityClassification.MISC)
+                .size(0.8f, 0.25f)
+                .setTrackingRange(64)
+                .setUpdateInterval(20)
+                .build(namePoo);
+        POO.setRegistryName(namePoo);
+
+        POO_BRICK = EntityType.Builder.<PooBrickEntity>create(PooBrickEntity::new, EntityClassification.MISC)
+                .size(0.5f, 0.25f)
+                .setTrackingRange(64)
+                .setUpdateInterval(20)
+                .build(namePooBrick);
+        POO_BRICK.setRegistryName(namePooBrick);
+
+
+        POO_EXPLOSIVE = EntityType.Builder.<PooExplosiveEntity>create(PooExplosiveEntity::new, EntityClassification.MISC)
+                .size(0.33f, 0.33f)
+                .setTrackingRange(256)
+                .setUpdateInterval(20)
+                .build(nameExplosivePoo);
+        POO_EXPLOSIVE.setRegistryName(nameExplosivePoo);
+
+        EXPLOSIVE = EntityType.Builder.<ExplosiveEntity>create(ExplosiveEntity::new, EntityClassification.MISC)
+                .size(0.98f, 0.98f)
+                .setTrackingRange(160)
+                .setUpdateInterval(10)
+                .build(nameExplosive);
+        EXPLOSIVE.setRegistryName(nameExplosive);
+
+        CONSTRUCTIVE_EXPLOSIVE = EntityType.Builder.<ConstructiveExplosiveEntity>create(ConstructiveExplosiveEntity::new, EntityClassification.MISC)
+                .size(0.98f, 0.98f)
+                .setTrackingRange(160)
+                .setUpdateInterval(10)
+                .build(nameConstructiveExplosive);
+        CONSTRUCTIVE_EXPLOSIVE.setRegistryName(nameConstructiveExplosive);
+
+        DIG_EXPLOSIVE = EntityType.Builder.<DigExplosiveEntity>create(DigExplosiveEntity::new, EntityClassification.MISC)
+                .size(0.98f, 0.98f)
+                .setTrackingRange(256)
+                .setUpdateInterval(10)
+                .build(nameDigExplosive);
+        DIG_EXPLOSIVE.setRegistryName(nameDigExplosive);
+
+        AIR_STRIKE_EXPLOSIVE = EntityType.Builder.<AirStrikeExplosiveEntity>create(AirStrikeExplosiveEntity::new, EntityClassification.MISC)
+                .size(0.98f, 0.98f)
+                .setTrackingRange(256)
+                .setUpdateInterval(10)
+                .build(nameAirstrikeExplosive);
+        AIR_STRIKE_EXPLOSIVE.setRegistryName(nameAirstrikeExplosive);
+
+        IMPACT_EXPLOSIVE = EntityType.Builder.<ImpactExplosiveEntity>create(ImpactExplosiveEntity::new, EntityClassification.MISC)
+                .size(0.33f, 0.33f)
+                .setTrackingRange(256)
+                .setUpdateInterval(10)
+                .build(nameImpactExplosive);
+        IMPACT_EXPLOSIVE.setRegistryName(nameImpactExplosive);
+
+        POO_COW = EntityType.Builder.<PooCowEntity>create(PooCowEntity::new, EntityClassification.CREATURE)
+                .size(EntityType.COW.getSize().width, EntityType.COW.getSize().height)
+                .setTrackingRange(80)
+                .setUpdateInterval(3)
+                .build(namePooCow);
+        POO_COW.setRegistryName(namePooCow);
+
+        POO_PIG = EntityType.Builder.<PooPigEntity>create(PooPigEntity::new, EntityClassification.CREATURE)
+                .size(EntityType.PIG.getSize().width, EntityType.PIG.getSize().height)
+                .setTrackingRange(80)
+                .setUpdateInterval(3)
+                .build(namePooPig);
+        POO_PIG.setRegistryName(namePooPig);
+
+        POO_SHEEP = EntityType.Builder.<PooSheepEntity>create(PooSheepEntity::new, EntityClassification.CREATURE)
+                .size(EntityType.SHEEP.getSize().width, EntityType.SHEEP.getSize().height)
+                .setTrackingRange(80)
+                .setUpdateInterval(3)
+                .build(namePooSheep);
+        POO_SHEEP.setRegistryName(namePooSheep);
+    }
+
     @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class Registration
     {
@@ -91,72 +172,7 @@ public class StupidModEntities {
         static void registerEntities(RegistryEvent.Register<EntityType<?>> register)
         {
             register.getRegistry().registerAll(
-                    EntityType.Builder.<PooEntity>create(PooEntity::new, EntityClassification.MISC)
-                            .size(0.8f, 0.25f)
-                            .setTrackingRange(64)
-                            .setUpdateInterval(20)
-                            .build(namePoo).setRegistryName(namePoo),
-                    
-                    EntityType.Builder.<PooBrickEntity>create(PooBrickEntity::new, EntityClassification.MISC)
-                            .size(0.5f, 0.25f)
-                            .setTrackingRange(64)
-                            .setUpdateInterval(20)
-                            .build(namePooBrick).setRegistryName(namePooBrick),
-                    
-                    EntityType.Builder.<PooExplosiveEntity>create(PooExplosiveEntity::new, EntityClassification.MISC)
-                            .size(0.33f, 0.33f)
-                            .setTrackingRange(256)
-                            .setUpdateInterval(20)
-                            .build(nameExplosivePoo)
-                            .setRegistryName(nameExplosivePoo),
-                    
-                    EntityType.Builder.<ExplosiveEntity>create(ExplosiveEntity::new, EntityClassification.MISC)
-                            .size(0.98f, 0.98f)
-                            .setTrackingRange(160)
-                            .setUpdateInterval(10)
-                            .build(nameExplosive).setRegistryName(nameExplosive),
-                    
-                    EntityType.Builder.<ConstructiveExplosiveEntity>create(ConstructiveExplosiveEntity::new, EntityClassification.MISC)
-                            .size(0.98f, 0.98f)
-                            .setTrackingRange(160)
-                            .setUpdateInterval(10)
-                            .build(nameConstructiveExplosive).setRegistryName(nameConstructiveExplosive),
-                    
-                    EntityType.Builder.<DigExplosiveEntity>create(DigExplosiveEntity::new, EntityClassification.MISC)
-                            .size(0.98f, 0.98f)
-                            .setTrackingRange(256)
-                            .setUpdateInterval(10)
-                            .build(nameDigExplosive).setRegistryName(nameDigExplosive),
-                    
-                    EntityType.Builder.<AirStrikeExplosiveEntity>create(AirStrikeExplosiveEntity::new, EntityClassification.MISC)
-                            .size(0.98f, 0.98f)
-                            .setTrackingRange(256)
-                            .setUpdateInterval(10)
-                            .build(nameAirstrikeExplosive).setRegistryName(nameAirstrikeExplosive),
-                    
-                    EntityType.Builder.<ImpactExplosiveEntity>create(ImpactExplosiveEntity::new, EntityClassification.MISC)
-                            .size(0.33f, 0.33f)
-                            .setTrackingRange(256)
-                            .setUpdateInterval(10)
-                            .build(nameImpactExplosive).setRegistryName(nameImpactExplosive),
-                    
-                    EntityType.Builder.<PooCowEntity>create(PooCowEntity::new, EntityClassification.CREATURE)
-                            .size(EntityType.COW.getSize().width, EntityType.COW.getSize().height)
-                            .setTrackingRange(80)
-                            .setUpdateInterval(3)
-                            .build(namePooCow).setRegistryName(namePooCow),
-                    
-                    EntityType.Builder.<PooPigEntity>create(PooPigEntity::new, EntityClassification.CREATURE)
-                            .size(EntityType.PIG.getSize().width, EntityType.PIG.getSize().height)
-                            .setTrackingRange(80)
-                            .setUpdateInterval(3)
-                            .build(namePooPig).setRegistryName(namePooPig),
-                    
-                    EntityType.Builder.<PooSheepEntity>create(PooSheepEntity::new, EntityClassification.CREATURE)
-                            .size(EntityType.SHEEP.getSize().width, EntityType.SHEEP.getSize().height)
-                            .setTrackingRange(80)
-                            .setUpdateInterval(3)
-                            .build(namePooSheep).setRegistryName(namePooSheep)
+                    POO, POO_BRICK, POO_EXPLOSIVE, EXPLOSIVE, CONSTRUCTIVE_EXPLOSIVE, DIG_EXPLOSIVE, AIR_STRIKE_EXPLOSIVE, IMPACT_EXPLOSIVE, POO_COW, POO_PIG, POO_SHEEP
             );
         }
         
@@ -170,7 +186,6 @@ public class StupidModEntities {
 
             );
         }
-        
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -190,5 +205,4 @@ public class StupidModEntities {
     
         ClientRegistry.bindTileEntitySpecialRenderer(CentrifugeTileEntity.class, new CentrifugeTileEntityRenderer());
     }
-    
 }

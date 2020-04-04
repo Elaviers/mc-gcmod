@@ -12,30 +12,30 @@ import stupidmod.entity.PooEntity;
 
 public class PooSheepEntity extends SheepEntity {
     int PooDropTimer;
-    
+
     public PooSheepEntity(EntityType<? extends PooSheepEntity> type, World world) {
         super(StupidModEntities.POO_SHEEP, world);
-        PooDropTimer = this.rand.nextInt(1000)+450;
+        PooDropTimer = this.rand.nextInt(2000) + 160;
     }
-    
+
     @Override
     public EntityType<?> getType() {
         return StupidModEntities.POO_SHEEP;
     }
-    
+
     @Override
     public void tick() {
         super.tick();
-        
+
         if(!this.world.isRemote && --PooDropTimer <= 0) {
             this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.8F + 0.1F);
-            
+
             this.world.addEntity(new PooEntity(this.world, this.posX, this.posY, this.posZ));
-            if (this.isChild())this.PooDropTimer = this.rand.nextInt(550) + 150;
-            else this.PooDropTimer = this.rand.nextInt(1334) + 200;
+            if (this.isChild())this.PooDropTimer = this.rand.nextInt(550) + 400;
+            else this.PooDropTimer = this.rand.nextInt(1334) + 800;
         }
     }
-    
+
     public SheepEntity createChild(AgeableEntity ageable)
     {
         return new PooSheepEntity(StupidModEntities.POO_SHEEP, this.world);

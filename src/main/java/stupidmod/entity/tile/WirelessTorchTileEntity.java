@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import stupidmod.StupidModEntities;
-import stupidmod.Utility;
 import stupidmod.block.WirelessTorchBlock;
 
 import java.util.ArrayList;
@@ -50,18 +49,6 @@ public class WirelessTorchTileEntity extends TileEntity {
     
         this.setTorchList(compound.getList("Torches", Constants.NBT.TAG_COMPOUND));
     }
-    
-    /*
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
-        if (oldState.getBlock() instanceof BlockWirelessTorch && newState.getBlock() instanceof BlockWirelessTorch)
-            return false;        //Keep tile entity during state change
-        
-        return true;
-    }
-    */
-    
-    
     
     public ListNBT getTorchList()
     {
@@ -134,10 +121,18 @@ public class WirelessTorchTileEntity extends TileEntity {
         if (linkedPositions == null)return;
         
         for (BlockPos pos : linkedPositions) {
-            WirelessTorchTileEntity td = Utility.setIndividualState(world, pos, state);
+            WirelessTorchTileEntity td = setIndividualState(world, pos, state);
             td.locked = state && !this.positionIsPowered(world, pos);
         }
-        
     }
-    
+
+    static private WirelessTorchTileEntity setIndividualState(World world, BlockPos pos, boolean state) {
+        WirelessTorchTileEntity td = (WirelessTorchTileEntity)world.getTileEntity(pos);
+        td.changingState = true;
+
+        world.setBlockState(pos, world.getBlockState(pos).with(WirelessTorchBlock.LIT, state));
+
+        td.changingState = false;
+        return td;
+    }
 }
