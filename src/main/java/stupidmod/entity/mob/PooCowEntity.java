@@ -40,4 +40,6 @@ public class PooCowEntity extends CowEntity {
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
+
+
 }

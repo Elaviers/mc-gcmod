@@ -58,5 +58,10 @@
     "entity.stupidmod.poo": "Poo Lump",
     "entity.stupidmod.poo_cow": "Cow",
     "entity.stupidmod.poo_pig": "Pig",
-    "entity.stupidmod.poo_sheep": "Sheep"
+    "entity.stupidmod.poo_sheep": "Sheep",
+
+    "enchantment.stupidmod.constipation": "Constipation",
+    "enchantment.stupidmod.diarrhoea": "Diarrhoea",
+    "enchantment.stupidmod.laxatives": "Laxatives",
+    "enchantment.stupidmod.pooer": "Pooer"
 }

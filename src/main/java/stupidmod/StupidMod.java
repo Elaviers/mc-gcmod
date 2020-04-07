@@ -44,7 +44,7 @@ public class StupidMod {
                         1,
                         0,
                         0,
-                        48
+                        100
                 )
         );
 
@@ -56,10 +56,10 @@ public class StupidMod {
                         5),
                 Placement.COUNT_RANGE,
                 new CountRangeConfig(
-                        5,
+                        3,
                         0,
                         0,
-                        20
+                        16
                 )
         );
 
@@ -100,7 +100,7 @@ public class StupidMod {
     public static final ItemGroup GROUP = new ItemGroup("stupidmod") {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(StupidModBlocks.POO);
+            return new ItemStack(StupidModItems.POO);
         }
     };
     
