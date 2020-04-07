@@ -95,14 +95,14 @@ public class RecipeExplosive extends SpecialRecipe {
         if (TNTCount > 0 && (powder > 0 || string > 0 || (finalType == ExplosiveBlock.Type.CONSTRUCTIVE && blockStateMod != null) || (finalType == ExplosiveBlock.Type.AIRSTRIKE && (string > 0 || arrow > 0 || coal > 0)) || TNTCount > 1))
         {
             if (finalType != ExplosiveBlock.Type.AIRSTRIKE) {
-                strength += strength_AS + powder * 2;
+                strength += strength_AS + powder;
             }
             else
             {
                 pieces += strength;
                 strength = (short)(strength_AS + powder);
             }
-            
+
             fuse += string * 20;
             spread += arrow;
             height += coal * 5;
@@ -138,7 +138,7 @@ public class RecipeExplosive extends SpecialRecipe {
     }
     
     @Override
-    public boolean canFit(int width, int height) { return width * height >= 2; }
+    public boolean canFit(int width, int height) { return width * height > 1; }
     
     @Override
     public IRecipeSerializer<?> getSerializer() { return StupidModRecipes.EXPLOSIVE; }

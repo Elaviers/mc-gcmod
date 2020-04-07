@@ -11,10 +11,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -43,6 +45,10 @@ public class ExplosiveBlockItem extends BlockItem {
     
         switch(((ExplosiveBlock)((ExplosiveBlockItem)stack.getItem()).getBlock()).type)
         {
+            case BLAST:
+                tag.putShort("Strength", (short)1);
+                break;
+
             case CONSTRUCTIVE:
                 tag.put("Block", NBTUtil.writeBlockState(Blocks.STONE.getDefaultState()));
                 break;
@@ -55,11 +61,6 @@ public class ExplosiveBlockItem extends BlockItem {
         }
     
         stack.setTag(tag);
-    }
-
-    @Override
-    public void onCreated(ItemStack stack, World worldIn, PlayerEntity playerIn) {
-        super.onCreated(stack, worldIn, playerIn);
     }
 
     @Override
@@ -169,6 +170,26 @@ public class ExplosiveBlockItem extends BlockItem {
                     itemstack.shrink(1);
 
                 return ActionResultType.SUCCESS;
+            }
+        }
+    }
+
+    @Override
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+        if (group == StupidMod.GROUP) {
+            switch (((ExplosiveBlock) this.getBlock()).type) {
+                case BLAST:
+                    items.add(makeStackBlast((short) 0, (short) 4));
+                    break;
+                case CONSTRUCTIVE:
+                    items.add(makeStackConstructive((short) 20, (short) 4, Blocks.STONE.getDefaultState()));
+                    break;
+                case DIG:
+                    items.add(makeStackDig((short) 0, (short) 4));
+                    break;
+                case AIRSTRIKE:
+                    items.add(makeStackAirstrike((short) 0, (short) 4, (short) 2, (short) 8, (short) 30));
+                    break;
             }
         }
     }

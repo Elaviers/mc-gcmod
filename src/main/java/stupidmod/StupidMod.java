@@ -43,7 +43,7 @@ public class StupidMod {
                         1,
                         0,
                         0,
-                        48)
+                        100)
         ));
 
         ConfiguredFeature noahSulphurFeature = Feature.ORE.withConfiguration(
@@ -53,10 +53,10 @@ public class StupidMod {
                         5)
         ).withPlacement(Placement.COUNT_RANGE.configure(
                 new CountRangeConfig(
-                        5,
+                        3,
                         0,
                         0,
-                        20)
+                        16)
         ));
 
         BiomeDictionary.getBiomes(BiomeDictionary.Type.OVERWORLD).forEach(biome ->
@@ -97,7 +97,7 @@ public class StupidMod {
     public static final ItemGroup GROUP = new ItemGroup("stupidmod") {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(StupidModBlocks.POO);
+            return new ItemStack(StupidModItems.POO);
         }
     };
     
