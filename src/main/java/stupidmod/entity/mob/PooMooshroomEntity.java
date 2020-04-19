@@ -3,6 +3,7 @@ package stupidmod.entity.mob;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -10,10 +11,10 @@ import stupidmod.StupidModEntities;
 import stupidmod.StupidModSounds;
 import stupidmod.entity.PooEntity;
 
-public class PooCowEntity extends CowEntity {
+public class PooMooshroomEntity extends MooshroomEntity {
     int PooDropTimer;
 
-    public PooCowEntity(EntityType<? extends PooCowEntity> type, World world) {
+    public PooMooshroomEntity(EntityType<? extends PooMooshroomEntity> type, World world) {
         super(type, world);
         PooDropTimer = this.rand.nextInt(1600) + 160;
     }
@@ -31,9 +32,10 @@ public class PooCowEntity extends CowEntity {
         }
     }
 
-    public CowEntity createChild(AgeableEntity ageable)
+    @Override
+    public MooshroomEntity createChild(AgeableEntity ageable)
     {
-        return new PooCowEntity(StupidModEntities.POO_COW, this.world);
+        return new PooMooshroomEntity(StupidModEntities.POO_MOOSHROOM, this.world);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package stupidmod;
 
-import net.minecraft.client.renderer.entity.CowRenderer;
-import net.minecraft.client.renderer.entity.PigRenderer;
-import net.minecraft.client.renderer.entity.SheepRenderer;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntityType;
@@ -16,9 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
 import stupidmod.client.render.*;
 import stupidmod.entity.*;
-import stupidmod.entity.mob.PooCowEntity;
-import stupidmod.entity.mob.PooPigEntity;
-import stupidmod.entity.mob.PooSheepEntity;
+import stupidmod.entity.mob.*;
 import stupidmod.entity.tile.CentrifugeTileEntity;
 import stupidmod.entity.tile.ExplosiveTileEntity;
 import stupidmod.entity.tile.WirelessTorchTileEntity;
@@ -36,6 +32,8 @@ public class StupidModEntities {
             nameAirstrikeExplosive = "airstrike_explosive",
             nameImpactExplosive = "impact_explosive",
             namePooCow = "poo_cow",
+            namePooHorse = "poo_horse",
+            namePooMooshroom = "poo_mooshroom",
             namePooPig = "poo_pig",
             namePooSheep = "poo_sheep",
             nameCentrifuge = "centrifuge",
@@ -68,6 +66,12 @@ public class StupidModEntities {
     
     @ObjectHolder(namePooCow)
     public static EntityType<PooCowEntity> POO_COW;
+
+    @ObjectHolder(namePooHorse)
+    public static EntityType<PooHorseEntity> POO_HORSE;
+
+    @ObjectHolder(namePooMooshroom)
+    public static EntityType<PooMooshroomEntity> POO_MOOSHROOM;
     
     @ObjectHolder(namePooPig)
     public static EntityType<PooPigEntity> POO_PIG;
@@ -84,8 +88,7 @@ public class StupidModEntities {
     @ObjectHolder(nameWirelessTorch)
     public static TileEntityType<WirelessTorchTileEntity> TE_WIRELESS_TORCH;
 
-    public static void createEntities()
-    {
+    public static void createEntities() {
         POO = EntityType.Builder.<PooEntity>create(PooEntity::new, EntityClassification.MISC)
                 .size(0.8f, 0.25f)
                 .setTrackingRange(64)
@@ -145,22 +148,41 @@ public class StupidModEntities {
 
         POO_COW = EntityType.Builder.<PooCowEntity>create(PooCowEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.COW.getSize().width, EntityType.COW.getSize().height)
-                .setTrackingRange(80)
-                .setUpdateInterval(3)
+                .setTrackingRange(EntityType.COW.getTrackingRange())
+                .setUpdateInterval(EntityType.COW.getUpdateFrequency())
+                .setShouldReceiveVelocityUpdates(EntityType.COW.shouldSendVelocityUpdates())
                 .build(namePooCow);
         POO_COW.setRegistryName(namePooCow);
 
+        POO_HORSE = EntityType.Builder.<PooHorseEntity>create(PooHorseEntity::new, EntityClassification.CREATURE)
+                .size(EntityType.COW.getSize().width, EntityType.HORSE.getSize().height)
+                .setTrackingRange(EntityType.HORSE.getTrackingRange())
+                .setUpdateInterval(EntityType.HORSE.getUpdateFrequency())
+                .setShouldReceiveVelocityUpdates(EntityType.HORSE.shouldSendVelocityUpdates())
+                .build(namePooHorse);
+        POO_HORSE.setRegistryName(namePooHorse);
+
+        POO_MOOSHROOM = EntityType.Builder.<PooMooshroomEntity>create(PooMooshroomEntity::new, EntityClassification.CREATURE)
+                .size(EntityType.MOOSHROOM.getSize().width, EntityType.MOOSHROOM.getSize().height)
+                .setTrackingRange(EntityType.MOOSHROOM.getTrackingRange())
+                .setUpdateInterval(EntityType.MOOSHROOM.getUpdateFrequency())
+                .setShouldReceiveVelocityUpdates(EntityType.MOOSHROOM.shouldSendVelocityUpdates())
+                .build(namePooMooshroom);
+        POO_MOOSHROOM.setRegistryName(namePooMooshroom);
+
         POO_PIG = EntityType.Builder.<PooPigEntity>create(PooPigEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.PIG.getSize().width, EntityType.PIG.getSize().height)
-                .setTrackingRange(80)
-                .setUpdateInterval(3)
+                .setTrackingRange(EntityType.PIG.getTrackingRange())
+                .setUpdateInterval(EntityType.PIG.getUpdateFrequency())
+                .setShouldReceiveVelocityUpdates(EntityType.PIG.shouldSendVelocityUpdates())
                 .build(namePooPig);
         POO_PIG.setRegistryName(namePooPig);
 
         POO_SHEEP = EntityType.Builder.<PooSheepEntity>create(PooSheepEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.SHEEP.getSize().width, EntityType.SHEEP.getSize().height)
-                .setTrackingRange(80)
-                .setUpdateInterval(3)
+                .setTrackingRange(EntityType.SHEEP.getTrackingRange())
+                .setUpdateInterval(EntityType.SHEEP.getUpdateFrequency())
+                .setShouldReceiveVelocityUpdates(EntityType.SHEEP.shouldSendVelocityUpdates())
                 .build(namePooSheep);
         POO_SHEEP.setRegistryName(namePooSheep);
     }
@@ -172,7 +194,7 @@ public class StupidModEntities {
         static void registerEntities(RegistryEvent.Register<EntityType<?>> register)
         {
             register.getRegistry().registerAll(
-                    POO, POO_BRICK, POO_EXPLOSIVE, EXPLOSIVE, CONSTRUCTIVE_EXPLOSIVE, DIG_EXPLOSIVE, AIR_STRIKE_EXPLOSIVE, IMPACT_EXPLOSIVE, POO_COW, POO_PIG, POO_SHEEP
+                    POO, POO_BRICK, POO_EXPLOSIVE, EXPLOSIVE, CONSTRUCTIVE_EXPLOSIVE, DIG_EXPLOSIVE, AIR_STRIKE_EXPLOSIVE, IMPACT_EXPLOSIVE, POO_COW, POO_HORSE, POO_MOOSHROOM, POO_PIG, POO_SHEEP
             );
         }
         
@@ -200,6 +222,8 @@ public class StupidModEntities {
         RenderingRegistry.registerEntityRenderingHandler(AirStrikeExplosiveEntity.class, manager -> new ExplosiveEntityRenderer(manager, StupidModBlocks.AIR_STRIKE_TNT.getDefaultState()));
         RenderingRegistry.registerEntityRenderingHandler(ImpactExplosiveEntity.class, manager -> new ImpactExplosiveEntityRenderer(manager, StupidModBlocks.BLAST_TNT.getDefaultState(), .5f));
         RenderingRegistry.registerEntityRenderingHandler(PooCowEntity.class,                CowRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(PooHorseEntity.class,              HorseRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(PooMooshroomEntity.class,          MooshroomRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PooPigEntity.class,                PigRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PooSheepEntity.class,              SheepRenderer::new);
     

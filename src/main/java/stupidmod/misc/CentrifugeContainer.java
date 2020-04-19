@@ -16,24 +16,24 @@ import stupidmod.item.PooItem;
 public class CentrifugeContainer extends Container {
     class CoolSlot extends Slot {
         private int limit;
-        
+
         public CoolSlot(IInventory inventoryIn, int index, int xPosition, int yPosition, int limit) {
             super(inventoryIn, index, xPosition, yPosition);
-            
+
             this.limit = limit;
         }
-    
+
         @Override
         public int getSlotStackLimit() {
             return limit;
         }
-    
+
         @Override
         public boolean isItemValid(ItemStack stack) {
             return stack.getItem() == StupidModItems.FERMENTED_POO;
         }
     }
-    
+
     public CentrifugeTileEntity ent;
     boolean isLocked = false;
 
@@ -43,7 +43,7 @@ public class CentrifugeContainer extends Container {
     {
         this(id, playerInventory, new Inventory(12), (CentrifugeTileEntity) playerInventory.player.world.getTileEntity(data.readBlockPos()));
     }
-    
+
     public CentrifugeContainer(int id, PlayerInventory playerInventory, IInventory inv, CentrifugeTileEntity tileentity) {
         super(StupidModContainers.CENTRIFUGE, id);
         assertInventorySize(inv, 12);
@@ -70,7 +70,7 @@ public class CentrifugeContainer extends Container {
         this.addSlot(new CoolSlot(inv,5,26,34, 0));
         this.addSlot(new CoolSlot(inv,6,8,52, 0));
         this.addSlot(new CoolSlot(inv,7,26,52, 0));
-        
+
         this.addSlot(new CoolSlot(inv,8,134,34, 0));
         this.addSlot(new CoolSlot(inv,9,152,34, 0));
         this.addSlot(new CoolSlot(inv,10,134,52, 0));
@@ -82,44 +82,45 @@ public class CentrifugeContainer extends Container {
                 this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
             }
         }
-        
+
         // Player Inventory, Slot 0-8, Slot IDs 39-47
         for (int x = 0; x < 9; ++x) {
             this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 142));
         }
     }
-    
+
     @Override
     public ItemStack transferStackInSlot(PlayerEntity player, int fromSlot) {
+        ItemStack result = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(fromSlot);
-        
+
         if (slot != null && slot.getHasStack()) {
             ItemStack current = slot.getStack();
-            
-            if (current != ItemStack.EMPTY) {
-                if (fromSlot < 12) {
-                    if (!this.mergeItemStack(current, 39, 47, false))
-                        if (!this.mergeItemStack(current, 12, 38, false))
-                            return ItemStack.EMPTY;
-                } else if (!isLocked) {
-                    if (!this.mergeItemStack(current, 0, 4, false))
-                        return ItemStack.EMPTY;
-                }
-                else
+            result = current.copy();
+
+            if (fromSlot < 12) {
+                if (!this.mergeItemStack(current, 12, 48, true))
                     return ItemStack.EMPTY;
-    
-                if (current.getCount() == 0)
-                    slot.putStack(ItemStack.EMPTY);
-                else
-                    slot.onSlotChanged();
-                
-                slot.onTake(player, current);
+            } else if (!isLocked) {
+                boolean merged = false;
+                for (int i = 0; i < 4 && !current.isEmpty() ; ++i) {
+                    if (this.mergeItemStack(current, 0, 4, false))
+                        merged = true;
+                }
+
+                if (!merged) return ItemStack.EMPTY;
             }
+            else return ItemStack.EMPTY; //locked
+
+            if (current.isEmpty())
+                slot.putStack(ItemStack.EMPTY);
+            else
+                slot.onSlotChanged();
         }
-        
-        return ItemStack.EMPTY;
+
+        return result;
     }
-    
+
     @Override
     public boolean canInteractWith(PlayerEntity player) {
         return this.inventory.isUsableByPlayer(player);

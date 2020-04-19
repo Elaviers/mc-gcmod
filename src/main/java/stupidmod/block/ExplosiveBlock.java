@@ -43,7 +43,7 @@ public class ExplosiveBlock extends Block {
     public static final IntegerProperty TIER = IntegerProperty.create("tier", 1, 3);
     
     public ExplosiveBlock(String name, Type type) {
-        super(Properties.create(Material.TNT).sound(SoundType.WOOD));
+        super(Properties.create(Material.TNT).sound(SoundType.WOOD).hardnessAndResistance(0.2f, 0.f));
         
         this.setRegistryName(name);
         this.type = type;
