@@ -36,7 +36,7 @@ public class CentrifugeBlock extends Block {
     private static VoxelShape SHAPE = VoxelShapes.or(VoxelShapes.or(VoxelShapes.or(BASE, BASE_2), ROD), TOP);
 
     public CentrifugeBlock(String name) {
-        super(Properties.create(Material.MISCELLANEOUS).sound(SoundType.METAL));
+        super(Properties.create(Material.MISCELLANEOUS).sound(SoundType.METAL).notSolid());
         
         this.setRegistryName(name);
     }
@@ -44,26 +44,6 @@ public class CentrifugeBlock extends Block {
     @Override
     public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
         return SHAPE;
-    }
-
-    @Override
-    public boolean causesSuffocation(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
-        return false;
-    }
-
-    @Override
-    public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
-        return false;
-    }
-
-    @Override
-    public boolean isNormalCube(BlockState p_220081_1_, IBlockReader p_220081_2_, BlockPos p_220081_3_) {
-        return false;
-    }
-
-    @Override
-    public int getOpacity(BlockState p_200011_1_, IBlockReader p_200011_2_, BlockPos p_200011_3_) {
-        return 0;
     }
 
     @Override

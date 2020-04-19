@@ -72,6 +72,10 @@ public class StupidMod {
 
                     if (entry.entityType == EntityType.COW)
                         spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_COW, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
+                    else if (entry.entityType == EntityType.HORSE)
+                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_HORSE, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
+                    else if (entry.entityType == EntityType.MOOSHROOM)
+                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_MOOSHROOM, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
                     else if (entry.entityType == EntityType.PIG)
                         spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_PIG, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
                     else if (entry.entityType == EntityType.SHEEP)

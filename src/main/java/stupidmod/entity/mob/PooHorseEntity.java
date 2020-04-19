@@ -3,6 +3,7 @@ package stupidmod.entity.mob;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.horse.HorseEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -10,30 +11,31 @@ import stupidmod.StupidModEntities;
 import stupidmod.StupidModSounds;
 import stupidmod.entity.PooEntity;
 
-public class PooCowEntity extends CowEntity {
+public class PooHorseEntity extends HorseEntity {
     int PooDropTimer;
 
-    public PooCowEntity(EntityType<? extends PooCowEntity> type, World world) {
+    public PooHorseEntity(EntityType<? extends PooHorseEntity> type, World world) {
         super(type, world);
-        PooDropTimer = this.rand.nextInt(1600) + 160;
+        PooDropTimer = this.rand.nextInt(600) + 160;
     }
-    
+
     @Override
     public void tick() {
         super.tick();
-        
+
         if(!this.world.isRemote && --PooDropTimer <= 0) {
-            this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.8F + 0.1F);
-            
+            this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.F + 0.1F);
+
             this.world.addEntity(new PooEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ()));
             if (this.isChild())this.PooDropTimer = this.rand.nextInt(1000) + 300;
-            else this.PooDropTimer = this.rand.nextInt(1200) + 600;
+            else this.PooDropTimer = this.rand.nextInt(600) + 600;
         }
     }
-    
-    public CowEntity createChild(AgeableEntity ageable)
+
+    @Override
+    public PooHorseEntity createChild(AgeableEntity ageable)
     {
-        return new PooCowEntity(StupidModEntities.POO_COW, this.world);
+        return new PooHorseEntity(StupidModEntities.POO_HORSE, this.world);
     }
 
     @Override

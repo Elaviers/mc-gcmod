@@ -22,7 +22,7 @@ public class CentrifugeContainer extends Container {
             
             this.limit = limit;
         }
-    
+
         @Override
         public int getSlotStackLimit() {
             return limit;
@@ -91,33 +91,34 @@ public class CentrifugeContainer extends Container {
     
     @Override
     public ItemStack transferStackInSlot(PlayerEntity player, int fromSlot) {
+        ItemStack result = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(fromSlot);
         
         if (slot != null && slot.getHasStack()) {
             ItemStack current = slot.getStack();
-            
-            if (current != ItemStack.EMPTY) {
-                if (fromSlot < 12) {
-                    if (!this.mergeItemStack(current, 39, 47, false))
-                        if (!this.mergeItemStack(current, 12, 38, false))
-                            return ItemStack.EMPTY;
-                } else if (!isLocked) {
-                    if (!this.mergeItemStack(current, 0, 4, false))
-                        return ItemStack.EMPTY;
-                }
-                else
+            result = current.copy();
+
+            if (fromSlot < 12) {
+                if (!this.mergeItemStack(current, 12, 48, true))
                     return ItemStack.EMPTY;
-    
-                if (current.getCount() == 0)
-                    slot.putStack(ItemStack.EMPTY);
-                else
-                    slot.onSlotChanged();
-                
-                slot.onTake(player, current);
+            } else if (!isLocked) {
+                boolean merged = false;
+                for (int i = 0; i < 4 && !current.isEmpty() ; ++i) {
+                    if (this.mergeItemStack(current, 0, 4, false))
+                        merged = true;
+                }
+
+                if (!merged) return ItemStack.EMPTY;
             }
+            else return ItemStack.EMPTY; //locked
+
+            if (current.isEmpty())
+                slot.putStack(ItemStack.EMPTY);
+            else
+                slot.onSlotChanged();
         }
         
-        return ItemStack.EMPTY;
+        return result;
     }
     
     @Override
