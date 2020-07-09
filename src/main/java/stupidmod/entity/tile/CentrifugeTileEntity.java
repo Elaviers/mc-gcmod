@@ -1,5 +1,6 @@
 package stupidmod.entity.tile;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -183,9 +184,10 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ITic
         return false;
     }
 
+    //read
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound) {
+        super.func_230337_a_(state, compound);
 
         if (!this.checkLootAndRead(compound)) {
             ItemStackHelper.loadAllItems(compound, this.inventory);

@@ -36,13 +36,6 @@ public class WirelessTorchBlock extends Block {
         this.setRegistryName(name);
     }
 
-    @Override
-    public boolean isTransparent(BlockState p_220074_1_) {
-        return true;
-    }
-
-
-
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
         return SHAPE;
     }
@@ -55,11 +48,6 @@ public class WirelessTorchBlock extends Block {
 
     public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
         return hasEnoughSolidSide(world, pos.down(), Direction.UP);
-    }
-
-    @Override
-    public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
     }
 
     private boolean shouldBeOn(World worldIn, BlockPos pos, BlockState state) {
@@ -90,15 +78,9 @@ public class WirelessTorchBlock extends Block {
 
     ///
 
-
     @Override
-    public int getLightValue(BlockState state) {
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         return (boolean)state.get(LIT) ? 14 : 0;
-    }
-
-    @Override
-    public int tickRate(IWorldReader world) {
-        return 2;
     }
 
     @Override

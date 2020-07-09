@@ -149,7 +149,7 @@ public class StupidModEntities {
 
         POO_COW = EntityType.Builder.<PooCowEntity>create(PooCowEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.COW.getSize().width, EntityType.COW.getSize().height)
-                .setTrackingRange(EntityType.COW.getTrackingRange())
+                .setTrackingRange(EntityType.COW.func_233602_m_())          //getTrackingRange
                 .setUpdateInterval(EntityType.COW.getUpdateFrequency())
                 .setShouldReceiveVelocityUpdates(EntityType.COW.shouldSendVelocityUpdates())
                 .build(namePooCow);
@@ -157,7 +157,7 @@ public class StupidModEntities {
 
         POO_HORSE = EntityType.Builder.<PooHorseEntity>create(PooHorseEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.COW.getSize().width, EntityType.HORSE.getSize().height)
-                .setTrackingRange(EntityType.HORSE.getTrackingRange())
+                .setTrackingRange(EntityType.HORSE.func_233602_m_())        //getTrackingRange
                 .setUpdateInterval(EntityType.HORSE.getUpdateFrequency())
                 .setShouldReceiveVelocityUpdates(EntityType.HORSE.shouldSendVelocityUpdates())
                 .build(namePooHorse);
@@ -165,7 +165,7 @@ public class StupidModEntities {
 
         POO_MOOSHROOM = EntityType.Builder.<PooMooshroomEntity>create(PooMooshroomEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.MOOSHROOM.getSize().width, EntityType.MOOSHROOM.getSize().height)
-                .setTrackingRange(EntityType.MOOSHROOM.getTrackingRange())
+                .setTrackingRange(EntityType.MOOSHROOM.func_233602_m_())    //getTrackingRange
                 .setUpdateInterval(EntityType.MOOSHROOM.getUpdateFrequency())
                 .setShouldReceiveVelocityUpdates(EntityType.MOOSHROOM.shouldSendVelocityUpdates())
                 .build(namePooMooshroom);
@@ -173,7 +173,7 @@ public class StupidModEntities {
 
         POO_PIG = EntityType.Builder.<PooPigEntity>create(PooPigEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.PIG.getSize().width, EntityType.PIG.getSize().height)
-                .setTrackingRange(EntityType.PIG.getTrackingRange())
+                .setTrackingRange(EntityType.PIG.func_233602_m_())          //getTrackingRange
                 .setUpdateInterval(EntityType.PIG.getUpdateFrequency())
                 .setShouldReceiveVelocityUpdates(EntityType.PIG.shouldSendVelocityUpdates())
                 .build(namePooPig);
@@ -181,7 +181,7 @@ public class StupidModEntities {
 
         POO_SHEEP = EntityType.Builder.<PooSheepEntity>create(PooSheepEntity::new, EntityClassification.CREATURE)
                 .size(EntityType.SHEEP.getSize().width, EntityType.SHEEP.getSize().height)
-                .setTrackingRange(EntityType.SHEEP.getTrackingRange())
+                .setTrackingRange(EntityType.SHEEP.func_233602_m_())        //getTrackingRange
                 .setUpdateInterval(EntityType.SHEEP.getUpdateFrequency())
                 .setShouldReceiveVelocityUpdates(EntityType.SHEEP.shouldSendVelocityUpdates())
                 .build(namePooSheep);

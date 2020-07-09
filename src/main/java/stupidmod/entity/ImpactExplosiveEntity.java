@@ -65,7 +65,7 @@ public class ImpactExplosiveEntity extends Entity {
 
         this.setMotion(this.getMotion().scale(0.98d));
 
-        if (this.collided)
+        if (this.collidedHorizontally || this.collidedVertically)
         {
             this.remove();
             if(!this.world.isRemote)

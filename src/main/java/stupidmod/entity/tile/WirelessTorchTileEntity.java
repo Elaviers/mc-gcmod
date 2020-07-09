@@ -1,5 +1,6 @@
 package stupidmod.entity.tile;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -38,15 +39,16 @@ public class WirelessTorchTileEntity extends TileEntity {
         
         return compound;
     }
-    
+
+    //read
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound) {
+        super.func_230337_a_(state, compound);
 
         side = Direction.byIndex(compound.getInt("Side"));
 
         if (!compound.contains("Torches")) return;
-    
+
         this.setTorchList(compound.getList("Torches", Constants.NBT.TAG_COMPOUND));
     }
     

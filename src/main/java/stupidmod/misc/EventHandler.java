@@ -58,7 +58,7 @@ public class EventHandler {
 
         public void onTick(long time)
         {
-            if (player.isShiftKeyDown()) {
+            if (player.isSneaking()) {
                 if (!isSneaking) {
                     isSneaking = true;
 

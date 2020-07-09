@@ -65,9 +65,6 @@ public class ExplosiveEntity extends Entity {
     }
     
     public void tick() {
-        this.prevPosX = this.getPosX();
-        this.prevPosY = this.getPosY();
-        this.prevPosZ = this.getPosZ();
         if (!this.hasNoGravity()) {
             this.setMotion(this.getMotion().add(0d, -0.04d, 0d));
         }
@@ -79,7 +76,6 @@ public class ExplosiveEntity extends Entity {
         }
     
         --this.fuse;
-    
         if (this.fuse <= 0 && !this.completedFuse)
         {
             this.onFuseCompleted();
@@ -87,7 +83,6 @@ public class ExplosiveEntity extends Entity {
         }
         else
         {
-            this.handleWaterMovement();
             this.world.addParticle(ParticleTypes.SMOKE, this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), 0.0D, 0.0D, 0.0D);
         }
     }

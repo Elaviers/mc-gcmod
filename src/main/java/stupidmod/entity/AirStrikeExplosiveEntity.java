@@ -47,7 +47,7 @@ public class AirStrikeExplosiveEntity extends ExplosiveEntity {
             this.move(MoverType.SELF, this.getMotion());
             this.setMotion(this.getMotion().mul(0.98d, 0d, 0.98d));
     
-            if((this.collided || this.getPosY() - this.initialY >= height) && !this.world.isRemote) {
+            if((this.collidedVertically || this.getPosY() - this.initialY >= height) && !this.world.isRemote) {
                 this.remove();
                 this.airStrike();
             }
