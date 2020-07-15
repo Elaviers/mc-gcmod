@@ -1,5 +1,7 @@
 modLoader="javafml"
 loaderVersion="[32,)"
+logoFile="icon.png"
+
 [[mods]]
     modId="stupidmod"
     version="${version}"

@@ -1,31 +1,23 @@
 package stupidmod.entity.tile;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableLootTileEntity;
-import net.minecraft.tileentity.LockableTileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import stupidmod.StupidMod;
 import stupidmod.StupidModEntities;
 import stupidmod.StupidModItems;
-import stupidmod.item.PooItem;
 import stupidmod.misc.CentrifugeContainer;
-
-import javax.annotation.Nullable;
 
 public class CentrifugeTileEntity extends LockableLootTileEntity implements ITickableTileEntity {
     @CapabilityInject(IItemHandler.class)
@@ -207,10 +199,9 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ITic
 
     @Override
     public void onLoad() {
-        StupidMod.proxy.clUpdateCentrifugeSound(this);
-
         super.onLoad();
+
+        if (world.isRemote)
+            StupidMod.proxy.clUpdateCentrifugeSound(this);
     }
-
-
 }

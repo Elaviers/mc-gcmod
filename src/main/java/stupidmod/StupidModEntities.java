@@ -1,9 +1,13 @@
 package stupidmod;
 
 import net.minecraft.client.renderer.entity.*;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.passive.SheepEntity;
+import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -205,7 +209,6 @@ public class StupidModEntities {
                     TileEntityType.Builder.create(WirelessTorchTileEntity::new, StupidModBlocks.WIRELESS_TORCH, StupidModBlocks.WIRELESS_TORCH_WALL).build(null).setRegistryName(nameWirelessTorch)
             );
         }
-
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -225,6 +228,12 @@ public class StupidModEntities {
         RenderingRegistry.registerEntityRenderingHandler(POO_SHEEP, SheepRenderer::new);
 
         ClientRegistry.bindTileEntityRenderer(TE_CENTRIFUGE, CentrifugeTileEntityRenderer::new);
+
+        GlobalEntityTypeAttributes.put(POO_COW, CowEntity.func_234188_eI_().func_233813_a_());
+        GlobalEntityTypeAttributes.put(POO_HORSE, AbstractHorseEntity.func_234237_fg_().func_233813_a_());
+        GlobalEntityTypeAttributes.put(POO_MOOSHROOM, CowEntity.func_234188_eI_().func_233813_a_());
+        GlobalEntityTypeAttributes.put(POO_PIG, PigEntity.func_234215_eI_().func_233813_a_());
+        GlobalEntityTypeAttributes.put(POO_SHEEP, SheepEntity.func_234225_eI_().func_233813_a_());
     }
 
 }
