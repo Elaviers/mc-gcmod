@@ -199,6 +199,12 @@ public class StupidModEntities {
             register.getRegistry().registerAll(
                     POO, POO_BRICK, POO_EXPLOSIVE, EXPLOSIVE, CONSTRUCTIVE_EXPLOSIVE, DIG_EXPLOSIVE, AIR_STRIKE_EXPLOSIVE, IMPACT_EXPLOSIVE, POO_COW, POO_HORSE, POO_MOOSHROOM, POO_PIG, POO_SHEEP
             );
+
+            GlobalEntityTypeAttributes.put(POO_COW, CowEntity.func_234188_eI_().func_233813_a_());
+            GlobalEntityTypeAttributes.put(POO_HORSE, AbstractHorseEntity.func_234237_fg_().func_233813_a_());
+            GlobalEntityTypeAttributes.put(POO_MOOSHROOM, CowEntity.func_234188_eI_().func_233813_a_());
+            GlobalEntityTypeAttributes.put(POO_PIG, PigEntity.func_234215_eI_().func_233813_a_());
+            GlobalEntityTypeAttributes.put(POO_SHEEP, SheepEntity.func_234225_eI_().func_233813_a_());
         }
 
         @SubscribeEvent
@@ -228,12 +234,6 @@ public class StupidModEntities {
         RenderingRegistry.registerEntityRenderingHandler(POO_SHEEP, SheepRenderer::new);
 
         ClientRegistry.bindTileEntityRenderer(TE_CENTRIFUGE, CentrifugeTileEntityRenderer::new);
-
-        GlobalEntityTypeAttributes.put(POO_COW, CowEntity.func_234188_eI_().func_233813_a_());
-        GlobalEntityTypeAttributes.put(POO_HORSE, AbstractHorseEntity.func_234237_fg_().func_233813_a_());
-        GlobalEntityTypeAttributes.put(POO_MOOSHROOM, CowEntity.func_234188_eI_().func_233813_a_());
-        GlobalEntityTypeAttributes.put(POO_PIG, PigEntity.func_234215_eI_().func_233813_a_());
-        GlobalEntityTypeAttributes.put(POO_SHEEP, SheepEntity.func_234225_eI_().func_233813_a_());
     }
 
 }
