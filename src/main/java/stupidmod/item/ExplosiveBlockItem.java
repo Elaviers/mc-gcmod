@@ -21,6 +21,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import stupidmod.StupidModBlocks;
 import stupidmod.StupidMod;
@@ -83,7 +84,7 @@ public class ExplosiveBlockItem extends BlockItem {
         switch(((ExplosiveBlock)((ExplosiveBlockItem)stack.getItem()).getBlock()).type)
         {
             case CONSTRUCTIVE:
-                tooltip.add(new StringTextComponent(NBTUtil.readBlockState(tag.getCompound("Block")).getBlock().getNameTextComponent().getString()));
+                tooltip.add(new TranslationTextComponent(NBTUtil.readBlockState(tag.getCompound("Block")).getBlock().getTranslationKey()));
                 break;
         
             case AIRSTRIKE:

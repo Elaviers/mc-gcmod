@@ -71,7 +71,7 @@ public class PooCannonItem extends Item {
 
         int constipationLvl = EnchantmentHelper.getEnchantmentLevel(StupidModEnchantments.CONSTIPATION, stack);
 
-        int count = 1;
+        int maxCount = 1;
         float spread = 0;
         float zDiff = 0;
         switch (constipationLvl)
@@ -79,22 +79,22 @@ public class PooCannonItem extends Item {
             case 0:
                 break;
             case 1:
-                count = 2;
+                maxCount = 2;
                 spread = 2.f;
                 zDiff = 0.2f;
                 break;
             case 2:
-                count = 4;
+                maxCount = 4;
                 spread = 8.f;
                 zDiff = 0.33f;
                 break;
             case 3:
-                count = 8;
+                maxCount = 8;
                 spread = 15.f;
                 zDiff = 0.5f;
                 break;
             default:
-                count = (int)Math.pow(2, constipationLvl);
+                maxCount = (int)Math.pow(2, constipationLvl);
                 spread = 20.f;
                 zDiff = 0.8f;
         }
@@ -105,9 +105,22 @@ public class PooCannonItem extends Item {
         }
 
         if (!world.isRemote) {
-            if(!player.isCreative()) {
+            int count;
+            if (player.isCreative() || EnchantmentHelper.getEnchantmentLevel(StupidModEnchantments.LAXATIVES, stack) > 0)
+                count = maxCount;
+            else
+            {
                 stack.damageItem(1, player, livingEntity -> livingEntity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+
+                for (count = 0; count < maxCount; ++count) {
+                    ammoStack = this.findAmmo(player);
+                    if (!ammoStack.isEmpty())
+                        ammoStack.setCount(ammoStack.getCount() - 1);
+                    else break;
+                }
             }
+
+            if (count == 0) return;
 
             float speed = 2.f;
             if (EnchantmentHelper.getEnchantmentLevel(StupidModEnchantments.DIARRHOEA, stack) <= 0)
@@ -116,16 +129,6 @@ public class PooCannonItem extends Item {
             }
 
             for (int i = 0; i < count; ++i) {
-                if (!player.isCreative())
-                {
-                    if (EnchantmentHelper.getEnchantmentLevel(StupidModEnchantments.LAXATIVES, stack) <= 0) {
-                        ammoStack.setCount(ammoStack.getCount() - 1);
-
-                        ammoStack = this.findAmmo(player);
-                        if (ammoStack.isEmpty()) return;
-                    }
-                }
-
                 PooExplosiveEntity poo = new PooExplosiveEntity(world, 0, 0, 0, 4 + EnchantmentHelper.getEnchantmentLevel(StupidModEnchantments.POOER, stack));
                 poo.setLocationAndAngles(player.getPosX(), player.getPosY() + player.getEyeHeight(), player.getPosZ(), player.rotationYaw, player.rotationPitch);
 
