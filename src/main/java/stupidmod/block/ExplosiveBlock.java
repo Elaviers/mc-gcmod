@@ -84,9 +84,7 @@ public class ExplosiveBlock extends Block {
             if (!world.isRemote) {
                 explode(world, pos, state);
                 if (item == Items.FLINT_AND_STEEL) {
-                    itemstack.damageItem(1, player, (playerEntity) -> {
-                        playerEntity.sendBreakAnimation(hand);
-                    });
+                    itemstack.damageItem(1, player, playerEntity -> playerEntity.sendBreakAnimation(hand));
                 } else {
                     itemstack.shrink(1);
                 }
@@ -102,7 +100,6 @@ public class ExplosiveBlock extends Block {
     public void onProjectileCollision(World worldIn, BlockState state, BlockRayTraceResult hit, Entity projectile) {
         if (!worldIn.isRemote && projectile instanceof AbstractArrowEntity) {
             AbstractArrowEntity abstractarrowentity = (AbstractArrowEntity)projectile;
-            Entity entity = abstractarrowentity.getShooter();
             if (abstractarrowentity.isBurning()) {
                 BlockPos blockpos = hit.getPos();
                 explode(worldIn, blockpos, state);

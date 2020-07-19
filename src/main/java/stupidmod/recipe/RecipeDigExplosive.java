@@ -18,7 +18,7 @@ public class RecipeDigExplosive extends ShapelessRecipe {
     ItemStack outputStack = ItemStack.EMPTY;
     
     public RecipeDigExplosive(ResourceLocation location) {
-        super(location, "misc", new ItemStack(StupidModBlocks.DIG_TNT_ITEM), NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(StupidModBlocks.BLAST_TNT_ITEM), Ingredient.fromItems(Items.DIAMOND_PICKAXE)));
+        super(location, StupidModRecipes.DIG_EXPLOSIVE.getRegistryName().toString(), new ItemStack(StupidModBlocks.DIG_TNT_ITEM), NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(StupidModBlocks.BLAST_TNT_ITEM), Ingredient.fromItems(Items.DIAMOND_PICKAXE)));
     }
     
     @Override
@@ -44,16 +44,6 @@ public class RecipeDigExplosive extends ShapelessRecipe {
     @Override
     public ItemStack getCraftingResult(CraftingInventory inv) {
         return this.outputStack.copy();
-    }
-    
-    @Override
-    public ItemStack getRecipeOutput() {
-        return this.outputStack;
-    }
-    
-    @Override
-    public boolean isDynamic() {
-        return true;
     }
 
     @Override

@@ -11,7 +11,6 @@ import net.minecraft.network.PacketBuffer;
 import stupidmod.StupidModContainers;
 import stupidmod.StupidModItems;
 import stupidmod.entity.tile.CentrifugeTileEntity;
-import stupidmod.item.PooItem;
 
 public class CentrifugeContainer extends Container {
     class CoolSlot extends Slot {

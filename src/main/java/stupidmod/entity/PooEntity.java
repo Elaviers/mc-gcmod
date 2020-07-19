@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -80,7 +81,7 @@ public class PooEntity extends Entity implements IEntityAdditionalSpawnData {
                             player.getHeldItemMainhand().getItem() == Items.DIAMOND_SHOVEL;
             
             if (Condition) {
-                if (!this.world.isRemote) player.getHeldItemMainhand().damageItem(1, player, null);
+                if (!this.world.isRemote) player.getHeldItemMainhand().damageItem(1, player, playerEntity -> playerEntity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
                 this.doDrop = true;
                 this.shrinkRate = size / 3;
             }

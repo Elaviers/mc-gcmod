@@ -2,14 +2,12 @@ package stupidmod;
 
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.world.gen.layer.EdgeLayer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
-import stupidmod.recipe.RecipeAirStrikeExplosive;
-import stupidmod.recipe.RecipeConstructiveExplosive;
-import stupidmod.recipe.RecipeDigExplosive;
-import stupidmod.recipe.RecipeExplosive;
+import stupidmod.recipe.*;
 
 @ObjectHolder(StupidMod.id)
 public class StupidModRecipes {
@@ -18,7 +16,8 @@ public class StupidModRecipes {
             nameAirStrikeExplosiveRecipe = "crafting_airstrike_tnt",
             nameConstructiveExplosiveRecipe = "crafting_constructive_tnt",
             nameDigExplosiveRecipe = "crafting_dig_tnt",
-            nameExplosiveRecipe = "crafting_explosive";
+            nameExplosiveRecipe = "crafting_explosive",
+            nameFertiliserRecipe = "crafting_fertiliser";
 
     @ObjectHolder(nameAirStrikeExplosiveRecipe)
     public static SpecialRecipeSerializer<RecipeAirStrikeExplosive> AIR_STRIKE_EXPLOSIVE;
@@ -32,6 +31,9 @@ public class StupidModRecipes {
     @ObjectHolder(nameExplosiveRecipe)
     public static SpecialRecipeSerializer<RecipeExplosive> EXPLOSIVE;
 
+    @ObjectHolder(nameFertiliserRecipe)
+    public static SpecialRecipeSerializer<RecipeFertiliser> FERTILISER;
+
     @Mod.EventBusSubscriber(modid = StupidMod.id, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Registration
     {
@@ -42,7 +44,8 @@ public class StupidModRecipes {
                     new SpecialRecipeSerializer<RecipeAirStrikeExplosive>(RecipeAirStrikeExplosive::new).setRegistryName(nameAirStrikeExplosiveRecipe),
                     new SpecialRecipeSerializer<RecipeConstructiveExplosive>(RecipeConstructiveExplosive::new).setRegistryName(nameConstructiveExplosiveRecipe),
                     new SpecialRecipeSerializer<RecipeDigExplosive>(RecipeDigExplosive::new).setRegistryName(nameDigExplosiveRecipe),
-                    new SpecialRecipeSerializer<RecipeExplosive>(RecipeExplosive::new).setRegistryName(nameExplosiveRecipe)
+                    new SpecialRecipeSerializer<RecipeExplosive>(RecipeExplosive::new).setRegistryName(nameExplosiveRecipe),
+                    new SpecialRecipeSerializer<RecipeFertiliser>(RecipeFertiliser::new).setRegistryName(nameFertiliserRecipe)
             );
         }
     }
