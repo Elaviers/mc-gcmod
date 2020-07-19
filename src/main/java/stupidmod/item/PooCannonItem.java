@@ -110,7 +110,7 @@ public class PooCannonItem extends Item {
                 count = maxCount;
             else
             {
-                stack.damageItem(1, player, livingEntity -> livingEntity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+                stack.damageItem(1, player, playerEntity -> playerEntity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
 
                 for (count = 0; count < maxCount; ++count) {
                     ammoStack = this.findAmmo(player);

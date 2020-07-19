@@ -14,6 +14,7 @@ public class StupidModItems {
     private static final String
             namePoo = "poo",
             nameFermentedPoo = "fermented_poo",
+            nameFertiliser = "fertiliser",
             nameSulphur = "sulphur",
             nameNoahSulphur = "noah_sulphur",
             nameMemeEssence = "meme_essence",
@@ -42,11 +43,14 @@ public class StupidModItems {
             namePooSheepSpawnEgg = "poo_sheep_spawn_egg";
     
     @ObjectHolder(namePoo)
-    public static PooItem POO;
+    public static BasicItem POO;
     
     @ObjectHolder(nameFermentedPoo)
-    public static PooItem FERMENTED_POO;
-    
+    public static BasicItem FERMENTED_POO;
+
+    @ObjectHolder(nameFertiliser)
+    public static FertiliserItem FERTILISER;
+
     @ObjectHolder(nameSulphur)
     public static BasicItem SULPHUR;
     
@@ -134,8 +138,9 @@ public class StupidModItems {
             StupidModEntities.createEntities();
 
             register.getRegistry().registerAll(
-                    new PooItem(namePoo),
-                    new PooItem(nameFermentedPoo),
+                    new BasicItem(namePoo),
+                    new BasicItem(nameFermentedPoo),
+                    new FertiliserItem(nameFertiliser),
                     new BasicItem(nameSulphur),
                     new BasicItem(nameNoahSulphur),
                     new BasicItem(nameMemeEssence),

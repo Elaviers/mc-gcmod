@@ -85,9 +85,7 @@ public class ExplosiveBlock extends Block {
             if (!world.isRemote) {
                 explode(world, pos, state);
                 if (item == Items.FLINT_AND_STEEL) {
-                    itemstack.damageItem(1, player, (playerEntity) -> {
-                        playerEntity.sendBreakAnimation(hand);
-                    });
+                    itemstack.damageItem(1, player, playerEntity -> playerEntity.sendBreakAnimation(hand));
                 } else {
                     itemstack.shrink(1);
                 }
