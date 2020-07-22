@@ -27,8 +27,7 @@ public class PooHorseEntity extends HorseEntity {
             this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.F + 0.1F);
 
             this.world.addEntity(new PooEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ()));
-            if (this.isChild())this.PooDropTimer = this.rand.nextInt(1000) + 300;
-            else this.PooDropTimer = this.rand.nextInt(600) + 600;
+            this.PooDropTimer = this.rand.nextInt(600) + 600;
         }
     }
 

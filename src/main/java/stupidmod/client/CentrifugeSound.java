@@ -34,10 +34,10 @@ public class CentrifugeSound extends TickableSound {
             StupidMod.proxy.clRemoveCentrifugeSound(new BlockPos((int)(this.x - 0.5f), (int)(this.y - 0.5f), (int)(this.z - 0.5f)));
             return;
         }
-        
-        if (entity.isSpinning() && volume < 1)
+
+        if (entity.getRotationRateTarget() != 0 && volume < 1)
             volume += .02f;
-        else if (!entity.isSpinning() && volume > 0)
+        else if (entity.getRotationRateTarget() == 0 && volume > 0)
             volume -= .02f;
         
         this.pitch = volume;

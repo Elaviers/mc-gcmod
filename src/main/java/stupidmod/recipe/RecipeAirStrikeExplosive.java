@@ -52,15 +52,6 @@ public class RecipeAirStrikeExplosive extends ShapedRecipe {
     public ItemStack getCraftingResult(CraftingInventory inv) {
         return this.outputStack.copy();
     }
-    
-    @Override
-    public ItemStack getRecipeOutput()
-    {
-        return this.outputStack;
-    }
-    
-    @Override
-    public boolean isDynamic() { return true; }
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
