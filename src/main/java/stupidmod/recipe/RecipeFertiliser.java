@@ -18,7 +18,7 @@ public class RecipeFertiliser extends ShapelessRecipe {
     static
     {
         defaultStack = new ItemStack(StupidModItems.FERTILISER);
-        defaultStack.setDamage(FertiliserItem.MAX_DAMAGE - 16);
+        defaultStack.setDamage(FertiliserItem.MAX_DAMAGE - 8);
     }
 
     ItemStack outputStack = defaultStack;
@@ -48,6 +48,8 @@ public class RecipeFertiliser extends ShapelessRecipe {
             {
                 if (prevDamage > 0) return false;
                 prevDamage = stack.getDamage();
+
+                if (prevDamage == 0) return false;
             }
             else if (stack.getItem() == StupidModItems.POO)
             {
@@ -55,7 +57,7 @@ public class RecipeFertiliser extends ShapelessRecipe {
             }
             else if (stack.getItem() == StupidModItems.FERMENTED_POO)
             {
-                extra += 16;
+                extra += 8;
             }
             else if (!stack.isEmpty())
             {

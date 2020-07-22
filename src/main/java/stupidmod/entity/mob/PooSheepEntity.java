@@ -31,8 +31,7 @@ public class PooSheepEntity extends SheepEntity {
             this.playSound(StupidModSounds.FART, 1.0f, (this.rand.nextFloat() - this.rand.nextFloat()) * 1.8F + 0.1F);
             
             this.world.addEntity(new PooEntity(this.world, this.getPosX(), this.getPosY(), this.getPosZ()));
-            if (this.isChild())this.PooDropTimer = this.rand.nextInt(550) + 400;
-            else this.PooDropTimer = this.rand.nextInt(1334) + 800;
+            this.PooDropTimer = this.rand.nextInt(1334) + 800;
         }
     }
     

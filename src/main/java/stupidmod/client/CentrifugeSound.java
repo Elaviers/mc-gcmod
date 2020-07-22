@@ -35,9 +35,9 @@ public class CentrifugeSound extends TickableSound {
             return;
         }
         
-        if (entity.isSpinning() && volume < 1)
+        if (entity.getRotationRateTarget() != 0 && volume < 1)
             volume += .02f;
-        else if (!entity.isSpinning() && volume > 0)
+        else if (entity.getRotationRateTarget() == 0 && volume > 0)
             volume -= .02f;
         
         this.pitch = volume;

@@ -12,14 +12,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class CentrifugeModel extends Model
 {
-    ModelRenderer Base,Base2,Rod,Arm1,Arm2,Arm3,Arm4,Drum1,Drum2,Drum3,Drum4,Drum5,Drum6,Drum7,Drum8,Drum9,Drum10,Drum11,Drum12,Drum13,Drum14,Drum15,Drum16;
+    ModelRenderer Base,Base2,Rod,Arm1,Arm2,Arm3,Arm4,Drum1,Drum2,Drum3,Drum4,Drum5,Drum6,Drum7,Drum8,Drum9,Drum10,Drum11,Drum12;
     
     public CentrifugeModel()
     {
         super(RenderType::getEntitySolid);
         textureWidth = 64;
         textureHeight = 32;
-        int DrumLength = 4;
         
         Base = new ModelRenderer(this, 0, 18);
         Base.addBox(2,0,2, 12, 2, 12);

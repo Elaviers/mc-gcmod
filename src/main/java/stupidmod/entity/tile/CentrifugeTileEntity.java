@@ -2,28 +2,95 @@ package stupidmod.entity.tile;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableLootTileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import stupidmod.StupidMod;
 import stupidmod.StupidModEntities;
 import stupidmod.StupidModItems;
 import stupidmod.misc.CentrifugeContainer;
 
-public class CentrifugeTileEntity extends LockableLootTileEntity implements ITickableTileEntity {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class CentrifugeTileEntity extends LockableLootTileEntity implements ISidedInventory, ITickableTileEntity {
     @CapabilityInject(IItemHandler.class)
-    static Capability<IItemHandler> CAP_ITEM_HANDLER;
+    static Capability<IItemHandler> CAP_ITEM_HANDLER = null;
 
     private NonNullList<ItemStack> inventory;
+
+    private final IItemHandler itemHandler= new IItemHandler() {
+        @Override
+        public int getSlots() {
+            return 6;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return inventory.get(slot);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            if (slot < 4 && !isSpinning() && stack.getItem() == StupidModItems.FERMENTED_POO && inventory.get(slot).isEmpty())
+            {
+                ItemStack remaining = stack.copy();
+                remaining.setCount(remaining.getCount() - 1);
+
+                if (!simulate)
+                    inventory.set(slot, new ItemStack(StupidModItems.FERMENTED_POO));
+
+                return remaining;
+            }
+
+            return stack;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (slot < 4) return ItemStack.EMPTY;
+
+            ItemStack stack = inventory.get(slot);
+            ItemStack split = stack.copy();
+            if (split.getCount() > amount)
+                split.setCount(amount);
+
+            if (!simulate)
+            {
+                if (amount < stack.getCount())
+                    stack.setCount(stack.getCount() - amount);
+                else
+                    inventory.set(slot, ItemStack.EMPTY);
+            }
+
+            return split;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return slot < 4 ? 1 : 0;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            return slot < 4 && stack.getItem() == StupidModItems.FERMENTED_POO;
+        }
+    };
     
     public float prevAngle;
     public float angle;
@@ -39,6 +106,16 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ITic
         this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
         this.rateTarget = -1000;
+        this.timer = timerMax;
+    }
+
+    @Nullable
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+        if (cap == CAP_ITEM_HANDLER)
+            return LazyOptional.of(() -> itemHandler).cast();
+
+        return super.getCapability(cap, side);
     }
 
     @Override
@@ -53,7 +130,7 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ITic
 
     @Override
     public int getSizeInventory() {
-        return 12;
+        return 6;
     }
 
     @Override
@@ -132,28 +209,45 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ITic
     private void applyProcess() {
         for (int i = 0;i < 4;i++) {
             ItemStack stack = this.getStackInSlot(i);
-            if (stack != null && stack.getItem() == StupidModItems.FERMENTED_POO) {
-                int pos1 = -1,pos2 = -1;
-                for (int pos = 0;pos < 4;pos++) {
-                    if (this.getStackInSlot(pos+4).isEmpty() && pos1 < 0)
-                        pos1 = pos+4;
-                    if (this.getStackInSlot(pos+8).isEmpty() && pos2 < 0)
-                        pos2 = pos+8;
+            if (stack.getItem() == StupidModItems.FERMENTED_POO) {
+                ItemStack powderStack = this.getStackInSlot(4);
+                ItemStack proteinStack = this.getStackInSlot(5);
 
-                    if (pos1 > 0 && pos2 > 0) {
-                        this.setInventorySlotContents(i, ItemStack.EMPTY);
-                        this.setInventorySlotContents(pos1, new ItemStack(StupidModItems.POO_POWDER));
-                        this.setInventorySlotContents(pos2, new ItemStack(StupidModItems.POO_PROTEIN));
-                        break;
-                    }
+                if (powderStack.isEmpty())
+                    powderStack = new ItemStack(StupidModItems.POO_POWDER);
+                else
+                {
+                    if (powderStack.getCount() >= powderStack.getMaxStackSize())
+                        return;
+
+                    powderStack.setCount(powderStack.getCount() + 1);
                 }
+
+                if (proteinStack.isEmpty())
+                    proteinStack = new ItemStack(StupidModItems.POO_PROTEIN);
+                else
+                {
+                    if (proteinStack.getCount() >= proteinStack.getMaxStackSize())
+                        return;
+
+                    proteinStack.setCount(proteinStack.getCount() + 1);
+                }
+
+                this.setInventorySlotContents(i, ItemStack.EMPTY);
+                this.setInventorySlotContents(4, powderStack);
+                this.setInventorySlotContents(5, proteinStack);
             }
         }
     }
 
     public boolean isSpinning()
     {
-        return this.rateTarget != 0;
+        return this.rotationRate > 0.01f;
+    }
+
+    public float getRotationRateTarget()
+    {
+        return this.rateTarget;
     }
 
     public int getRemainingTicks() { return this.timer; }
@@ -203,5 +297,26 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ITic
 
         if (world.isRemote)
             StupidMod.proxy.clUpdateCentrifugeSound(this);
+    }
+
+
+
+    //The sidedInventory stuff only gets called when the capability fails, don't let it do anything
+
+    private static final int[] empty = {};
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        return empty;
+    }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, @Nullable Direction direction) {
+        return false;
+    }
+
+    @Override
+    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
+        return false;
     }
 }
