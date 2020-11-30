@@ -270,25 +270,24 @@ public class CentrifugeTileEntity extends LockableLootTileEntity implements ISid
         return false;
     }
 
-    //read
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT compound) {
-        super.func_230337_a_(state, compound);
+    public void read(BlockState state, CompoundNBT nbt) {
+        super.read(state, nbt);
 
-        if (!this.checkLootAndRead(compound)) {
-            ItemStackHelper.loadAllItems(compound, this.inventory);
+        if (!this.checkLootAndRead(nbt)) {
+            ItemStackHelper.loadAllItems(nbt, this.inventory);
         }
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+    public CompoundNBT write(CompoundNBT nbt) {
+        super.write(nbt);
 
-        if (!this.checkLootAndWrite(compound)) {
-            ItemStackHelper.saveAllItems(compound, this.inventory);
+        if (!this.checkLootAndWrite(nbt)) {
+            ItemStackHelper.saveAllItems(nbt, this.inventory);
         }
 
-        return compound;
+        return nbt;
     }
 
     @Override

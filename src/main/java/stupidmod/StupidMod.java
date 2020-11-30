@@ -5,11 +5,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.*;
-import net.minecraft.world.gen.placement.CountRangeConfig;
-import net.minecraft.world.gen.placement.Placement;
-import net.minecraftforge.common.BiomeDictionary;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.world.MobSpawnInfoBuilder;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -24,73 +28,66 @@ public class StupidMod {
     public static final String id = "stupidmod";
 
     public static Proxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> Proxy::new);
-    
+
+    private ConfiguredFeature sulphurFeature;
+    private ConfiguredFeature noahSulphurFeature;
+
     public StupidMod()
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, this::biomeSetup);
     }
-    
-    private void setup(FMLCommonSetupEvent event)
+
+    private void setup(FMLCommonSetupEvent setup)
     {
-        ConfiguredFeature sulphurFeature = Feature.ORE.withConfiguration(
+        //func_242731_b = Features per Chunk!
+
+        sulphurFeature = Feature.ORE.withConfiguration(
                 new OreFeatureConfig(
-                        OreFeatureConfig.FillerBlockType.NATURAL_STONE,
+                        OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD,
                         StupidModBlocks.SULPHUR_ORE.getDefaultState(),
                         32)
-        ).withPlacement(Placement.COUNT_RANGE.configure(
-                new CountRangeConfig(
-                        1,
-                        0,
-                        0,
-                        100)
-        ));
+        ).range(100).func_242731_b(1);
 
-        ConfiguredFeature noahSulphurFeature = Feature.ORE.withConfiguration(
+        noahSulphurFeature = Feature.ORE.withConfiguration(
                 new OreFeatureConfig(
-                        OreFeatureConfig.FillerBlockType.NATURAL_STONE,
+                        OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD,
                         StupidModBlocks.NOAH_SULPHUR_ORE.getDefaultState(),
                         5)
-        ).withPlacement(Placement.COUNT_RANGE.configure(
-                new CountRangeConfig(
-                        3,
-                        0,
-                        0,
-                        16)
-        ));
-
-        BiomeDictionary.getBiomes(BiomeDictionary.Type.OVERWORLD).forEach(biome ->
-            {
-                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, sulphurFeature);
-                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, noahSulphurFeature);
-
-                List<Biome.SpawnListEntry> spawns = biome.getSpawns(EntityClassification.CREATURE);
-
-                for (int i = 0; i < spawns.size();)
-                {
-                    Biome.SpawnListEntry entry = spawns.get(i);
-
-                    if (entry.entityType == EntityType.COW)
-                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_COW, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
-                    else if (entry.entityType == EntityType.HORSE)
-                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_HORSE, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
-                    else if (entry.entityType == EntityType.MOOSHROOM)
-                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_MOOSHROOM, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
-                    else if (entry.entityType == EntityType.PIG)
-                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_PIG, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
-                    else if (entry.entityType == EntityType.SHEEP)
-                        spawns.add(new Biome.SpawnListEntry(StupidModEntities.POO_SHEEP, entry.itemWeight, entry.minGroupCount, entry.maxGroupCount));
-                    else {
-                        i++;
-                        continue;
-                    }
-
-                    spawns.remove(i);
-                }
-            }
-        );
+        ).range(16).func_242731_b(3);
     }
-    
+
+    private void biomeSetup(BiomeLoadingEvent event)
+    {
+        //Overworld..
+        if (event.getCategory() != Biome.Category.THEEND && event.getCategory() != Biome.Category.NETHER && event.getCategory() != Biome.Category.NONE)
+        {
+            event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_ORES, sulphurFeature).withFeature(GenerationStage.Decoration.UNDERGROUND_ORES, noahSulphurFeature);
+
+            MobSpawnInfoBuilder spawns =  event.getSpawns();
+            List<MobSpawnInfo.Spawners> spawners = spawns.getSpawner(EntityClassification.CREATURE);
+            for (int i = 0; i < spawners.size();)
+            {
+                MobSpawnInfo.Spawners spawner = spawners.get(i);
+
+                if (spawner.type == EntityType.COW) spawners.add(new MobSpawnInfo.Spawners(StupidModEntities.POO_COW, spawner.itemWeight, spawner.minCount, spawner.maxCount));
+                else if (spawner.type == EntityType.HORSE) spawners.add(new MobSpawnInfo.Spawners(StupidModEntities.POO_HORSE, spawner.itemWeight, spawner.minCount, spawner.maxCount));
+                else if (spawner.type == EntityType.MOOSHROOM) spawners.add(new MobSpawnInfo.Spawners(StupidModEntities.POO_MOOSHROOM, spawner.itemWeight, spawner.minCount, spawner.maxCount));
+                else if (spawner.type == EntityType.PIG) spawners.add(new MobSpawnInfo.Spawners(StupidModEntities.POO_PIG, spawner.itemWeight, spawner.minCount, spawner.maxCount));
+                else if (spawner.type == EntityType.SHEEP) spawners.add(new MobSpawnInfo.Spawners(StupidModEntities.POO_SHEEP, spawner.itemWeight, spawner.minCount, spawner.maxCount));
+                else
+                {
+                    i++;
+                    continue;
+                }
+
+                spawners.remove(i);
+            }
+        }
+    }
+
     private void clientSetup(FMLClientSetupEvent event)
     {
         StupidModBlocks.registerRenderLayers();

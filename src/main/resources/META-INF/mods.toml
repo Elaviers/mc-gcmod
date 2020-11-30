@@ -1,6 +1,7 @@
 modLoader="javafml"
-loaderVersion="[32,)"
+loaderVersion="[35,)"
 logoFile="icon.png"
+license="MIT License"
 
 [[mods]]
     modId="stupidmod"
@@ -12,13 +13,13 @@ logoFile="icon.png"
 [[dependencies.stupidmod]]
     modId="forge"
     mandatory=true
-    versionRange="[32,)"
+    versionRange="[35,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.stupidmod]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.1]"
+    versionRange="[1.16.4]"
     ordering="NONE"
     side="BOTH"

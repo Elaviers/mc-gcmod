@@ -3,9 +3,11 @@ package stupidmod.entity.mob;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.horse.HorseEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 import stupidmod.StupidModEntities;
 import stupidmod.StupidModSounds;
@@ -31,10 +33,10 @@ public class PooHorseEntity extends HorseEntity {
         }
     }
 
+    //createChild
     @Override
-    public PooHorseEntity createChild(AgeableEntity ageable)
-    {
-        return new PooHorseEntity(StupidModEntities.POO_HORSE, this.world);
+    public PooHorseEntity func_241840_a(ServerWorld world, AgeableEntity entity) {
+        return StupidModEntities.POO_HORSE.create(world);
     }
 
     @Override

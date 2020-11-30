@@ -34,11 +34,10 @@ public class ExplosiveTileEntity extends TileEntity {
         this.fuse = 0;
     }
 
-    //read
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT compound) {
-        super.func_230337_a_(state, compound);
-        this.readExplosiveData(compound);
+    public void read(BlockState state, CompoundNBT nbt) {
+        super.read(state, nbt);
+        this.readExplosiveData(nbt);
     }
 
     public void readExplosiveData(CompoundNBT compound)

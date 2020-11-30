@@ -2,9 +2,11 @@ package stupidmod.entity.mob;
 
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 import stupidmod.StupidModEntities;
 import stupidmod.StupidModSounds;
@@ -34,10 +36,11 @@ public class PooSheepEntity extends SheepEntity {
             this.PooDropTimer = this.rand.nextInt(1334) + 800;
         }
     }
-    
-    public SheepEntity createChild(AgeableEntity ageable)
-    {
-        return new PooSheepEntity(StupidModEntities.POO_SHEEP, this.world);
+
+    //createChild
+    @Override
+    public PooSheepEntity func_241840_a(ServerWorld world, AgeableEntity entity) {
+        return StupidModEntities.POO_SHEEP.create(world);
     }
 
     @Override

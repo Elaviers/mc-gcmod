@@ -1,7 +1,6 @@
 package stupidmod.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -29,28 +28,26 @@ public class CentrifugeScreen extends ContainerScreen<CentrifugeContainer> imple
         this.xSize = 176;
         this.ySize = 166;
 
-        //this.passEvents = false;
-        this.field_230711_n_ = false;
+        this.passEvents = false;
     }
 
     @Override
-    public void func_230430_a_(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
-        this.func_230446_a_(matrices);
-        super.func_230430_a_(matrices, mouseX, mouseY, partialTicks);
-        this.func_230459_a_(matrices, mouseX, mouseY);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void func_230450_a_(MatrixStack matrices, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.color4f(1.f, 1.f, 1.f, 1.f);
 
-        //this.minecraft...
-        this.field_230706_i_.getTextureManager().bindTexture(new ResourceLocation("stupidmod:textures/gui/centrifuge.png"));
-        int i = (this.field_230708_k_ - this.xSize) / 2;  //this.width
-        int j = (this.field_230709_l_ - this.ySize) / 2; //this.height
-        this.func_238474_b_(matrices, i, j, 0, 0, this.xSize, this.ySize); //this.blit
+        this.minecraft.getTextureManager().bindTexture(new ResourceLocation("stupidmod:textures/gui/centrifuge.png"));
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+        this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
 
         if (this.tileent != null)
-            this.func_238474_b_(matrices,i + 79,j + 33,176,0,18, (CentrifugeTileEntity.timerMax - this.tileent.getRemainingTicks()) * 19 / CentrifugeTileEntity.timerMax);  //BLIT
+            this.blit(matrixStack,i + 79,j + 33,176,0,18, (CentrifugeTileEntity.timerMax - this.tileent.getRemainingTicks()) * 19 / CentrifugeTileEntity.timerMax);
     }
 }

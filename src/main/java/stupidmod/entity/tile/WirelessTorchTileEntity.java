@@ -28,30 +28,29 @@ public class WirelessTorchTileEntity extends TileEntity {
     }
     
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
-         super.write(compound);
+    public CompoundNBT write(CompoundNBT nbt) {
+         super.write(nbt);
 
-        compound.putInt("Side", side.getIndex());
+        nbt.putInt("Side", side.getIndex());
 
-        if (this.linkedPositions == null) return compound;
+        if (this.linkedPositions == null) return nbt;
+
+        nbt.put("Torches", this.getTorchList());
         
-        compound.put("Torches", this.getTorchList());
-        
-        return compound;
+        return nbt;
     }
 
-    //read
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT compound) {
-        super.func_230337_a_(state, compound);
+    public void read(BlockState state, CompoundNBT nbt) {
+        super.read(state, nbt);
 
-        side = Direction.byIndex(compound.getInt("Side"));
+        side = Direction.byIndex(nbt.getInt("Side"));
 
-        if (!compound.contains("Torches")) return;
+        if (!nbt.contains("Torches")) return;
 
-        this.setTorchList(compound.getList("Torches", Constants.NBT.TAG_COMPOUND));
+        this.setTorchList(nbt.getList("Torches", Constants.NBT.TAG_COMPOUND));
     }
-    
+
     public ListNBT getTorchList()
     {
         ListNBT list = new ListNBT();

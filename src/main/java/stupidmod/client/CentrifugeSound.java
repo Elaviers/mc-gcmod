@@ -30,7 +30,7 @@ public class CentrifugeSound extends TickableSound {
     @Override
     public void tick() {
         if (entity == null || entity.isRemoved()) {
-            this.func_239509_o_(); //Stops sound from playing
+            this.finishPlaying();
             StupidMod.proxy.clRemoveCentrifugeSound(new BlockPos((int)(this.x - 0.5f), (int)(this.y - 0.5f), (int)(this.z - 0.5f)));
             return;
         }
