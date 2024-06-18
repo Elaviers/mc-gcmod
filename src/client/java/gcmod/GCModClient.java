@@ -12,9 +12,9 @@ import net.minecraft.util.Identifier;
 
 public class GCModClient implements ClientModInitializer
 {
-    public static final EntityModelLayer POO_LAYER = new EntityModelLayer( new Identifier( "gcmod", "poo" ), "main" );
-    public static final EntityModelLayer POO_BRICK_LAYER = new EntityModelLayer( new Identifier( "gcmod", "poo_brick" ), "main" );
-    public static final EntityModelLayer CENTRIFUGE_LAYER = new EntityModelLayer( new Identifier( "gcmod", "centrifuge" ), "main" );
+    public static final EntityModelLayer POO_LAYER = new EntityModelLayer( Identifier.of( "gcmod", "poo" ), "main" );
+    public static final EntityModelLayer POO_BRICK_LAYER = new EntityModelLayer( Identifier.of( "gcmod", "poo_brick" ), "main" );
+    public static final EntityModelLayer CENTRIFUGE_LAYER = new EntityModelLayer( Identifier.of( "gcmod", "centrifuge" ), "main" );
 
     @Override
     public void onInitializeClient()

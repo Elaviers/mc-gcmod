@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "gcmod:block/wireless_torch_on"
+    },
+    "lit=false": {
+      "model": "gcmod:block/wireless_torch_off"
+    }
+  }
+}

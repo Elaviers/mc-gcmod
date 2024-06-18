@@ -1,0 +1,8 @@
+{
+  "comparator_output": 10,
+  "description": {
+    "translate": "item.gcmod.music_disc_smelly_methane.desc"
+  },
+  "length_in_seconds": 36.0,
+  "sound_event": "gcmod:music_disc.smelly_methane"
+}

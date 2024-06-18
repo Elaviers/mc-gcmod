@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "gcmod:fermented_poo_block"
+    }
+  ],
+  "result": {
+    "id": "gcmod:fermented_poo",
+    "count": 9
+  }
+}

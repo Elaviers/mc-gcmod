@@ -14,7 +14,7 @@ public class CentrifugeEntityRenderer implements BlockEntityRenderer<CentrifugeE
 {
     private final ModelPart bone;
     private final ModelPart bb_main;
-    private final static Identifier TEXTURE = new Identifier( "gcmod", "textures/entity/centrifuge.png" );
+    private final static Identifier TEXTURE = Identifier.of( "gcmod", "textures/entity/centrifuge.png" );
 
     CentrifugeEntityRenderer( BlockEntityRendererFactory.Context ctx)
     {

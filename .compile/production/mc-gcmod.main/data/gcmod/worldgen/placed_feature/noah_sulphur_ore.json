@@ -1,0 +1,64 @@
+{
+  "feature": {
+    "type": "minecraft:ore",
+    "config": {
+      "size": 4,
+      "discard_chance_on_air_exposure": 0,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "minecraft:stone_ore_replaceables"
+          },
+          "state": {
+            "Name": "gcmod:noah_sulphur_ore"
+          }
+        },
+        {
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "minecraft:deepslate_ore_replaceables"
+          },
+          "state": {
+            "Name": "gcmod:noah_sulphur_ore"
+          }
+        }
+      ]
+    }
+  },
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 3
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:weighted_list",
+        "distribution": [
+          {
+            "weight": 9,
+            "data": {
+              "type": "minecraft:uniform",
+              "min_inclusive": {
+                "above_bottom": 4
+              },
+              "max_inclusive": {
+                "above_bottom": 14
+              }
+            }
+          },
+          {
+            "weight": 1,
+            "data": {
+              "absolute": 69
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

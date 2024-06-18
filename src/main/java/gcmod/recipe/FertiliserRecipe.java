@@ -8,6 +8,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
@@ -29,16 +30,16 @@ public class FertiliserRecipe extends SpecialCraftingRecipe
     }
 
     @Override
-    public boolean matches( RecipeInputInventory inv, World world )
+    public boolean matches( CraftingRecipeInput inv, World world )
     {
         outputStack = defaultStack.copy();
 
         int prevDamage = 0;
         float pooValue = 0;
 
-        for ( int i = 0; i < inv.size(); ++i )
+        for ( int i = 0; i < inv.getSize(); ++i )
         {
-            ItemStack stack = inv.getStack( i );
+            ItemStack stack = inv.getStackInSlot( i );
 
             if ( stack.getItem() == Items.BUCKET )
             {
@@ -85,7 +86,7 @@ public class FertiliserRecipe extends SpecialCraftingRecipe
     }
 
     @Override
-    public ItemStack craft( RecipeInputInventory inventory, RegistryWrapper.WrapperLookup lookup )
+    public ItemStack craft( CraftingRecipeInput inventory, RegistryWrapper.WrapperLookup lookup )
     {
         return this.outputStack.copy();
     }

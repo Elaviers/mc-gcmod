@@ -24,7 +24,7 @@ public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity>
         return TexturedModelData.of(modelData, 64, 32);
     }
 
-    public static final Identifier TEXTURE = new Identifier( "gcmod", "textures/item/poo_brick.png" );
+    public static final Identifier TEXTURE = Identifier.of( "gcmod", "textures/item/poo_brick.png" );
     public ModelPart model;
 
     protected PooBrickEntityRenderer( EntityRendererFactory.Context ctx )
@@ -50,7 +50,7 @@ public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity>
         matrices.multiply( RotationAxis.POSITIVE_Y.rotationDegrees( pooBrick.prevAngleY + tickDelta * (pooBrick.angleY - pooBrick.prevAngleY )));
         matrices.multiply( RotationAxis.POSITIVE_Z.rotationDegrees( pooBrick.prevAngleZ + tickDelta * (pooBrick.angleZ - pooBrick.prevAngleZ )));
 
-        model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1 );
+        model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV );
 
         matrices.pop();
 

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "tier=1": {
+      "model": "gcmod:block/tnt_1_4"
+    },
+    "tier=2": {
+      "model": "gcmod:block/tnt_2_4"
+    },
+    "tier=3": {
+      "model": "gcmod:block/tnt_3_4"
+    }
+  }
+}

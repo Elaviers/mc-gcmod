@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_poo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "gcmod:poo"
+          }
+        ]
+      }
+    },
+    "has_fermented_poo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "gcmod:fermented_poo"
+          }
+        ]
+      }
+    },
+    "has_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:bucket"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "gcmod:fertiliser_simple"
+      }
+    },
+    "has_the_other_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "gcmod:fertiliser_simple_fermented"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_poo",
+      "has_fermented_poo",
+      "has_the_recipe",
+      "has_the_other_recipe"
+    ],
+    [
+      "has_bucket",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "gcmod:fertiliser_simple",
+      "gcmod:fertiliser_simple_fermented"
+    ]
+  }
+}

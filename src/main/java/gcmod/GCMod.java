@@ -14,21 +14,19 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.block.jukebox.JukeboxSong;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.*;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SpecialRecipeSerializer;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
@@ -55,26 +53,27 @@ public class GCMod implements ModInitializer
     public static final GameRules.Key<GameRules.IntRule> RULE_TURD_RATE =
             GameRuleRegistry.register( "turdRate", GameRules.Category.MOBS, GameRuleFactory.createIntRule( 1 ) );
 
-    public static final Identifier MEME_BOCK_ID = new Identifier( "gcmod", "meme_block" );
-    public static final Identifier POO_BLOCK_ID = new Identifier( "gcmod", "poo_block" );
-    public static final SoundEvent FART_SOUND = SoundEvent.of( new Identifier( "gcmod", "fart" ) );
+    public static final Identifier MEME_BOCK_ID = Identifier.of( "gcmod", "meme_block" );
+    public static final Identifier POO_BLOCK_ID = Identifier.of( "gcmod", "poo_block" );
+    public static final SoundEvent FART_SOUND = SoundEvent.of( Identifier.of( "gcmod", "fart" ) );
     public static final SoundEvent POO_BLOCK_SOUND = SoundEvent.of( POO_BLOCK_ID );
-    public static final SoundEvent NOAH_SOUND = SoundEvent.of( new Identifier( "gcmod", "meme" ) );
+    public static final SoundEvent NOAH_SOUND = SoundEvent.of( Identifier.of( "gcmod", "meme" ) );
     public static final SoundEvent MEME_BLOCK_SOUND = SoundEvent.of( MEME_BOCK_ID );
-    public static final SoundEvent CENTRIFUGE_SOUND = SoundEvent.of( new Identifier( "gcmod", "centrifuge" ) );
-    public static final SoundEvent POO_CANNON_SOUND = SoundEvent.of( new Identifier( "gcmod", "poo_cannon" ) );
-    public static final SoundEvent MUSIC_BIGWILLIES = SoundEvent.of( new Identifier( "gcmod", "music_disc.big_willies" ) );
-    public static final SoundEvent MUSIC_FOTCC = SoundEvent.of( new Identifier( "gcmod", "music_disc.flight_of_the_chinese_commuter" ) );
-    public static final SoundEvent MUSIC_GODLYPISS = SoundEvent.of( new Identifier( "gcmod", "music_disc.godly_piss" ) );
-    public static final SoundEvent MUSIC_MASSIVECRAP = SoundEvent.of( new Identifier( "gcmod", "music_disc.massive_crap" ) );
-    public static final SoundEvent MUSIC_PEASIZEDANUS = SoundEvent.of( new Identifier( "gcmod", "music_disc.pea_sized_anus" ) );
-    public static final SoundEvent MUSIC_POOEYLOO = SoundEvent.of( new Identifier( "gcmod", "music_disc.pooey_loo" ) );
-    public static final SoundEvent MUSIC_POWERFULCONSTIPATION = SoundEvent.of( new Identifier( "gcmod", "music_disc.powerful_constipation" ) );
-    public static final SoundEvent MUSIC_ROACC = SoundEvent.of( new Identifier( "gcmod", "music_disc.rage_over_a_clogged_commode" ) );
-    public static final SoundEvent MUSIC_REDWEEWEE = SoundEvent.of( new Identifier( "gcmod", "music_disc.red_weewee" ) );
-    public static final SoundEvent MUSIC_SMELLYMETHANE = SoundEvent.of( new Identifier( "gcmod", "music_disc.smelly_methane" ) );
-    public static final SoundEvent MUSIC_SOS = SoundEvent.of( new Identifier( "gcmod", "music_disc.symphony_of_stupidity" ) );
-    public static final SoundEvent MUSIC_TOILETWATER = SoundEvent.of( new Identifier( "gcmod", "music_disc.toilet_water" ) );
+    public static final SoundEvent CENTRIFUGE_SOUND = SoundEvent.of( Identifier.of( "gcmod", "centrifuge" ) );
+    public static final SoundEvent POO_CANNON_SOUND = SoundEvent.of( Identifier.of( "gcmod", "poo_cannon" ) );
+
+    public static final RegistryKey<JukeboxSong> SONG_BIGWILLIES = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "big_willies" ) );
+    public static final RegistryKey<JukeboxSong> SONG_FOTCC = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "fotcc" ) );
+    public static final RegistryKey<JukeboxSong> SONG_GODLYPISS = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "godly_piss" ) );
+    public static final RegistryKey<JukeboxSong> SONG_MASSIVECRAP = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "massive_crap" ) );
+    public static final RegistryKey<JukeboxSong> SONG_PEASIZEDANUS = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "pea_sized_anus" ) );
+    public static final RegistryKey<JukeboxSong> SONG_POOEYLOO = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "pooey_loo" ) );
+    public static final RegistryKey<JukeboxSong> SONG_POWERFULCONSTIPATION = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "powerful_constipation" ) );
+    public static final RegistryKey<JukeboxSong> SONG_REDWEEWEE = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "red_weewee" ) );
+    public static final RegistryKey<JukeboxSong> SONG_ROACC = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "roacc" ) );
+    public static final RegistryKey<JukeboxSong> SONG_SMELLYMETHANE = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "smelly_methane" ) );
+    public static final RegistryKey<JukeboxSong> SONG_SOS = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "sos" ) );
+    public static final RegistryKey<JukeboxSong> SONG_TOILETWATER = RegistryKey.of( RegistryKeys.JUKEBOX_SONG, Identifier.of( "gcmod", "toilet_water" ) );
 
     private static final BlockSoundGroup POO_BLOCK_SOUNDS = new BlockSoundGroup( 1, 1, POO_BLOCK_SOUND, POO_BLOCK_SOUND, POO_BLOCK_SOUND, POO_BLOCK_SOUND, POO_BLOCK_SOUND );
     private static final BlockSoundGroup MEME_BLOCK_SOUNDS = new BlockSoundGroup( 1, 1, MEME_BLOCK_SOUND, MEME_BLOCK_SOUND, MEME_BLOCK_SOUND, MEME_BLOCK_SOUND, MEME_BLOCK_SOUND );
@@ -117,76 +116,76 @@ public class GCMod implements ModInitializer
     public static final Item NOAH_SULPHUR = new Item( new Item.Settings() );
     public static final Item MEME_ESSENCE = new Item( new Item.Settings() );
     public static final Item CALIBRATOR = new CalibratorItem( new Item.Settings().maxCount( 1 ) );
-    public static final Item DISC_BIG_WILLIES = new MusicDiscItem( 1, MUSIC_BIGWILLIES, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 66 );
-    public static final Item DISC_FLIGHT_OF_THE_CHINESE_COMMUTER = new MusicDiscItem( 2, MUSIC_FOTCC, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 24 );
-    public static final Item DISC_GODLY_PISS = new MusicDiscItem( 3, MUSIC_GODLYPISS, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 19 );
-    public static final Item DISC_MASSIVE_CRAP = new MusicDiscItem( 4, MUSIC_MASSIVECRAP, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 46 );
-    public static final Item DISC_PEA_SIZED_ANUS = new MusicDiscItem( 5, MUSIC_PEASIZEDANUS, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 73 );
-    public static final Item DISC_POOEY_LOO = new MusicDiscItem( 6, MUSIC_POOEYLOO, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 40 );
-    public static final Item DISC_POWERFUL_CONSTIPATION = new MusicDiscItem( 7, MUSIC_POWERFULCONSTIPATION, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 26 );
-    public static final Item DISC_RAGE_OVER_A_CLOGGED_COMMODE = new MusicDiscItem( 8, MUSIC_ROACC, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 66 );
-    public static final Item DISC_RED_WEEWEE = new MusicDiscItem( 9, MUSIC_REDWEEWEE, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 96 );
-    public static final Item DISC_SMELLY_METHANE = new MusicDiscItem( 10, MUSIC_SMELLYMETHANE, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 36 );
-    public static final Item DISC_SYMPHONY_OF_STUPIDITY = new MusicDiscItem( 11, MUSIC_SOS, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 25 );
-    public static final Item DISC_TOILET_WATER = new MusicDiscItem( 12, MUSIC_TOILETWATER, new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ), 78 );
+    public static final Item DISC_BIG_WILLIES = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_BIGWILLIES ) );
+    public static final Item DISC_FLIGHT_OF_THE_CHINESE_COMMUTER = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_FOTCC ) );
+    public static final Item DISC_GODLY_PISS = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_GODLYPISS ) );
+    public static final Item DISC_MASSIVE_CRAP = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_MASSIVECRAP ) );
+    public static final Item DISC_PEA_SIZED_ANUS = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_PEASIZEDANUS ) );
+    public static final Item DISC_POOEY_LOO = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_POOEYLOO ) );
+    public static final Item DISC_POWERFUL_CONSTIPATION = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_POWERFULCONSTIPATION ) );
+    public static final Item DISC_RED_WEEWEE = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_REDWEEWEE ) );
+    public static final Item DISC_RAGE_OVER_A_CLOGGED_COMMODE = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_ROACC ) );
+    public static final Item DISC_SMELLY_METHANE = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_SMELLYMETHANE ) );
+    public static final Item DISC_SYMPHONY_OF_STUPIDITY = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_SOS ) );
+    public static final Item DISC_TOILET_WATER = new Item( new Item.Settings().maxCount( 1 ).rarity( Rarity.RARE ).jukeboxPlayable( SONG_TOILETWATER ) );
 
     public static final EntityType<PooEntity> POO_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "poo" ),
+            Identifier.of( "gcmod", "poo" ),
             EntityType.Builder.create( PooEntity::new, SpawnGroup.MISC ).dimensions( .75f, .3125f ).build()
     );
 
     public static final EntityType<PooBrickEntity> POO_BRICK_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "poo_brick" ),
+            Identifier.of( "gcmod", "poo_brick" ),
             EntityType.Builder.create( PooBrickEntity::new, SpawnGroup.MISC ).dimensions( .4f, .25f ).build()
     );
 
     public static final EntityType<PooBrickEntity> EXPLOSIVE_POO_BRICK_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "explosive_poo_brick" ),
+            Identifier.of( "gcmod", "explosive_poo_brick" ),
             EntityType.Builder.create( PooBrickEntity::createExplosive, SpawnGroup.MISC ).dimensions( .4f, .25f ).build()
     );
 
     public static final EntityType<PooBrickEntity> EXPLOSIVE_BOMB_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "explosive_bomb" ),
+            Identifier.of( "gcmod", "explosive_bomb" ),
             EntityType.Builder.create( PooBrickEntity::createExplosive, SpawnGroup.MISC ).dimensions( .5f, .5f ).build()
     );
 
     public static final EntityType<ExplosiveEntity> EXPLOSIVE_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "explosive" ),
+            Identifier.of( "gcmod", "explosive" ),
             EntityType.Builder.create( ExplosiveEntity::new, SpawnGroup.MISC ).dimensions( 1f, 1f ).build()
     );
 
     public static final EntityType<AirstrikeExplosiveEntity> AIRSTRIKE_EXPLOSIVE_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "airstrike_explosive" ),
+            Identifier.of( "gcmod", "airstrike_explosive" ),
             EntityType.Builder.create( AirstrikeExplosiveEntity::new, SpawnGroup.MISC ).dimensions( 1f, 1f ).build()
     );
 
     public static final EntityType<ConstructiveExplosiveEntity> CONSTRUCTIVE_EXPLOSIVE_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "constructive_explosive" ),
+            Identifier.of( "gcmod", "constructive_explosive" ),
             EntityType.Builder.create( ConstructiveExplosiveEntity::new, SpawnGroup.MISC ).dimensions( 1f, 1f ).build()
     );
 
     public static final EntityType<DigExplosiveEntity> DIG_EXPLOSIVE_ENTITY = Registry.register(
             Registries.ENTITY_TYPE,
-            new Identifier( "gcmod", "dig_explosive" ),
+            Identifier.of( "gcmod", "dig_explosive" ),
             EntityType.Builder.create( DigExplosiveEntity::new, SpawnGroup.MISC ).dimensions( 1f, 1f ).build()
     );
 
     public static final BlockEntityType<CentrifugeEntity> CENTRIFUGE_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE,
-            new Identifier( "gcmod", "centrifuge" ),
+            Identifier.of( "gcmod", "centrifuge" ),
             BlockEntityType.Builder.create( CentrifugeEntity::new, CENTRIFUGE ).build()
     );
 
     public static final BlockEntityType<WirelessTorchEntity> WIRELESS_TORCH_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE,
-            new Identifier( "gcmod", "wireless_torch" ),
+            Identifier.of( "gcmod", "wireless_torch" ),
             BlockEntityType.Builder.create( WirelessTorchEntity::new, WIRELESS_TORCH ).build()
     );
 
@@ -195,54 +194,29 @@ public class GCMod implements ModInitializer
     public static BlockEntityType<ExplosiveBlockEntity> CONSTRUCTIVE_TNT_BLOCK_ENTITY;
     public static BlockEntityType<ExplosiveBlockEntity> DIG_TNT_BLOCK_ENTITY;
 
-    public static final TagKey<Item> TAG_POO_CANNONS = TagKey.of( RegistryKeys.ITEM, new Identifier( "gcmod", "poo_cannons" ) );
+    public static ComponentType<EnchantmentValueEffect> EFFECT_CONSTIPATION = Registry.register(
+            Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE,
+            Identifier.of( "gcmod", "constipation" ),
+            ComponentType.<EnchantmentValueEffect>builder().codec( EnchantmentValueEffect.CODEC ).build() );
 
-    public static final Enchantment ENCH_CONSTIPATION = new Enchantment(
-            Enchantment.properties( TAG_POO_CANNONS,
-                    1,
-                    3,
-                    Enchantment.constantCost( 25 ), Enchantment.constantCost( 50 ), 3,
-                    FeatureSet.empty(),
-                    EquipmentSlot.MAINHAND
-            ) );
+    public static ComponentType<EnchantmentValueEffect> EFFECT_POOER = Registry.register(
+            Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE,
+            Identifier.of( "gcmod", "pooer" ),
+            ComponentType.<EnchantmentValueEffect>builder().codec( EnchantmentValueEffect.CODEC ).build() );
 
-    public static final Enchantment ENCH_DIARRHOEA = new Enchantment(
-            Enchantment.properties( TAG_POO_CANNONS,
-                    1,
-                    1,
-                    Enchantment.constantCost( 25 ), Enchantment.constantCost( 50 ), 3,
-                    FeatureSet.empty(),
-                    EquipmentSlot.MAINHAND
-            ) );
+    public static final TagKey<Enchantment> ENCH_DIARRHOEA = TagKey.of( RegistryKeys.ENCHANTMENT, Identifier.of( "gcmod", "induces_diarrhoea" ) );
+    public static final TagKey<Enchantment> ENCH_LAXATIVES = TagKey.of( RegistryKeys.ENCHANTMENT, Identifier.of( "gcmod", "laxatives" ) );
 
-    public static final Enchantment ENCH_LAXATIVES = new Enchantment(
-            Enchantment.properties( TAG_POO_CANNONS,
-                    1,
-                    1,
-                    Enchantment.constantCost( 25 ), Enchantment.constantCost( 50 ), 3,
-                    FeatureSet.empty(),
-                    EquipmentSlot.MAINHAND
-            ) );
-
-    public static final Enchantment ENCH_POOER = new Enchantment(
-            Enchantment.properties( TAG_POO_CANNONS,
-                    1,
-                    3,
-                    Enchantment.constantCost( 25 ), Enchantment.constantCost( 50 ), 3,
-                    FeatureSet.empty(),
-                    EquipmentSlot.MAINHAND
-            ) );
-
-    public static final DataComponentType<NbtComponent> DATA_EXPLOSIVE_INFO = Registry.register(
+    public static final ComponentType<NbtComponent> DATA_EXPLOSIVE_INFO = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            new Identifier( "gcmod", "explosive_info" ),
-            DataComponentType.<NbtComponent>builder().codec( NbtComponent.CODEC ).build()
+            Identifier.of( "gcmod", "explosive_info" ),
+            ComponentType.<NbtComponent>builder().codec( NbtComponent.CODEC ).build()
     );
 
-    public static final DataComponentType<NbtComponent> DATA_TORCH_NETWORK = Registry.register(
+    public static final ComponentType<NbtComponent> DATA_TORCH_NETWORK = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            new Identifier( "gcmod", "torch_network" ),
-            DataComponentType.<NbtComponent>builder().codec( NbtComponent.CODEC ).build()
+            Identifier.of( "gcmod", "torch_network" ),
+            ComponentType.<NbtComponent>builder().codec( NbtComponent.CODEC ).build()
     );
 
     public static RecipeSerializer<FertiliserRecipe> FERTILIZER_RECIPE_SERIALIZER;
@@ -250,7 +224,7 @@ public class GCMod implements ModInitializer
 
     public static ScreenHandlerType<CentrifugeScreenHandler> CENTRIFUGE_SCREEN_HANDLER = Registry.register(
             Registries.SCREEN_HANDLER,
-            new Identifier( "gcmod", "centrifuge" ),
+            Identifier.of( "gcmod", "centrifuge" ),
             new ScreenHandlerType<>( CentrifugeScreenHandler::new, FeatureSet.empty() )
     );
 
@@ -290,16 +264,29 @@ public class GCMod implements ModInitializer
                 entries.add( DISC_PEA_SIZED_ANUS );
                 entries.add( DISC_POOEY_LOO );
                 entries.add( DISC_POWERFUL_CONSTIPATION );
-                entries.add( DISC_RAGE_OVER_A_CLOGGED_COMMODE );
                 entries.add( DISC_RED_WEEWEE );
+                entries.add( DISC_RAGE_OVER_A_CLOGGED_COMMODE );
                 entries.add( DISC_SMELLY_METHANE );
                 entries.add( DISC_SYMPHONY_OF_STUPIDITY );
                 entries.add( DISC_TOILET_WATER );
             } )
             .build();
 
-    private static final RegistryKey<PlacedFeature> SULPHUR_ORE_PLACEMENT = RegistryKey.of( RegistryKeys.PLACED_FEATURE, new Identifier( "gcmod", "sulphur_ore" ) );
-    private static final RegistryKey<PlacedFeature> NOAH_ORE_PLACEMENT = RegistryKey.of( RegistryKeys.PLACED_FEATURE, new Identifier( "gcmod", "noah_sulphur_ore" ) );
+    private static final RegistryKey<PlacedFeature> SULPHUR_ORE_PLACEMENT = RegistryKey.of( RegistryKeys.PLACED_FEATURE, Identifier.of( "gcmod", "sulphur_ore" ) );
+    private static final RegistryKey<PlacedFeature> NOAH_ORE_PLACEMENT = RegistryKey.of( RegistryKeys.PLACED_FEATURE, Identifier.of( "gcmod", "noah_sulphur_ore" ) );
+
+    public static final SoundEvent MUSIC_BIGWILLIES = SoundEvent.of( Identifier.of( "gcmod", "music_disc.big_willies" ) );
+    public static final SoundEvent MUSIC_FOTCC = SoundEvent.of( Identifier.of( "gcmod", "music_disc.flight_of_the_chinese_commuter" ) );
+    public static final SoundEvent MUSIC_GODLYPISS = SoundEvent.of( Identifier.of( "gcmod", "music_disc.godly_piss" ) );
+    public static final SoundEvent MUSIC_MASSIVECRAP = SoundEvent.of( Identifier.of( "gcmod", "music_disc.massive_crap" ) );
+    public static final SoundEvent MUSIC_PEASIZEDANUS = SoundEvent.of( Identifier.of( "gcmod", "music_disc.pea_sized_anus" ) );
+    public static final SoundEvent MUSIC_POOEYLOO = SoundEvent.of( Identifier.of( "gcmod", "music_disc.pooey_loo" ) );
+    public static final SoundEvent MUSIC_POWERFULCONSTIPATION = SoundEvent.of( Identifier.of( "gcmod", "music_disc.powerful_constipation" ) );
+    public static final SoundEvent MUSIC_ROACC = SoundEvent.of( Identifier.of( "gcmod", "music_disc.rage_over_a_clogged_commode" ) );
+    public static final SoundEvent MUSIC_REDWEEWEE = SoundEvent.of( Identifier.of( "gcmod", "music_disc.red_weewee" ) );
+    public static final SoundEvent MUSIC_SMELLYMETHANE = SoundEvent.of( Identifier.of( "gcmod", "music_disc.smelly_methane" ) );
+    public static final SoundEvent MUSIC_SOS = SoundEvent.of( Identifier.of( "gcmod", "music_disc.symphony_of_stupidity" ) );
+    public static final SoundEvent MUSIC_TOILETWATER = SoundEvent.of( Identifier.of( "gcmod", "music_disc.toilet_water" ) );
 
     @Override
     public void onInitialize()
@@ -322,95 +309,106 @@ public class GCMod implements ModInitializer
         Registry.register( Registries.SOUND_EVENT, MUSIC_SOS.getId(), MUSIC_SOS );
         Registry.register( Registries.SOUND_EVENT, MUSIC_TOILETWATER.getId(), MUSIC_TOILETWATER );
 
-        Registry.register( Registries.ITEM_GROUP, new Identifier( "gcmod", "itemgroup" ), ITEM_GROUP );
+        Registry.register( Registries.ITEM_GROUP, Identifier.of( "gcmod", "itemgroup" ), ITEM_GROUP );
 
         Registry.register( Registries.BLOCK, POO_BLOCK_ID, POO_BLOCK );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "fermented_poo_block" ), FERMENTED_POO_BLOCK );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "rope" ), ROPE );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "centrifuge" ), CENTRIFUGE );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "sulphur_ore" ), SULPHUR_ORE );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "noah_sulphur_ore" ), NOAH_SULPHUR_ORE );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "fermented_poo_block" ), FERMENTED_POO_BLOCK );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "rope" ), ROPE );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "centrifuge" ), CENTRIFUGE );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "sulphur_ore" ), SULPHUR_ORE );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "noah_sulphur_ore" ), NOAH_SULPHUR_ORE );
         Registry.register( Registries.BLOCK, MEME_BOCK_ID, MEME_BLOCK );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "airstrike_tnt" ), AIRSTRIKE_TNT );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "blast_tnt" ), BLAST_TNT );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "constructive_tnt" ), CONSTRUCTIVE_TNT );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "dig_tnt" ), DIG_TNT );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "wireless_torch" ), WIRELESS_TORCH );
-        Registry.register( Registries.BLOCK, new Identifier( "gcmod", "wireless_wall_torch" ), WIRELESS_TORCH_WALL );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "airstrike_tnt" ), AIRSTRIKE_TNT );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "blast_tnt" ), BLAST_TNT );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "constructive_tnt" ), CONSTRUCTIVE_TNT );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "dig_tnt" ), DIG_TNT );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "wireless_torch" ), WIRELESS_TORCH );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "wireless_wall_torch" ), WIRELESS_TORCH_WALL );
 
         Registry.register( Registries.ITEM, POO_BLOCK_ID, new BlockItem( POO_BLOCK, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "fermented_poo_block" ), new BlockItem( FERMENTED_POO_BLOCK, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "rope" ), ROPE_ITEM );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "centrifuge" ), new BlockItem( CENTRIFUGE, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "sulphur_ore" ), new BlockItem( SULPHUR_ORE, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "noah_sulphur_ore" ), new BlockItem( NOAH_SULPHUR_ORE, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "meme_block" ), new BlockItem( MEME_BLOCK, new Item.Settings().maxCount( 69 ) ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "airstrike_tnt" ), new ExplosiveBlockItem( AIRSTRIKE_TNT, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "blast_tnt" ), new ExplosiveBlockItem( BLAST_TNT, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "constructive_tnt" ), new ExplosiveBlockItem( CONSTRUCTIVE_TNT, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "dig_tnt" ), new ExplosiveBlockItem( DIG_TNT, new Item.Settings() ) );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "wireless_torch" ),
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "fermented_poo_block" ), new BlockItem( FERMENTED_POO_BLOCK, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "rope" ), ROPE_ITEM );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "centrifuge" ), new BlockItem( CENTRIFUGE, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "sulphur_ore" ), new BlockItem( SULPHUR_ORE, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "noah_sulphur_ore" ), new BlockItem( NOAH_SULPHUR_ORE, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "meme_block" ), new BlockItem( MEME_BLOCK, new Item.Settings().maxCount( 69 ) ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "airstrike_tnt" ), new ExplosiveBlockItem( AIRSTRIKE_TNT, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "blast_tnt" ), new ExplosiveBlockItem( BLAST_TNT, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "constructive_tnt" ), new ExplosiveBlockItem( CONSTRUCTIVE_TNT, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "dig_tnt" ), new ExplosiveBlockItem( DIG_TNT, new Item.Settings() ) );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "wireless_torch" ),
                 new VerticallyAttachableBlockItem( WIRELESS_TORCH, WIRELESS_TORCH_WALL, new Item.Settings(), Direction.DOWN )
         );
 
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "poo" ), POO );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "fermented_poo" ), FERMENTED_POO );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "poo_brick" ), POO_BRICK );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "poo_cannon" ), POO_CANNON );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "poo_powder" ), POO_POWDER );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "poo_protein" ), POO_PROTEIN );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "fertiliser" ), FERTILISER );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "black_powder" ), BLACK_POWDER );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "sulphur" ), SULPHUR );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "noah_sulphur" ), NOAH_SULPHUR );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "meme_essence" ), MEME_ESSENCE );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "calibrator" ), CALIBRATOR );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_big_willies" ), DISC_BIG_WILLIES );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_flight_of_the_chinese_commuter" ), DISC_FLIGHT_OF_THE_CHINESE_COMMUTER );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_godly_piss" ), DISC_GODLY_PISS );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_massive_crap" ), DISC_MASSIVE_CRAP );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_pea_sized_anus" ), DISC_PEA_SIZED_ANUS );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_pooey_loo" ), DISC_POOEY_LOO );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_powerful_constipation" ), DISC_POWERFUL_CONSTIPATION );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_rage_over_a_clogged_commode" ), DISC_RAGE_OVER_A_CLOGGED_COMMODE );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_red_weewee" ), DISC_RED_WEEWEE );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_smelly_methane" ), DISC_SMELLY_METHANE );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_symphony_of_stupidity" ), DISC_SYMPHONY_OF_STUPIDITY );
-        Registry.register( Registries.ITEM, new Identifier( "gcmod", "music_disc_toilet_water" ), DISC_TOILET_WATER );
-
-        Registry.register( Registries.ENCHANTMENT, new Identifier( "gcmod", "constipation" ), ENCH_CONSTIPATION );
-        Registry.register( Registries.ENCHANTMENT, new Identifier( "gcmod", "diarrhoea" ), ENCH_DIARRHOEA );
-        Registry.register( Registries.ENCHANTMENT, new Identifier( "gcmod", "laxatives" ), ENCH_LAXATIVES );
-        Registry.register( Registries.ENCHANTMENT, new Identifier( "gcmod", "pooer" ), ENCH_POOER );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "poo" ), POO );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "fermented_poo" ), FERMENTED_POO );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "poo_brick" ), POO_BRICK );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "poo_cannon" ), POO_CANNON );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "poo_powder" ), POO_POWDER );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "poo_protein" ), POO_PROTEIN );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "fertiliser" ), FERTILISER );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "black_powder" ), BLACK_POWDER );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "sulphur" ), SULPHUR );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "noah_sulphur" ), NOAH_SULPHUR );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "meme_essence" ), MEME_ESSENCE );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "calibrator" ), CALIBRATOR );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_big_willies" ), DISC_BIG_WILLIES );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_flight_of_the_chinese_commuter" ), DISC_FLIGHT_OF_THE_CHINESE_COMMUTER );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_godly_piss" ), DISC_GODLY_PISS );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_massive_crap" ), DISC_MASSIVE_CRAP );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_pea_sized_anus" ), DISC_PEA_SIZED_ANUS );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_pooey_loo" ), DISC_POOEY_LOO );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_powerful_constipation" ), DISC_POWERFUL_CONSTIPATION );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_rage_over_a_clogged_commode" ), DISC_RAGE_OVER_A_CLOGGED_COMMODE );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_red_weewee" ), DISC_RED_WEEWEE );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_smelly_methane" ), DISC_SMELLY_METHANE );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_symphony_of_stupidity" ), DISC_SYMPHONY_OF_STUPIDITY );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "music_disc_toilet_water" ), DISC_TOILET_WATER );
 
         AIRSTRIKE_TNT_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
-                new Identifier( "gcmod", "airstrike_tnt" ),
+                Identifier.of( "gcmod", "airstrike_tnt" ),
                 BlockEntityType.Builder.create( ( p, s ) -> new ExplosiveBlockEntity( AIRSTRIKE_TNT_BLOCK_ENTITY, p, s ), DIG_TNT ).build()
         );
 
         BLAST_TNT_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
-                new Identifier( "gcmod", "blast_tnt" ),
+                Identifier.of( "gcmod", "blast_tnt" ),
                 BlockEntityType.Builder.create( ( p, s ) -> new ExplosiveBlockEntity( BLAST_TNT_BLOCK_ENTITY, p, s ), DIG_TNT ).build()
         );
 
         CONSTRUCTIVE_TNT_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
-                new Identifier( "gcmod", "constructive_tnt" ),
+                Identifier.of( "gcmod", "constructive_tnt" ),
                 BlockEntityType.Builder.create( ( p, s ) -> new ExplosiveBlockEntity( CONSTRUCTIVE_TNT_BLOCK_ENTITY, p, s ), DIG_TNT ).build()
         );
 
         DIG_TNT_BLOCK_ENTITY = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
-                new Identifier( "gcmod", "dig_tnt" ),
+                Identifier.of( "gcmod", "dig_tnt" ),
                 BlockEntityType.Builder.create( ( p, s ) -> new ExplosiveBlockEntity( DIG_TNT_BLOCK_ENTITY, p, s ), DIG_TNT ).build()
         );
 
-        RecipeType.<FertiliserRecipe>register( "gcmod:crafting_fertiliser" );
-        RecipeType.<FertiliserRecipe>register( "gcmod:crafting_explosive" );
-        FERTILIZER_RECIPE_SERIALIZER = Registry.register( Registries.RECIPE_SERIALIZER, new Identifier( "gcmod", "crafting_fertiliser" ), new SpecialRecipeSerializer<>( FertiliserRecipe::new ) );
-        EXPLOSIVE_RECIPE_SERIALIZER = Registry.register( Registries.RECIPE_SERIALIZER, new Identifier( "gcmod", "crafting_explosive" ), new SpecialRecipeSerializer<>( ExplosiveRecipe::new ) );
+        Registry.register( Registries.RECIPE_TYPE, Identifier.of( "gcmod", "crafting_fertilizer" ), new RecipeType<FertiliserRecipe>()
+        {
+            @Override
+            public String toString()
+            {
+                return "<FERTILIZER_RECIPE>";
+            }
+        } );
+
+        Registry.register( Registries.RECIPE_TYPE, Identifier.of( "gcmod", "crafting_explosive" ), new RecipeType<ExplosiveRecipe>()
+        {
+            @Override
+            public String toString()
+            {
+                return "<EXPLOSIVE_RECIPE>";
+            }
+        } );
+
+        FERTILIZER_RECIPE_SERIALIZER = Registry.register( Registries.RECIPE_SERIALIZER, Identifier.of( "gcmod", "crafting_fertiliser" ), new SpecialRecipeSerializer<>( FertiliserRecipe::new ) );
+        EXPLOSIVE_RECIPE_SERIALIZER = Registry.register( Registries.RECIPE_SERIALIZER, Identifier.of( "gcmod", "crafting_explosive" ), new SpecialRecipeSerializer<>( ExplosiveRecipe::new ) );
 
         BiomeModifications.addFeature( BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, SULPHUR_ORE_PLACEMENT );
         BiomeModifications.addFeature( BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, NOAH_ORE_PLACEMENT );

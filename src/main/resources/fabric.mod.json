@@ -3,10 +3,15 @@
   "id": "gcmod",
   "version": "${version}",
   "name": "Gamma Cagadota",
+  "description": "Classic mod I originally made a long time ago that adds a bunch of contrived stuff",
   "icon": "icon.png",
   "authors": [
     "Elaviers"
   ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/gcmod",
+    "sources": "https://github.com/Elaviers/mc-gcmod"
+  },
   "license": "CC0-1.0",
   "environment": "*",
   "entrypoints": {
@@ -25,7 +30,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.11",
-    "minecraft": "~1.20.6",
+    "minecraft": "~1.21.0",
     "java": ">=21",
     "fabric-api": "*"
   }

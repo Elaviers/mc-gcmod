@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "gcmod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AnimalMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "ClientPlayNetworkHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

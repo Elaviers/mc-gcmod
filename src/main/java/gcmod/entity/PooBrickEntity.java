@@ -12,6 +12,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
@@ -43,7 +44,7 @@ public class PooBrickEntity extends Entity
         this.intersectionChecked = true;
     }
 
-    public static PooBrickEntity createExplosive( EntityType<?> type, World world)
+    public static PooBrickEntity createExplosive( EntityType<?> type, World world )
     {
         // EXPLOSIVE_POO_BRICK_ENTITY uses this.
         // We have a separate entity type because we want clients to be able to distinguish between explosive / non-explosive bricks for the collidesWith check.
@@ -151,9 +152,9 @@ public class PooBrickEntity extends Entity
     }
 
     @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket()
+    public Packet<ClientPlayPacketListener> createSpawnPacket( EntityTrackerEntry entityTrackerEntry )
     {
-        return new EntitySpawnS2CPacket( this, this.thrower == null ? 0 : this.thrower.getId() );
+        return new EntitySpawnS2CPacket( this, entityTrackerEntry, this.thrower == null ? 0 : this.thrower.getId() );
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public class CentrifugeScreen extends HandledScreen<CentrifugeScreenHandler>
 {
-    private final static Identifier BG_TEX = new Identifier( "gcmod", "textures/gui/centrifuge.png" );
+    private final static Identifier BG_TEX = Identifier.of( "gcmod", "textures/gui/centrifuge.png" );
 
     public CentrifugeScreen( CentrifugeScreenHandler handler, PlayerInventory inventory, Text title )
     {

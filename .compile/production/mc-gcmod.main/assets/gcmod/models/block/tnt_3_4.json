@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "gcmod:block/tnt/tnt4_top",
+    "side": "gcmod:block/tnt/tier3/tnt4_side"
+  }
+}

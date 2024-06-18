@@ -15,6 +15,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
@@ -29,7 +30,7 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
     }
 
     @Override
-    public boolean matches( RecipeInputInventory inv, World world )
+    public boolean matches( CraftingRecipeInput inv, World world )
     {
         outputStack = ItemStack.EMPTY;
 
@@ -48,9 +49,9 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
         ExplosiveBlock.Type finalType = null;
         int TNTCount = 0;
 
-        for ( int i = 0; i < inv.size(); ++i )
+        for ( int i = 0; i < inv.getSize(); ++i )
         {
-            ItemStack stack = inv.getStack( i );
+            ItemStack stack = inv.getStackInSlot( i );
 
             if ( !stack.isEmpty() )
             {
@@ -200,7 +201,7 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
     }
 
     @Override
-    public ItemStack craft( RecipeInputInventory inventory, RegistryWrapper.WrapperLookup lookup )
+    public ItemStack craft( CraftingRecipeInput inventory, RegistryWrapper.WrapperLookup lookup )
     {
         return this.outputStack.copy();
     }

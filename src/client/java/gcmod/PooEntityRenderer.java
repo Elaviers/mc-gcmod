@@ -22,7 +22,7 @@ public class PooEntityRenderer extends EntityRenderer<PooEntity>
         return TexturedModelData.of(modelData, 64, 32);
     }
 
-    public static final Identifier TEXTURE = new Identifier( "gcmod", "textures/entity/poo.png" );
+    public static final Identifier TEXTURE = Identifier.of( "gcmod", "textures/entity/poo.png" );
     public ModelPart model;
 
     protected PooEntityRenderer( EntityRendererFactory.Context ctx )
@@ -47,7 +47,7 @@ public class PooEntityRenderer extends EntityRenderer<PooEntity>
         if ( size > 0 )
         {
             matrices.scale( size, size, size );
-            model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1 );
+            model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV );
         }
 
         matrices.pop();

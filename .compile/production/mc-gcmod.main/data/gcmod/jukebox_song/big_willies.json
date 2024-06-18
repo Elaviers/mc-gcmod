@@ -1,0 +1,8 @@
+{
+  "comparator_output": 1,
+  "description": {
+    "translate": "item.gcmod.music_disc_big_willies.desc"
+  },
+  "length_in_seconds": 66.0,
+  "sound_event": "gcmod:music_disc.big_willies"
+}

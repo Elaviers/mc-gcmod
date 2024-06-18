@@ -1,0 +1,8 @@
+{
+  "comparator_output": 8,
+  "description": {
+    "translate": "item.gcmod.music_disc_red_weewee.desc"
+  },
+  "length_in_seconds": 96.0,
+  "sound_event": "gcmod:music_disc.red_weewee"
+}

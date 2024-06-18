@@ -82,21 +82,21 @@ public class RopeBlock extends Block
     {
         if ( stack.isOf( GCMod.ROPE_ITEM ) )
         {
-            if ( !world.isClient )
-            {
-                BlockPos posBelow = pos.down();
-                while ( world.getBlockState( posBelow ).getBlock() == GCMod.ROPE )
-                    posBelow = posBelow.down();
+            BlockPos posBelow = pos.down();
+            while ( world.getBlockState( posBelow ).getBlock() == GCMod.ROPE )
+                posBelow = posBelow.down();
 
-                if ( world.getBlockState( posBelow ).isAir() )
+            if ( world.getBlockState( posBelow ).isAir() )
+            {
+                if ( !world.isClient )
                 {
                     if ( !player.isCreative() )
                         stack.decrement( 1 );
 
                     world.setBlockState( posBelow, GCMod.ROPE.getDefaultState() );
-
-                    return ItemActionResult.SUCCESS;
                 }
+
+                return ItemActionResult.SUCCESS;
             }
         }
 

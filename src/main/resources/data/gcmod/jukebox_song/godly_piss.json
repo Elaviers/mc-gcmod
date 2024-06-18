@@ -1,0 +1,8 @@
+{
+  "comparator_output": 3,
+  "description": {
+    "translate": "item.gcmod.music_disc_godly_piss.desc"
+  },
+  "length_in_seconds": 19.0,
+  "sound_event": "gcmod:music_disc.godly_piss"
+}

@@ -1,13 +1,15 @@
 package gcmod.item;
 
+import com.mojang.datafixers.util.Pair;
 import gcmod.GCMod;
 import gcmod.entity.PooBrickEntity;
+import net.minecraft.component.ComponentType;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.util.Hand;
@@ -41,11 +43,20 @@ public class PooCannonItem extends RangedWeaponItem
         assert false; // kinda dumb that they made me do this
     }
 
+    private static int getEnchantmentValue( ItemStack stack, ComponentType<EnchantmentValueEffect> type )
+    {
+        Pair<EnchantmentValueEffect, Integer> pair = EnchantmentHelper.getEffectListAndLevel( stack, GCMod.EFFECT_CONSTIPATION );
+        if ( pair != null )
+            return pair.getSecond();
+
+        return 0;
+    }
+
     void shootPoo( World world, PlayerEntity player, ItemStack stack )
     {
         ItemStack ammoStack = null;
 
-        int constipationLvl = EnchantmentHelper.getLevel( GCMod.ENCH_CONSTIPATION, stack );
+        final int constipationLvl = getEnchantmentValue(stack, GCMod.EFFECT_CONSTIPATION );
 
         int maxCount = 1;
         float spread = .08f;
@@ -85,7 +96,7 @@ public class PooCannonItem extends RangedWeaponItem
         if ( !world.isClient )
         {
             int count;
-            if ( player.isCreative() || EnchantmentHelper.getLevel( GCMod.ENCH_LAXATIVES, stack ) > 0 )
+            if ( player.isCreative() || EnchantmentHelper.hasAnyEnchantmentsIn( stack, GCMod.ENCH_LAXATIVES ) )
             {
                 count = maxCount;
             }
@@ -107,7 +118,7 @@ public class PooCannonItem extends RangedWeaponItem
                 return;
 
             float speed = 2f;
-            if ( EnchantmentHelper.getLevel( GCMod.ENCH_DIARRHOEA, stack ) <= 0 )
+            if ( !EnchantmentHelper.hasAnyEnchantmentsIn( stack, GCMod.ENCH_DIARRHOEA ) )
             {
                 final float charge = Math.min( 1f, player.getItemUseTime() / 45f );
                 speed = .4f + charge * 1.6f;
@@ -117,7 +128,7 @@ public class PooCannonItem extends RangedWeaponItem
             for ( int i = 0; i < count; ++i )
             {
                 PooBrickEntity poo = GCMod.EXPLOSIVE_POO_BRICK_ENTITY.create( world );
-                poo.explosionRadius = 4 + EnchantmentHelper.getLevel( GCMod.ENCH_POOER, stack );
+                poo.explosionRadius = 4 + getEnchantmentValue( stack, GCMod.EFFECT_POOER );
                 poo.thrower = player;
 
                 poo.setPosition( player.getEyePos() );
@@ -161,7 +172,7 @@ public class PooCannonItem extends RangedWeaponItem
     }
 
     @Override
-    public int getMaxUseTime( ItemStack stack )
+    public int getMaxUseTime( ItemStack stack, LivingEntity user )
     {
         return 72000;
     }

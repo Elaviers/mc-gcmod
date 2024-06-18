@@ -1,0 +1,8 @@
+{
+  "comparator_output": 9,
+  "description": {
+    "translate": "item.gcmod.music_disc_rage_over_a_clogged_commode.desc"
+  },
+  "length_in_seconds": 66.0,
+  "sound_event": "gcmod:music_disc.rage_over_a_clogged_commode"
+}

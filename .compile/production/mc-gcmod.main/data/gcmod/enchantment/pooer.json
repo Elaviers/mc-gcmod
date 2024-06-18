@@ -1,0 +1,30 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.gcmod.pooer"
+  },
+  "effects": {
+    "gcmod:pooer": {
+      "type": "minecraft:add",
+      "value": {
+        "type": "minecraft:linear",
+        "base": 1,
+        "per_level_above_first": 1
+      }
+    }
+  },
+  "min_cost": {
+    "base": 20,
+    "per_level_above_first": 9
+  },
+  "max_cost": {
+    "base": 51,
+    "per_level_above_first": 10
+  },
+  "max_level": 3,
+  "slots": [
+    "mainhand"
+  ],
+  "supported_items": "#gcmod:poo_cannons",
+  "weight": 5
+}

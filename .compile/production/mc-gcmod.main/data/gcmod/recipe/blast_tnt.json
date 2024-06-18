@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "tag": "minecraft:planks"
+    },
+    "Y": {
+      "item": "gcmod:black_powder"
+    }
+  },
+  "result": {
+    "id": "gcmod:blast_tnt",
+    "components": {
+      "gcmod:explosive_info": {
+        "Strength": 2
+      }
+    }
+  }
+}
