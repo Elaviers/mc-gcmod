@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/template_torch",
-  "textures": {
-    "torch": "gcmod:block/wtorch_off"
-  }
-}

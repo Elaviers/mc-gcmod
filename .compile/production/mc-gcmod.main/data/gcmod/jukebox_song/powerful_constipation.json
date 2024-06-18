@@ -1,8 +1,0 @@
-{
-  "comparator_output": 7,
-  "description": {
-    "translate": "item.gcmod.music_disc_powerful_constipation.desc"
-  },
-  "length_in_seconds": 26.0,
-  "sound_event": "gcmod:music_disc.powerful_constipation"
-}

@@ -1,2 +1,0 @@
-accessWidener      v2  named
-accessible  method  net/minecraft/block/jukebox/JukeboxSongs    register    (Lnet/minecraft/registry/Registerable;Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/registry/entry/RegistryEntry$Reference;II)V
