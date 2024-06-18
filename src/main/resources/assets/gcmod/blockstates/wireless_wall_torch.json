@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,lit=true": {
+      "model": "gcmod:block/wireless_torch_on_wall"
+    },
+    "facing=east,lit=false": {
+      "model": "gcmod:block/wireless_torch_off_wall"
+    },
+    "facing=south,lit=true": {
+      "model": "gcmod:block/wireless_torch_on_wall",
+      "y": 90
+    },
+    "facing=south,lit=false": {
+      "model": "gcmod:block/wireless_torch_off_wall",
+      "y": 90
+    },
+    "facing=west,lit=true": {
+      "model": "gcmod:block/wireless_torch_on_wall",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "gcmod:block/wireless_torch_off_wall",
+      "y": 180
+    },
+    "facing=north,lit=true": {
+      "model": "gcmod:block/wireless_torch_on_wall",
+      "y": 270
+    },
+    "facing=north,lit=false": {
+      "model": "gcmod:block/wireless_torch_off_wall",
+      "y": 270
+    }
+  }
+}

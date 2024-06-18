@@ -1,6 +1,0 @@
-{
-	"parent": "block/torch",
-	"textures": {
-		"torch": "stupidmod:block/wtorch_off"
-	}
-}

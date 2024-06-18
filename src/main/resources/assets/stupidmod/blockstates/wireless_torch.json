@@ -1,6 +1,0 @@
-{
-	"variants": {
-		"lit=true":  { "model": "stupidmod:block/wireless_torch_on" },
-		"lit=false":  { "model": "stupidmod:block/wireless_torch_off" }
-	}
-}

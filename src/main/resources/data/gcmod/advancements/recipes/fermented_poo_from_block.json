@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_poo_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "gcmod:poo_block"
+          }
+        ]
+      }
+    },
+    "has_fermented_poo_block": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "gcmod:fermented_poo_block"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "gcmod:fermented_poo"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_poo_block",
+      "has_fermented_poo_block",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "gcmod:fermented_poo"
+    ]
+  }
+}

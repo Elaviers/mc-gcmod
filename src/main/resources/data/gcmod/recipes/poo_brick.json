@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": {
+    "item": "gcmod:poo_powder"
+  },
+  "result": {
+    "id": "gcmod:poo_brick"
+  },
+  "experience": 5,
+  "cookingtime": 200
+}

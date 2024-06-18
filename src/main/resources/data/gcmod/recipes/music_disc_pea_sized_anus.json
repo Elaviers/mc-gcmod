@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "gcmod:poo"
+    },
+    "Y": {
+      "item": "minecraft:music_disc_far"
+    }
+  },
+  "result": {
+    "id": "gcmod:music_disc_pea_sized_anus"
+  }
+}

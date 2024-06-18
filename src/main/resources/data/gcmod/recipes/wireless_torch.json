@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    " Y ",
+    " X "
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:redstone_torch"
+    },
+    "Y": {
+      "item": "minecraft:repeater"
+    }
+  },
+  "result": {
+    "id": "gcmod:wireless_torch"
+  }
+}

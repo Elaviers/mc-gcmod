@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XYX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "gcmod:poo"
+    },
+    "Y": {
+      "item": "minecraft:music_disc_blocks"
+    }
+  },
+  "result": {
+    "id": "gcmod:music_disc_godly_piss"
+  }
+}
