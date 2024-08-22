@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "moisture=0": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=1": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=2": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=3": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=4": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=5": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=6": {
+      "model": "gcmod:block/compost"
+    },
+    "moisture=7": {
+      "model": "gcmod:block/compost_moist"
+    }
+  }
+}

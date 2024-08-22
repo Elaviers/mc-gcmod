@@ -12,6 +12,8 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.jukebox.JukeboxSong;
@@ -23,6 +25,9 @@ import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.*;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.packet.PacketType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SpecialRecipeSerializer;
@@ -100,6 +105,9 @@ public class GCMod implements ModInitializer
 
     public static final Block WIRELESS_TORCH_WALL = new WallWirelessTorchBlock( AbstractBlock.Settings.create()
             .sounds( BlockSoundGroup.METAL ).noCollision().breakInstantly().luminance( Blocks.createLightLevelFromLitBlockState( 14 ) ) );
+
+    public static final Block COMPOST = new FarmlandBlock( AbstractBlock.Settings.create()
+            .sounds( BlockSoundGroup.GRAVEL ).mapColor( MapColor.DIRT_BROWN ).strength( 0.6f ).ticksRandomly().blockVision(Blocks::always).suffocates(Blocks::always) );
 
     public static final FoodComponent FOOD_POO_PROTEIN = new FoodComponent.Builder().alwaysEdible().saturationModifier( 5 ).nutrition( 0 ).snack().build();
 
@@ -236,6 +244,7 @@ public class GCMod implements ModInitializer
                 entries.add( FERMENTED_POO_BLOCK );
                 entries.add( ROPE );
                 entries.add( CENTRIFUGE );
+                entries.add( COMPOST );
                 entries.add( SULPHUR_ORE );
                 entries.add( NOAH_SULPHUR_ORE );
                 entries.add( MEME_BLOCK );
@@ -288,6 +297,8 @@ public class GCMod implements ModInitializer
     public static final SoundEvent MUSIC_SOS = SoundEvent.of( Identifier.of( "gcmod", "music_disc.symphony_of_stupidity" ) );
     public static final SoundEvent MUSIC_TOILETWATER = SoundEvent.of( Identifier.of( "gcmod", "music_disc.toilet_water" ) );
 
+    public static final SimpleParticleType PARTICLE_POO_SPLAT = FabricParticleTypes.simple();
+
     @Override
     public void onInitialize()
     {
@@ -309,6 +320,8 @@ public class GCMod implements ModInitializer
         Registry.register( Registries.SOUND_EVENT, MUSIC_SOS.getId(), MUSIC_SOS );
         Registry.register( Registries.SOUND_EVENT, MUSIC_TOILETWATER.getId(), MUSIC_TOILETWATER );
 
+        Registry.register( Registries.PARTICLE_TYPE, Identifier.of( "gcmod", "poo_splat" ), PARTICLE_POO_SPLAT );
+
         Registry.register( Registries.ITEM_GROUP, Identifier.of( "gcmod", "itemgroup" ), ITEM_GROUP );
 
         Registry.register( Registries.BLOCK, POO_BLOCK_ID, POO_BLOCK );
@@ -324,6 +337,7 @@ public class GCMod implements ModInitializer
         Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "dig_tnt" ), DIG_TNT );
         Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "wireless_torch" ), WIRELESS_TORCH );
         Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "wireless_wall_torch" ), WIRELESS_TORCH_WALL );
+        Registry.register( Registries.BLOCK, Identifier.of( "gcmod", "compost" ), COMPOST );
 
         Registry.register( Registries.ITEM, POO_BLOCK_ID, new BlockItem( POO_BLOCK, new Item.Settings() ) );
         Registry.register( Registries.ITEM, Identifier.of( "gcmod", "fermented_poo_block" ), new BlockItem( FERMENTED_POO_BLOCK, new Item.Settings() ) );
@@ -339,6 +353,7 @@ public class GCMod implements ModInitializer
         Registry.register( Registries.ITEM, Identifier.of( "gcmod", "wireless_torch" ),
                 new VerticallyAttachableBlockItem( WIRELESS_TORCH, WIRELESS_TORCH_WALL, new Item.Settings(), Direction.DOWN )
         );
+        Registry.register( Registries.ITEM, Identifier.of( "gcmod", "compost" ), new BlockItem( COMPOST, new Item.Settings() ) );
 
         Registry.register( Registries.ITEM, Identifier.of( "gcmod", "poo" ), POO );
         Registry.register( Registries.ITEM, Identifier.of( "gcmod", "fermented_poo" ), FERMENTED_POO );
@@ -412,7 +427,7 @@ public class GCMod implements ModInitializer
 
         BiomeModifications.addFeature( BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, SULPHUR_ORE_PLACEMENT );
         BiomeModifications.addFeature( BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, NOAH_ORE_PLACEMENT );
+
+        PayloadTypeRegistry.playS2C().register( PooSplatPayload.ID, PooSplatPayload.CODEC );
     }
-
-
 }

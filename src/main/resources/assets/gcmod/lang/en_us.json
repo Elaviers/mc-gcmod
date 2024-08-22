@@ -58,6 +58,7 @@
   "block.gcmod.rope": "Rope",
   "block.gcmod.sulphur_ore": "Sulphur Ore",
   "block.gcmod.wireless_torch": "Wireless Torch",
+  "block.gcmod.compost": "Compost",
   "tileentity.gcmod.centrifuge": "Centrifuge",
   "entity.gcmod.poo": "Poo Lump",
   "entity.gcmod.poo_cow": "Cow",
@@ -71,5 +72,7 @@
   "enchantment.gcmod.pooer": "Pooer",
 
   "gamerule.solidTurds": "Turd collision",
-  "gamerule.turdRate": "Turd rate"
+  "gamerule.turdRate": "Turd rate",
+
+  "resourcepack.tileable_textures.name": "Tileable Textures"
 }

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "gcmod:explosive_info"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "gcmod:dig_tnt"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

@@ -1,6 +1,11 @@
 package gcmod.entity;
 
+import com.sun.jna.platform.unix.X11;
 import gcmod.GCMod;
+import gcmod.PooSplatPayload;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -14,7 +19,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -29,6 +40,8 @@ public class PooEntity extends Entity
     float shrinkRate;
     float timer;
     boolean doDrop;
+
+    boolean wasOnGround;
 
     public PooEntity( EntityType<?> type, World world )
     {
@@ -163,6 +176,14 @@ public class PooEntity extends Entity
         return 0.04;
     }
 
+    private void emitPooFX( float severity, float randSeverity )
+    {
+        this.getServer().getPlayerManager().sendToAround( null, getX(), getY(), getZ(),
+                100f, this.getWorld().getRegistryKey(),
+                ServerPlayNetworking.createS2CPacket( new PooSplatPayload( this.getPos().toVector3f(), severity + randSeverity * this.getWorld().random.nextFloat() ) )
+        );
+    }
+
     @Override
     public void tick()
     {
@@ -198,8 +219,17 @@ public class PooEntity extends Entity
         this.setVelocity( this.getVelocity().multiply( 0.98 ) );
         if ( this.isOnGround() )
         {
+            if ( !wasOnGround && !this.getWorld().isClient && this.getWorld().getBlockState( this.getBlockPos() ).isOf( Blocks.STONECUTTER ) )
+            {
+                this.doDrop = true;
+                this.breakPoo();
+                this.emitPooFX( 1f + 5f * Math.abs( (float)this.getVelocity().y ), .5f );
+            }
+
             this.setVelocity( this.getVelocity().multiply( 0.7, -0.5, 0.7 ) );
         }
+
+        wasOnGround = this.isOnGround();
     }
 
     @Override
@@ -234,5 +264,18 @@ public class PooEntity extends Entity
     protected void writeCustomDataToNbt( NbtCompound nbt )
     {
 
+    }
+
+    @Override
+    protected void onBlockCollision( BlockState state )
+    {
+        if ( !getWorld().isClient && state.isOf( Blocks.PISTON_HEAD ) && getWorld().getBlockState( this.getBlockPos() ).isOf( Blocks.PISTON_HEAD ) )
+        {
+            this.doDrop = true;
+            this.breakPoo();
+            this.emitPooFX( 1.25f, 2f );
+        }
+
+        super.onBlockCollision( state );
     }
 }

@@ -2,10 +2,10 @@ package gcmod.entity;
 
 import gcmod.CentrifugeScreenHandler;
 import gcmod.GCMod;
+import gcmod.block.PooBlock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -110,7 +110,7 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
     @Override
     public boolean canInsert( int slot, ItemStack stack, @Nullable Direction dir )
     {
-        if ( this.spinRate > 0.01 || slot >= 4 || dir == Direction.DOWN )
+        if ( this.spinRate > 0.01 || slot >= 4 || dir == Direction.DOWN || !this.getStack( slot ).isEmpty() )
             return false;
 
         return stack.isOf( GCMod.FERMENTED_POO );

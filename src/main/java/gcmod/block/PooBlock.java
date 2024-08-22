@@ -1,7 +1,6 @@
-package gcmod.entity;
+package gcmod.block;
 
 import gcmod.GCMod;
-import gcmod.block.RopeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.tag.FluidTags;

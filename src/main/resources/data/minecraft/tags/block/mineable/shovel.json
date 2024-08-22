@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "gcmod:compost",
     "gcmod:poo_block",
     "gcmod:fermented_poo_block"
   ]

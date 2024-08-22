@@ -1,5 +1,6 @@
 package gcmod.item;
 
+import gcmod.GCMod;
 import net.minecraft.block.*;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -38,6 +39,21 @@ public class FertiliserItem extends Item
         World world = context.getWorld();
         BlockPos blockPos = context.getBlockPos();
         BlockPos blockPos2 = blockPos.offset( context.getSide() );
+
+        BlockState blockState = world.getBlockState( blockPos );
+
+        if ( blockState.isOf( Blocks.FARMLAND ) && world.getBlockState( blockPos2 ).isAir() )
+        {
+            if ( !world.isClient )
+            {
+                context.getPlayer().emitGameEvent( GameEvent.ITEM_INTERACT_FINISH );
+                world.setBlockState( blockPos, GCMod.COMPOST.getDefaultState().with( FarmlandBlock.MOISTURE, blockState.get( FarmlandBlock.MOISTURE ) ) );
+                context.getStack().damage( 1, context.getPlayer(), EquipmentSlot.MAINHAND );
+            }
+
+            return ActionResult.success( world.isClient );
+        }
+
         if ( useOnFertilizable( context.getStack(), world, blockPos, context.getPlayer() ) )
         {
             if ( !world.isClient )
@@ -48,23 +64,19 @@ public class FertiliserItem extends Item
 
             return ActionResult.success( world.isClient );
         }
-        else
-        {
-            if ( world.getBlockState( blockPos ).isSideSolidFullSquare( world, blockPos, context.getSide() ) && useOnGround( context.getStack(), world, blockPos2, context.getSide(), context.getPlayer() ) )
-            {
-                if ( !world.isClient )
-                {
-                    context.getPlayer().emitGameEvent( GameEvent.ITEM_INTERACT_FINISH );
-                    world.syncWorldEvent( WorldEvents.BONE_MEAL_USED, blockPos2, 15 );
-                }
 
-                return ActionResult.success( world.isClient );
-            }
-            else
+        if ( world.getBlockState( blockPos ).isSideSolidFullSquare( world, blockPos, context.getSide() ) && useOnGround( context.getStack(), world, blockPos2, context.getSide(), context.getPlayer() ) )
+        {
+            if ( !world.isClient )
             {
-                return ActionResult.PASS;
+                context.getPlayer().emitGameEvent( GameEvent.ITEM_INTERACT_FINISH );
+                world.syncWorldEvent( WorldEvents.BONE_MEAL_USED, blockPos2, 15 );
             }
+
+            return ActionResult.success( world.isClient );
         }
+
+        return ActionResult.PASS;
     }
 
     public static boolean useOnFertilizable( ItemStack stack, World world, BlockPos pos, LivingEntity user )
