@@ -6,11 +6,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class ExplosiveEntity extends Entity
@@ -74,6 +76,12 @@ public class ExplosiveEntity extends Entity
     protected Entity.MoveEffect getMoveEffect()
     {
         return Entity.MoveEffect.NONE;
+    }
+
+    @Override
+    public boolean damage( ServerWorld world, DamageSource source, float amount )
+    {
+        return false;
     }
 
     @Override

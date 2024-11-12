@@ -6,12 +6,8 @@
     "XXX"
   ],
   "key": {
-    "X": {
-      "item": "gcmod:poo"
-    },
-    "Y": {
-      "item": "minecraft:music_disc_mellohi"
-    }
+    "X": "gcmod:poo",
+    "Y": "minecraft:music_disc_mellohi"
   },
   "result": {
     "id": "gcmod:music_disc_powerful_constipation"

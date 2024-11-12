@@ -2,16 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     [
-      {
-        "item": "minecraft:coal"
-      },
-      {
-        "item": "minecraft:charcoal"
-      }
+        "minecraft:coal",
+        "minecraft:charcoal"
     ],
-    {
-      "item": "gcmod:sulphur"
-    }
+    "gcmod:sulphur"
   ],
   "result": {
     "id": "minecraft:gunpowder"

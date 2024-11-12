@@ -6,6 +6,7 @@ import gcmod.entity.PooEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.passive.*;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,9 +30,9 @@ public abstract class AnimalMixin extends PassiveEntity
     {
         MobTurdInfo info = MobTurdInfo.forClass( this );
         this.pooDropTimer = INVALID_TIMER;
-        if ( info != null )
+        if ( !this.getWorld().isClient && info != null )
         {
-            final int turdRate = this.getWorld().getGameRules().getInt( GCMod.RULE_TURD_RATE );
+            final int turdRate = ((ServerWorld)this.getWorld()).getGameRules().getInt( GCMod.RULE_TURD_RATE );
             if ( turdRate > 0 )
             {
                 this.pooDropTimer = this.random.nextInt( info.maxInterval ) * turdRate;
@@ -53,7 +54,7 @@ public abstract class AnimalMixin extends PassiveEntity
             MobTurdInfo info = MobTurdInfo.forClass( this );
             assert info != null;
 
-            final int turdRate = this.getWorld().getGameRules().getInt( GCMod.RULE_TURD_RATE );
+            final int turdRate = ((ServerWorld)this.getWorld()).getGameRules().getInt( GCMod.RULE_TURD_RATE );
             this.pooDropTimer = turdRate > 0 ? (this.random.nextBetween( info.minInterval, info.maxInterval ) * turdRate) : INVALID_TIMER;
         }
     }

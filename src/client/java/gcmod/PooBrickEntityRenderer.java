@@ -6,11 +6,12 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.*;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
-public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity>
+public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity, PooBrickEntityRenderState>
 {
     public static TexturedModelData getTexturedModelData()
     {
@@ -35,25 +36,34 @@ public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity>
     }
 
     @Override
-    public Identifier getTexture( PooBrickEntity entity )
-    {
-        return TEXTURE;
-    }
-
-    @Override
-    public void render( PooBrickEntity pooBrick, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
+    public void render( PooBrickEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
     {
         matrices.push();
 
         matrices.translate(0.0, 0.125, 0.0);
-        matrices.multiply( RotationAxis.POSITIVE_X.rotationDegrees( pooBrick.prevAngleX + tickDelta * (pooBrick.angleX - pooBrick.prevAngleX )));
-        matrices.multiply( RotationAxis.POSITIVE_Y.rotationDegrees( pooBrick.prevAngleY + tickDelta * (pooBrick.angleY - pooBrick.prevAngleY )));
-        matrices.multiply( RotationAxis.POSITIVE_Z.rotationDegrees( pooBrick.prevAngleZ + tickDelta * (pooBrick.angleZ - pooBrick.prevAngleZ )));
+        matrices.multiply( RotationAxis.POSITIVE_X.rotationDegrees( state.angleX ) );
+        matrices.multiply( RotationAxis.POSITIVE_Y.rotationDegrees( state.angleY ) );
+        matrices.multiply( RotationAxis.POSITIVE_Z.rotationDegrees( state.angleZ ) );
 
         model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV );
 
         matrices.pop();
 
-        super.render( pooBrick, yaw, tickDelta, matrices, vertexConsumers, light );
+        super.render( state, matrices, vertexConsumers, light );
+    }
+
+    @Override
+    public PooBrickEntityRenderState createRenderState()
+    {
+        return new PooBrickEntityRenderState();
+    }
+
+    @Override
+    public void updateRenderState( PooBrickEntity entity, PooBrickEntityRenderState state, float tickDelta )
+    {
+        super.updateRenderState( entity, state, tickDelta );
+        state.angleX = entity.prevAngleX + tickDelta * (entity.angleX - entity.prevAngleX );
+        state.angleY = entity.prevAngleY + tickDelta * (entity.angleY - entity.prevAngleY );
+        state.angleZ = entity.prevAngleZ + tickDelta * (entity.angleZ - entity.prevAngleZ );
     }
 }

@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "fertiliser",
   "ingredients": [
-    {
-      "item": "minecraft:bucket"
-    },
-    {
-      "item": "gcmod:fermented_poo"
-    }
+      "minecraft:bucket",
+      "gcmod:fermented_poo"
   ],
   "result": {
     "count": 1,

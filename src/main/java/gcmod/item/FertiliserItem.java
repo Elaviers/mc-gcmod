@@ -51,7 +51,7 @@ public class FertiliserItem extends Item
                 context.getStack().damage( 1, context.getPlayer(), EquipmentSlot.MAINHAND );
             }
 
-            return ActionResult.success( world.isClient );
+            return ActionResult.SUCCESS;
         }
 
         if ( useOnFertilizable( context.getStack(), world, blockPos, context.getPlayer() ) )
@@ -62,7 +62,7 @@ public class FertiliserItem extends Item
                 world.syncWorldEvent( WorldEvents.BONE_MEAL_USED, blockPos, 15 );
             }
 
-            return ActionResult.success( world.isClient );
+            return ActionResult.SUCCESS;
         }
 
         if ( world.getBlockState( blockPos ).isSideSolidFullSquare( world, blockPos, context.getSide() ) && useOnGround( context.getStack(), world, blockPos2, context.getSide(), context.getPlayer() ) )
@@ -73,7 +73,7 @@ public class FertiliserItem extends Item
                 world.syncWorldEvent( WorldEvents.BONE_MEAL_USED, blockPos2, 15 );
             }
 
-            return ActionResult.success( world.isClient );
+            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;

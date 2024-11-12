@@ -13,6 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 public class WirelessTorchBlock extends AbstractTorchBlock implements BlockEntityProvider
@@ -76,9 +77,9 @@ public class WirelessTorchBlock extends AbstractTorchBlock implements BlockEntit
     }
 
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify )
+    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
     {
-        super.neighborUpdate( state, world, pos, sourceBlock, sourcePos, notify );
+        super.neighborUpdate( state, world, pos, sourceBlock, wireOrientation, notify );
 
         Direction dir = this.getFacing( state ).getOpposite();
         final boolean shouldBeOn = world.isEmittingRedstonePower( pos.offset( dir ), dir );

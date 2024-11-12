@@ -5,6 +5,7 @@
   "mixins": [
     "AnimalMixin",
     "CropBlockMixin",
+    "ExplosionImplMixin",
     "PlayerMixin"
   ],
   "client": [

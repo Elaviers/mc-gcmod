@@ -11,7 +11,7 @@ public record PooSplatPayload(Vector3f position, float severity) implements Cust
 {
     public static final PacketCodec<RegistryByteBuf, PooSplatPayload> CODEC =
             PacketCodec.tuple(
-                    PacketCodecs.VECTOR3F, PooSplatPayload::position,
+                    PacketCodecs.VECTOR_3F, PooSplatPayload::position,
                     PacketCodecs.FLOAT, PooSplatPayload::severity,
                     PooSplatPayload::new);
 

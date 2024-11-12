@@ -4,6 +4,7 @@ import gcmod.GCMod;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -26,7 +27,7 @@ public class AirstrikeExplosiveEntity extends ExplosiveEntity
 
     public static AirstrikeExplosiveEntity create( World world, double x, double y, double z, int strength, int spread, int pieces, int height )
     {
-        AirstrikeExplosiveEntity explosive = GCMod.AIRSTRIKE_EXPLOSIVE_ENTITY.create( world );
+        AirstrikeExplosiveEntity explosive = GCMod.AIRSTRIKE_EXPLOSIVE_ENTITY.create( world, SpawnReason.TRIGGERED );
 
         explosive.setPosition( x, y, z );
         explosive.explosionRadius = strength;
@@ -90,7 +91,7 @@ public class AirstrikeExplosiveEntity extends ExplosiveEntity
 
     private void createNewBomb( double motionX, double motionY, double motionZ )
     {
-        PooBrickEntity bomb = GCMod.EXPLOSIVE_BOMB_ENTITY.create( getWorld() );
+        PooBrickEntity bomb = GCMod.EXPLOSIVE_BOMB_ENTITY.create( getWorld(), SpawnReason.TRIGGERED );
         bomb.setPosition( this.getPos() );
 
         if ( this.instigator instanceof PlayerEntity player )

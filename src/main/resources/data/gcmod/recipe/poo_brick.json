@@ -1,9 +1,7 @@
 {
   "type": "minecraft:smelting",
   "category": "misc",
-  "ingredient": {
-    "item": "gcmod:poo_powder"
-  },
+  "ingredient":  "gcmod:poo_powder",
   "result": {
     "id": "gcmod:poo_brick"
   },

@@ -8,13 +8,14 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.effect.EnchantmentValueEffect;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.item.consume.UseAction;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -32,12 +33,6 @@ public class PooCannonItem extends RangedWeaponItem
     }
 
     @Override
-    public int getEnchantability()
-    {
-        return 25;
-    }
-
-    @Override
     protected void shoot( LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target )
     {
         assert false; // kinda dumb that they made me do this
@@ -45,14 +40,14 @@ public class PooCannonItem extends RangedWeaponItem
 
     private static int getEnchantmentValue( ItemStack stack, ComponentType<EnchantmentValueEffect> type )
     {
-        Pair<EnchantmentValueEffect, Integer> pair = EnchantmentHelper.getEffectListAndLevel( stack, GCMod.EFFECT_CONSTIPATION );
+        Pair<EnchantmentValueEffect, Integer> pair = EnchantmentHelper.getHighestLevelEffect( stack, GCMod.EFFECT_CONSTIPATION );
         if ( pair != null )
             return pair.getSecond();
 
         return 0;
     }
 
-    void shootPoo( World world, PlayerEntity player, ItemStack stack )
+    boolean shootPoo( World world, PlayerEntity player, ItemStack stack )
     {
         ItemStack ammoStack = null;
 
@@ -90,7 +85,7 @@ public class PooCannonItem extends RangedWeaponItem
         {
             ammoStack = player.getProjectileType( stack );
             if ( ammoStack.isEmpty() )
-                return;
+                return false;
         }
 
         if ( !world.isClient )
@@ -115,7 +110,7 @@ public class PooCannonItem extends RangedWeaponItem
             }
 
             if ( count == 0 )
-                return;
+                return false;
 
             float speed = 2f;
             if ( !EnchantmentHelper.hasAnyEnchantmentsIn( stack, GCMod.ENCH_DIARRHOEA ) )
@@ -127,7 +122,7 @@ public class PooCannonItem extends RangedWeaponItem
 
             for ( int i = 0; i < count; ++i )
             {
-                PooBrickEntity poo = GCMod.EXPLOSIVE_POO_BRICK_ENTITY.create( world );
+                PooBrickEntity poo = GCMod.EXPLOSIVE_POO_BRICK_ENTITY.create( world, SpawnReason.EVENT );
                 poo.explosionRadius = 4 + getEnchantmentValue( stack, GCMod.EFFECT_POOER );
                 poo.thrower = player;
 
@@ -162,13 +157,17 @@ public class PooCannonItem extends RangedWeaponItem
         {
             player.playSound( GCMod.POO_CANNON_SOUND, 1 + world.random.nextFloat() * 0.2f, 1 + (world.random.nextFloat() * 0.5f - 0.25f) );
         }
+
+        return true;
     }
 
     @Override
-    public void onStoppedUsing( ItemStack stack, World world, LivingEntity user, int remainingUseTicks )
+    public boolean onStoppedUsing( ItemStack stack, World world, LivingEntity user, int remainingUseTicks )
     {
         if ( user instanceof PlayerEntity player )
-            shootPoo( world, player, stack );
+            return shootPoo( world, player, stack );
+
+        return false;
     }
 
     @Override
@@ -184,18 +183,16 @@ public class PooCannonItem extends RangedWeaponItem
     }
 
     @Override
-    public TypedActionResult<ItemStack> use( World world, PlayerEntity user, Hand hand )
+    public ActionResult use( World world, PlayerEntity user, Hand hand )
     {
         ItemStack stack = user.getStackInHand( hand );
         if ( !user.isInCreativeMode() && user.getProjectileType( stack ).isEmpty() )
         {
-            return TypedActionResult.fail( stack );
+            return ActionResult.FAIL;
         }
-        else
-        {
-            user.setCurrentHand( hand );
-            return TypedActionResult.consume( stack );
-        }
+
+        user.setCurrentHand( hand );
+        return ActionResult.CONSUME;
     }
 
     @Override

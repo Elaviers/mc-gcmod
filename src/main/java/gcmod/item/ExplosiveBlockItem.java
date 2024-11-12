@@ -91,7 +91,7 @@ public class ExplosiveBlockItem extends BlockItem
         {
             case CONSTRUCTIVE:
             {
-                RegistryEntryLookup<Block> blockReg = context.getRegistryLookup().getWrapperOrThrow( RegistryKeys.BLOCK );
+                RegistryEntryLookup<Block> blockReg = context.getRegistryLookup().getOrThrow( RegistryKeys.BLOCK );
                 tooltip.add( Text.translatable( "block.gcmod.explosive.tooltip.block", NbtHelper.toBlockState( blockReg, nbt.getCompound( "Block" ) ).getBlock().getName() ) );
                 break;
             }

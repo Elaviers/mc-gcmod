@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "gcmod:poo_block"
-    }
+      "gcmod:poo_block"
   ],
   "result": {
     "id": "gcmod:poo",

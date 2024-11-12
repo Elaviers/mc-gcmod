@@ -1,17 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "building",
   "pattern": [
     "XXX",
     "XYX",
     "XXX"
   ],
   "key": {
-    "X": {
-      "tag": "minecraft:planks"
-    },
-    "Y": {
-      "item": "gcmod:black_powder"
-    }
+    "X": "#minecraft:planks",
+    "Y": "gcmod:black_powder"
   },
   "result": {
     "id": "gcmod:blast_tnt",

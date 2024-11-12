@@ -6,12 +6,8 @@
     " X "
   ],
   "key": {
-    "X": {
-      "item": "minecraft:redstone_torch"
-    },
-    "Y": {
-      "item": "minecraft:repeater"
-    }
+    "X": "minecraft:redstone_torch",
+    "Y": "minecraft:repeater"
   },
   "result": {
     "id": "gcmod:wireless_torch"

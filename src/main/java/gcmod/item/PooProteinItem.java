@@ -3,13 +3,8 @@ package gcmod.item;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 import java.util.Collection;
@@ -19,24 +14,6 @@ public class PooProteinItem extends Item
     public PooProteinItem( Settings settings )
     {
         super( settings );
-    }
-
-    @Override
-    public int getMaxUseTime( ItemStack stack, LivingEntity user )
-    {
-        return 16;
-    }
-
-    @Override
-    public UseAction getUseAction( ItemStack stack )
-    {
-        return UseAction.EAT;
-    }
-
-    @Override
-    public TypedActionResult<ItemStack> use( World world, PlayerEntity user, Hand hand )
-    {
-        return ItemUsage.consumeHeldItem( world, user, hand );
     }
 
     @Override

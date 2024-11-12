@@ -5,9 +5,7 @@
     "XX"
   ],
   "key": {
-    "X": {
-      "item": "gcmod:noah_sulphur"
-    }
+    "X": "gcmod:noah_sulphur"
   },
   "result": {
     "id": "gcmod:meme_essence"

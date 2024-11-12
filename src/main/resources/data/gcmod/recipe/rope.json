@@ -1,14 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "pattern": [
     " XX",
     "XXX",
     "XX "
   ],
   "key": {
-    "X": {
-      "item": "minecraft:string"
-    }
+    "X": "minecraft:string"
   },
   "result": {
     "id": "gcmod:rope"

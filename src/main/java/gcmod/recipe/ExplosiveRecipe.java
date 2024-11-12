@@ -5,7 +5,6 @@ import gcmod.block.ExplosiveBlock;
 import gcmod.item.ExplosiveBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -49,7 +48,7 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
         ExplosiveBlock.Type finalType = null;
         int TNTCount = 0;
 
-        for ( int i = 0; i < inv.getSize(); ++i )
+        for ( int i = 0; i < inv.size(); ++i )
         {
             ItemStack stack = inv.getStackInSlot( i );
 
@@ -207,13 +206,7 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
     }
 
     @Override
-    public boolean fits( int width, int height )
-    {
-        return width * height > 1;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer()
+    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer()
     {
         return GCMod.FERTILIZER_RECIPE_SERIALIZER;
     }

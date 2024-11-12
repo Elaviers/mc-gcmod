@@ -9,7 +9,7 @@ import net.minecraft.client.render.entity.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-public class PooEntityRenderer extends EntityRenderer<PooEntity>
+public class PooEntityRenderer extends EntityRenderer<PooEntity, PooEntityRenderState>
 {
     public static TexturedModelData getTexturedModelData()
     {
@@ -33,25 +33,31 @@ public class PooEntityRenderer extends EntityRenderer<PooEntity>
     }
 
     @Override
-    public Identifier getTexture( PooEntity entity )
-    {
-        return TEXTURE;
-    }
-
-    @Override
-    public void render( PooEntity poo, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
+    public void render( PooEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
     {
         matrices.push();
 
-        float size = poo.prevSize + tickDelta * (poo.size - poo.prevSize);
-        if ( size > 0 )
+        if ( state.size > 0 )
         {
-            matrices.scale( size, size, size );
+            matrices.scale( state.size, state.size, state.size );
             model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV );
         }
 
         matrices.pop();
 
-        super.render( poo, yaw, tickDelta, matrices, vertexConsumers, light );
+        super.render( state, matrices, vertexConsumers, light );
+    }
+
+    @Override
+    public PooEntityRenderState createRenderState()
+    {
+        return new PooEntityRenderState();
+    }
+
+    @Override
+    public void updateRenderState( PooEntity entity, PooEntityRenderState state, float tickDelta )
+    {
+        super.updateRenderState( entity, state, tickDelta );
+        state.size = entity.prevSize + tickDelta * (entity.size - entity.prevSize);
     }
 }

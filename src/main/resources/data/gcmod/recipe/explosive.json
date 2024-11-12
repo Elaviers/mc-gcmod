@@ -1,3 +1,4 @@
 {
-  "type": "gcmod:crafting_explosive"
+  "type": "gcmod:crafting_explosive",
+  "category": "building"
 }

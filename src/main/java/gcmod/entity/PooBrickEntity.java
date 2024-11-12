@@ -13,6 +13,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
@@ -77,14 +78,14 @@ public class PooBrickEntity extends Entity
     }
 
     @Override
-    public boolean damage( DamageSource source, float amount )
+    public boolean damage( ServerWorld world, DamageSource source, float amount )
     {
         if ( !getWorld().isClient && this.explosionRadius == 0 )
         {
             this.discard();
 
             if ( source.getSource() instanceof PlayerEntity player && !player.isCreative() )
-                this.dropItem( GCMod.POO_BRICK );
+                this.dropItem( (ServerWorld)getWorld(), GCMod.POO_BRICK );
         }
 
         return true;
@@ -104,7 +105,7 @@ public class PooBrickEntity extends Entity
             if ( this.age >= 3000 )
             {
                 this.discard();
-                this.dropItem( GCMod.POO_BRICK );
+                this.dropItem( (ServerWorld)getWorld(), GCMod.POO_BRICK );
                 return;
             }
 
@@ -144,7 +145,7 @@ public class PooBrickEntity extends Entity
 
                 for ( Entity ent : overlaps )
                 {
-                    ent.damage( getWorld().getDamageSources().fallingBlock( this.thrower ), (float) (8 * this.getVelocity().length()) );
+                    ent.damage( (ServerWorld)getWorld(), getWorld().getDamageSources().fallingBlock( this.thrower ), (float) (8 * this.getVelocity().length()) );
                     ent.playSound( SoundEvents.ENTITY_PLAYER_BIG_FALL, 1.f, .5f + getWorld().random.nextFloat() * .4f );
                 }
             }

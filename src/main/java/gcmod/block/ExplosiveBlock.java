@@ -13,14 +13,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,14 +73,14 @@ public class ExplosiveBlock extends Block implements BlockEntityProvider
     }
 
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify )
+    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
     {
         if ( world.isReceivingRedstonePower( pos ) )
             explode( world, pos, false );
     }
 
     @Override
-    protected void onExploded( BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger )
+    protected void onExploded( BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger )
     {
         if ( explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK )
         {
@@ -108,7 +110,7 @@ public class ExplosiveBlock extends Block implements BlockEntityProvider
     }
 
     @Override
-    protected ItemActionResult onUseWithItem( ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit )
+    protected ActionResult onUseWithItem( ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit )
     {
         if ( !stack.isOf( Items.FLINT_AND_STEEL ) && !stack.isOf( Items.FIRE_CHARGE ) )
             return super.onUseWithItem( stack, state, world, pos, player, hand, hit );
@@ -124,7 +126,7 @@ public class ExplosiveBlock extends Block implements BlockEntityProvider
         }
 
         player.incrementStat( Stats.USED.getOrCreateStat( stack.getItem() ) );
-        return ItemActionResult.success( world.isClient );
+        return ActionResult.SUCCESS;
     }
 
     @Override
@@ -133,7 +135,7 @@ public class ExplosiveBlock extends Block implements BlockEntityProvider
         if ( !world.isClient )
         {
             BlockPos blockPos = hit.getBlockPos();
-            if ( projectile.isOnFire() && projectile.canModifyAt( world, blockPos ) )
+            if ( projectile.isOnFire() && projectile.canModifyAt( (ServerWorld)world, blockPos ) )
                 explode( world, blockPos, false );
         }
     }

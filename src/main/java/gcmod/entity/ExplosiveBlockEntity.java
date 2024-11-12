@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.RegistryKeys;
@@ -94,7 +95,7 @@ public class ExplosiveBlockEntity extends BlockEntity
 
         if ( getType() == GCMod.BLAST_TNT_BLOCK_ENTITY )
         {
-            ExplosiveEntity tnt = GCMod.EXPLOSIVE_ENTITY.create( getWorld() );
+            ExplosiveEntity tnt = GCMod.EXPLOSIVE_ENTITY.create( getWorld(), SpawnReason.TRIGGERED );
             tnt.setPosition( spawnPos );
             tnt.explosionRadius = this.strength;
             tnt.startFuse( fuse );
@@ -107,7 +108,7 @@ public class ExplosiveBlockEntity extends BlockEntity
         }
         else if ( getType() == GCMod.CONSTRUCTIVE_TNT_BLOCK_ENTITY )
         {
-            ConstructiveExplosiveEntity tnt = GCMod.CONSTRUCTIVE_EXPLOSIVE_ENTITY.create( getWorld() );
+            ConstructiveExplosiveEntity tnt = GCMod.CONSTRUCTIVE_EXPLOSIVE_ENTITY.create( getWorld(), SpawnReason.TRIGGERED );
             tnt.setPosition( spawnPos );
             tnt.explosionRadius = strength;
             tnt.createdBlock = this.constructState == null ? Blocks.AIR.getDefaultState() : this.constructState;
@@ -121,7 +122,7 @@ public class ExplosiveBlockEntity extends BlockEntity
         }
         else if ( getType() == GCMod.DIG_TNT_BLOCK_ENTITY )
         {
-            DigExplosiveEntity tnt = GCMod.DIG_EXPLOSIVE_ENTITY.create( getWorld() );
+            DigExplosiveEntity tnt = GCMod.DIG_EXPLOSIVE_ENTITY.create( getWorld(), SpawnReason.TRIGGERED );
             tnt.setPosition( spawnPos );
             tnt.explosionRadius = strength;
             tnt.startFuse( fuse );

@@ -1,14 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "building",
   "pattern": [
     "XXX",
     "XXX",
     "XXX"
   ],
   "key": {
-    "X": {
-      "item": "gcmod:meme_essence"
-    }
+      "X": "gcmod:meme_essence"
   },
   "result": {
     "id": "gcmod:meme_block",

@@ -2,12 +2,13 @@ package gcmod.item;
 
 import gcmod.GCMod;
 import gcmod.entity.PooBrickEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -22,7 +23,7 @@ public class PooBrickItem extends Item
     }
 
     @Override
-    public TypedActionResult<ItemStack> use( World world, PlayerEntity player, Hand hand )
+    public ActionResult use( World world, PlayerEntity player, Hand hand )
     {
         ItemStack stack = player.getStackInHand(hand);
 
@@ -31,7 +32,7 @@ public class PooBrickItem extends Item
             if ( !player.isCreative() )
                 stack.decrement( 1 );
 
-            PooBrickEntity brick = GCMod.POO_BRICK_ENTITY.create( world );
+            PooBrickEntity brick = GCMod.POO_BRICK_ENTITY.create( world, SpawnReason.EVENT );
             brick.thrower = player;
 
             brick.setYaw( player.getYaw() );
@@ -53,7 +54,7 @@ public class PooBrickItem extends Item
             brick.setPosition( new Vec3d( player.getX(), player.getEyeY() - .1f, player.getZ() ).add( fwd.multiply( -.2f ) ).add( right.multiply( .2f ) ) );
 
             brick.setVelocity(
-                    player.getVelocity()
+                    player.getMovement()
                             .add( fwd.multiply( .6f + world.random.nextFloat() * .8f ) )
                             .add( new Vec3d( dir ).multiply( world.random.nextFloat() * .1f ) )
             );
@@ -64,6 +65,6 @@ public class PooBrickItem extends Item
 
         player.playSound( SoundEvents.ENTITY_EGG_THROW, 1f, .5f + world.random.nextFloat() * .2f );
 
-        return TypedActionResult.success( stack );
+        return ActionResult.SUCCESS;
     }
 }

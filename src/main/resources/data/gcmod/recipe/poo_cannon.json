@@ -6,15 +6,9 @@
     "PY "
   ],
   "key": {
-    "X": {
-      "item": "minecraft:obsidian"
-    },
-    "Y": {
-      "item": "minecraft:iron_ingot"
-    },
-    "P": {
-      "item": "gcmod:black_powder"
-    }
+    "X": "minecraft:obsidian",
+    "Y": "minecraft:iron_ingot",
+    "P": "gcmod:black_powder"
   },
   "result": {
     "id": "gcmod:poo_cannon"

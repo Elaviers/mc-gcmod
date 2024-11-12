@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "group": "black_powder",
   "ingredients": [
-    {
-      "item": "gcmod:noah_sulphur"
-    }
+      "gcmod:noah_sulphur"
   ],
   "result": {
     "id": "gcmod:black_powder",

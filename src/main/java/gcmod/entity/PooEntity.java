@@ -24,6 +24,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -118,14 +119,13 @@ public class PooEntity extends Entity
         return false;
     }
 
-    @Override
-    public boolean damage( DamageSource source, float amount )
+    private boolean commonDamage( DamageSource source )
     {
         if ( !(source.getSource() instanceof PlayerEntity player) )
         {
             this.doDrop = false;
             this.shrinkRate = size;
-            return false;
+            return true;
         }
 
         this.targetSize = this.size;
@@ -155,12 +155,24 @@ public class PooEntity extends Entity
         return true;
     }
 
+    @Override
+    public boolean clientDamage( DamageSource source )
+    {
+        return commonDamage( source );
+    }
+
+    @Override
+    public boolean damage( ServerWorld world, DamageSource source, float amount )
+    {
+        return commonDamage( source );
+    }
+
     void breakPoo()
     {
         this.discard();
 
         if ( this.doDrop )
-            this.dropStack( new ItemStack( GCMod.POO, this.targetSize > 1.1f ? 2 : 1 ) );
+            this.dropStack( (ServerWorld)this.getWorld(), new ItemStack( GCMod.POO, this.targetSize > 1.1f ? 2 : 1 ) );
     }
 
     @Override

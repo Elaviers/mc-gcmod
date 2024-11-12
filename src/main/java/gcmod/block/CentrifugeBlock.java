@@ -17,6 +17,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 public class CentrifugeBlock extends BlockWithEntity
@@ -40,7 +41,7 @@ public class CentrifugeBlock extends BlockWithEntity
     }
 
     @Override
-    protected boolean isTransparent( BlockState state, BlockView world, BlockPos pos )
+    protected boolean isTransparent( BlockState state )
     {
         return true;
     }
@@ -100,11 +101,10 @@ public class CentrifugeBlock extends BlockWithEntity
     //
     //
 
-
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify )
+    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
     {
-        super.neighborUpdate( state, world, pos, sourceBlock, sourcePos, notify );
+        super.neighborUpdate( state, world, pos, sourceBlock, wireOrientation, notify );
         if ( world.getBlockEntity( pos ) instanceof CentrifugeEntity centrifuge )
             centrifuge.setPowered( world.isReceivingRedstonePower( pos ) );
     }
