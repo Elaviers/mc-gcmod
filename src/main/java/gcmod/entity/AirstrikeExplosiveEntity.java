@@ -1,14 +1,15 @@
 package gcmod.entity;
 
 import gcmod.GCMod;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class AirstrikeExplosiveEntity extends ExplosiveEntity
 {
@@ -20,16 +21,16 @@ public class AirstrikeExplosiveEntity extends ExplosiveEntity
 
     private double initialY;
 
-    public AirstrikeExplosiveEntity( EntityType<?> type, World world )
+    public AirstrikeExplosiveEntity( EntityType<?> type, Level world )
     {
         super( type, world );
     }
 
-    public static AirstrikeExplosiveEntity create( World world, double x, double y, double z, int strength, int spread, int pieces, int height )
+    public static AirstrikeExplosiveEntity create( Level world, double x, double y, double z, int strength, int spread, int pieces, int height )
     {
-        AirstrikeExplosiveEntity explosive = GCMod.AIRSTRIKE_EXPLOSIVE_ENTITY.create( world, SpawnReason.TRIGGERED );
+        AirstrikeExplosiveEntity explosive = GCMod.AIRSTRIKE_EXPLOSIVE_ENTITY.create( world, EntitySpawnReason.TRIGGERED );
 
-        explosive.setPosition( x, y, z );
+        explosive.setPos( x, y, z );
         explosive.explosionRadius = strength;
 
         explosive.initialY = y;
@@ -49,20 +50,20 @@ public class AirstrikeExplosiveEntity extends ExplosiveEntity
             return;
         }
 
-        if ( this.getVelocity().y < 1.f )
-            this.setVelocity( this.getVelocity().add( 0d, 0.02d, 0d ) );
+        if ( this.getDeltaMovement().y < 1.f )
+            this.setDeltaMovement( this.getDeltaMovement().add( 0d, 0.02d, 0d ) );
 
-        this.move( MovementType.SELF, this.getVelocity() );
-        this.setVelocity( this.getVelocity().multiply( 0.999d, 1d, 0.999d ) );
+        this.move( MoverType.SELF, this.getDeltaMovement() );
+        this.setDeltaMovement( this.getDeltaMovement().multiply( 0.999d, 1d, 0.999d ) );
 
-        if ( (this.verticalCollision || this.getY() - this.initialY >= height) && !this.getWorld().isClient )
+        if ( (this.verticalCollision || this.getY() - this.initialY >= height) && !this.level().isClientSide() )
         {
             this.discard();
             this.airStrike();
         }
 
-        if ( this.getWorld().isClient )
-            this.getWorld().addParticle( ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() - 0.25, this.getZ(), 0.0, -.25d, 0.0 );
+        if ( this.level().isClientSide() )
+            this.level().addParticle( ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() - 0.25, this.getZ(), 0.0, -.25d, 0.0 );
     }
 
     @Override
@@ -73,13 +74,13 @@ public class AirstrikeExplosiveEntity extends ExplosiveEntity
 
     protected void airStrike()
     {
-        this.getWorld().createExplosion( this, this.getX(), this.getY(), this.getZ(), 5, World.ExplosionSourceType.TNT );
+        this.level().explode( this, this.getX(), this.getY(), this.getZ(), 5, Level.ExplosionInteraction.TNT );
         double AngleStep = 2 * Math.PI / this.pieces;
         double xmot, ymot, zmot;
         final float mod = spread * .12f;
         for ( int i = 0; i < this.pieces; i++ )
         {
-            ymot = this.getVelocity().y + Math.random() * mod;
+            ymot = this.getDeltaMovement().y + Math.random() * mod;
 
             final double power = Math.random() * mod;
             xmot = Math.sin( AngleStep * i ) * power;
@@ -91,40 +92,39 @@ public class AirstrikeExplosiveEntity extends ExplosiveEntity
 
     private void createNewBomb( double motionX, double motionY, double motionZ )
     {
-        PooBrickEntity bomb = GCMod.EXPLOSIVE_BOMB_ENTITY.create( getWorld(), SpawnReason.TRIGGERED );
-        bomb.setPosition( this.getPos() );
+        PooBrickEntity bomb = GCMod.EXPLOSIVE_BOMB_ENTITY.create( level(), EntitySpawnReason.TRIGGERED );
+        bomb.setPos( this.position() );
 
-        if ( this.instigator instanceof PlayerEntity player )
+        if ( this.instigator instanceof Player player )
             bomb.thrower = player;
 
         bomb.explosionRadius = Math.max( 1, this.explosionRadius );
-        bomb.setVelocity( motionX, motionY, motionZ );
-        getWorld().spawnEntity( bomb );
+        bomb.setDeltaMovement( motionX, motionY, motionZ );
+        level().addFreshEntity( bomb );
     }
 
     @Override
-    protected void writeCustomDataToNbt( NbtCompound nbt )
+    protected void addAdditionalSaveData( ValueOutput view )
     {
-        super.writeCustomDataToNbt( nbt );
-
-        nbt.putShort( "Spread", (short) this.spread );
-        nbt.putShort( "Pieces", (short) this.pieces );
-        nbt.putShort( "Height", (short) this.height );
+        super.addAdditionalSaveData( view );
+        view.putShort( "Spread", (short)this.spread );
+        view.putShort( "Pieces", (short)this.pieces );
+        view.putShort( "Height", (short)this.height );
     }
 
     @Override
-    protected void readCustomDataFromNbt( NbtCompound nbt )
+    protected void readAdditionalSaveData( ValueInput view )
     {
-        super.readCustomDataFromNbt( nbt );
-
-        this.spread = nbt.getShort( "Spread" );
-        this.pieces = nbt.getShort( "Pieces" );
-        this.height = nbt.getShort( "Height" );
+        super.readAdditionalSaveData( view );
+        this.spread = view.getShortOr( "Spread", (short)0 );
+        this.pieces = view.getShortOr( "Pieces", (short)0 );
+        this.height = view.getShortOr( "Height", (short)0 );
+        this.initialY = this.getY(); // chances are the fuse was active. if we were midair - who cares?
     }
 
     @Override
     public BlockState getBlockState()
     {
-        return GCMod.AIRSTRIKE_TNT.getDefaultState();
+        return GCMod.AIRSTRIKE_TNT.defaultBlockState();
     }
 }

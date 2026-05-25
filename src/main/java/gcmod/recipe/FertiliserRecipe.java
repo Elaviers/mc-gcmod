@@ -2,34 +2,34 @@ package gcmod.recipe;
 
 import gcmod.GCMod;
 import gcmod.item.FertiliserItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.world.World;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public class FertiliserRecipe extends SpecialCraftingRecipe
+public class FertiliserRecipe extends CustomRecipe
 {
     private static final ItemStack defaultStack;
 
     static
     {
         defaultStack = new ItemStack( GCMod.FERTILISER );
-        defaultStack.setDamage( FertiliserItem.MAX_DAMAGE - 8 );
+        defaultStack.setDamageValue( FertiliserItem.MAX_DAMAGE - 8 );
     }
 
     ItemStack outputStack = defaultStack;
 
-    public FertiliserRecipe( CraftingRecipeCategory category )
+    public FertiliserRecipe( CraftingBookCategory category )
     {
         super( category );
     }
 
     @Override
-    public boolean matches( CraftingRecipeInput inv, World world )
+    public boolean matches( CraftingInput inv, Level world )
     {
         outputStack = defaultStack.copy();
 
@@ -38,7 +38,7 @@ public class FertiliserRecipe extends SpecialCraftingRecipe
 
         for ( int i = 0; i < inv.size(); ++i )
         {
-            ItemStack stack = inv.getStackInSlot( i );
+            ItemStack stack = inv.getItem( i );
 
             if ( stack.getItem() == Items.BUCKET )
             {
@@ -52,7 +52,7 @@ public class FertiliserRecipe extends SpecialCraftingRecipe
                 if ( prevDamage > 0 )
                     return false;
 
-                prevDamage = stack.getDamage();
+                prevDamage = stack.getDamageValue();
                 if ( prevDamage == 0 )
                     return false;
             }
@@ -77,7 +77,7 @@ public class FertiliserRecipe extends SpecialCraftingRecipe
             if ( newDmg <= 0 )
                 return false;
 
-            outputStack.setDamage( newDmg );
+            outputStack.setDamageValue( newDmg );
             return true;
         }
 
@@ -85,13 +85,10 @@ public class FertiliserRecipe extends SpecialCraftingRecipe
     }
 
     @Override
-    public ItemStack craft( CraftingRecipeInput inventory, RegistryWrapper.WrapperLookup lookup )
-    {
-        return this.outputStack.copy();
-    }
+    public ItemStack assemble( CraftingInput recipeInput, HolderLookup.Provider provider ) { return this.outputStack.copy(); }
 
     @Override
-    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer()
+    public RecipeSerializer<? extends CustomRecipe> getSerializer()
     {
         return GCMod.FERTILIZER_RECIPE_SERIALIZER;
     }

@@ -1,39 +1,41 @@
 package gcmod;
 
 import gcmod.mixin.ExplosionImplMixin;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.explosion.ExplosionBehavior;
-import net.minecraft.world.explosion.ExplosionImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ExplosionDamageCalculator;
+import net.minecraft.world.level.ServerExplosion;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 
-public class ConstructiveExplosionImpl extends ExplosionImpl
+public class ConstructiveExplosionImpl extends ServerExplosion
 {
     public BlockState blockState;
 
-    public ConstructiveExplosionImpl( ServerWorld world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, BlockState blockState )
+    public ConstructiveExplosionImpl( ServerLevel world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator behavior, Vec3 pos, float power, BlockState blockState )
     {
-        super( world, entity, damageSource, behavior, pos, power, false, DestructionType.KEEP );
+        super( world, entity, damageSource, behavior, pos, power, false, BlockInteraction.KEEP );
         this.blockState = blockState;
     }
 
     @Override
-    public void explode()
+    public int explode()
     {
-        this.getWorld().emitGameEvent(this.getEntity(), GameEvent.EXPLODE, this.getPosition());
-        ((ExplosionImplMixin)this).callDamageEntities();
+        this.level().gameEvent( this.getDirectSourceEntity(), GameEvent.EXPLODE, this.center() );
+        ((ExplosionImplMixin) this).callDamageEntities();
 
-        List<BlockPos> positions = ((ExplosionImplMixin)this).callGetBlocksToDestroy();
+        List<BlockPos> positions = ((ExplosionImplMixin) this).callGetBlocksToDestroy();
         for ( BlockPos pos : positions )
         {
-            getWorld().setBlockState( pos, blockState );
+            level().setBlockAndUpdate( pos, blockState );
         }
+
+        return positions.size();
     }
 }

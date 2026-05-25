@@ -1,24 +1,25 @@
 package gcmod;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import gcmod.block.ExplosiveBlock;
 import gcmod.entity.PooBrickEntity;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class ExplosiveBombEntityRenderer extends EntityRenderer<PooBrickEntity, PooBrickEntityRenderState>
 {
-    private final BlockRenderManager blockRenderManager;
+    private final BlockRenderDispatcher blockRenderManager;
 
-    public ExplosiveBombEntityRenderer( EntityRendererFactory.Context context )
+    public ExplosiveBombEntityRenderer( EntityRendererProvider.Context context )
     {
         super( context );
         this.shadowRadius = 0.5F;
-        this.blockRenderManager = context.getBlockRenderManager();
+        this.blockRenderManager = context.getBlockRenderDispatcher();
     }
 
     @Override
@@ -28,29 +29,29 @@ public class ExplosiveBombEntityRenderer extends EntityRenderer<PooBrickEntity, 
     }
 
     @Override
-    public void render( PooBrickEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
+    public void submit( PooBrickEntityRenderState state, PoseStack matrices, SubmitNodeCollector commands, CameraRenderState cameraRenderState )
     {
-        matrices.push();
+        matrices.pushPose();
 
         matrices.scale( .5f, .5f, .5f );
         matrices.translate( 0, .5, 0 );
-        matrices.multiply( RotationAxis.POSITIVE_X.rotationDegrees( state.angleX ) );
-        matrices.multiply( RotationAxis.POSITIVE_Y.rotationDegrees( state.angleY ) );
-        matrices.multiply( RotationAxis.POSITIVE_Z.rotationDegrees( state.angleZ ) );
-        matrices.translate(-0.5, -0.5, -0.5);
+        matrices.mulPose( Axis.XP.rotationDegrees( state.angleX ) );
+        matrices.mulPose( Axis.YP.rotationDegrees( state.angleY ) );
+        matrices.mulPose( Axis.ZP.rotationDegrees( state.angleZ ) );
+        matrices.translate( -0.5, -0.5, -0.5 );
 
-        this.blockRenderManager.renderBlockAsEntity( GCMod.BLAST_TNT.getDefaultState().with( ExplosiveBlock.TIER, 1 ), matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV );
-        matrices.pop();
+        commands.submitBlock( matrices, GCMod.BLAST_TNT.defaultBlockState().setValue( ExplosiveBlock.TIER, 1 ), state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor );
+        matrices.popPose();
 
-        super.render( state, matrices, vertexConsumers, light );
+        super.submit( state, matrices, commands, cameraRenderState );
     }
 
     @Override
-    public void updateRenderState( PooBrickEntity entity, PooBrickEntityRenderState state, float tickDelta )
+    public void extractRenderState( PooBrickEntity entity, PooBrickEntityRenderState state, float tickDelta )
     {
-        super.updateRenderState( entity, state, tickDelta );
-        state.angleX = entity.prevAngleX + tickDelta * (entity.angleX - entity.prevAngleX );
-        state.angleY = entity.prevAngleY + tickDelta * (entity.angleY - entity.prevAngleY );
-        state.angleZ = entity.prevAngleZ + tickDelta * (entity.angleZ - entity.prevAngleZ );
+        super.extractRenderState( entity, state, tickDelta );
+        state.angleX = entity.prevAngleX + tickDelta * (entity.angleX - entity.prevAngleX);
+        state.angleY = entity.prevAngleY + tickDelta * (entity.angleY - entity.prevAngleY);
+        state.angleZ = entity.prevAngleZ + tickDelta * (entity.angleZ - entity.prevAngleZ);
     }
 }

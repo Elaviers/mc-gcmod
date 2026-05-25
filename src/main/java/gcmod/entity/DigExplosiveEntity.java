@@ -1,16 +1,16 @@
 package gcmod.entity;
 
 import gcmod.GCMod;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class DigExplosiveEntity extends ExplosiveEntity
 {
     double explosionY;
     int stuckTicks;
 
-    public DigExplosiveEntity( EntityType<?> type, World world )
+    public DigExplosiveEntity( EntityType<?> type, Level world )
     {
         super( type, world );
     }
@@ -20,14 +20,14 @@ public class DigExplosiveEntity extends ExplosiveEntity
     {
         super.tick();
 
-        if ( !this.getWorld().isClient )
+        if ( !this.level().isClientSide() )
         {
             if ( this.getY() < this.explosionY )
             {
                 if ( (this.getFuse() & 2) == 0 )
-                    this.getWorld().createExplosion( this, this.getX(), this.getY() + (double) (this.getHeight() / 16.0F), this.getZ(), this.explosionRadius, World.ExplosionSourceType.TNT );
+                    this.level().explode( this, this.getX(), this.getY() + (double) (this.getBbHeight() / 16.0F), this.getZ(), this.explosionRadius, Level.ExplosionInteraction.TNT );
 
-                if ( this.getY() == this.prevY )
+                if ( this.getY() == this.yOld )
                 {
                     if ( this.stuckTicks >= 10 )
                         this.discard();
@@ -36,7 +36,7 @@ public class DigExplosiveEntity extends ExplosiveEntity
                 }
                 else this.stuckTicks = 0;
             }
-            else if ( this.explosionY > 0 && this.getVelocity().y == 0.0 )
+            else if ( this.explosionY > 0 && this.getDeltaMovement().y == 0.0 )
                 this.explosionY = 1000;
         }
     }
@@ -45,12 +45,12 @@ public class DigExplosiveEntity extends ExplosiveEntity
     protected void onFuseComplete()
     {
         this.explosionY = this.getY() + 0.5;
-        this.setVelocity(this.getVelocity().getX(), 1d, this.getVelocity().getZ() );
+        this.setDeltaMovement(this.getDeltaMovement().x(), 1d, this.getDeltaMovement().z() );
     }
 
     @Override
     public BlockState getBlockState()
     {
-        return GCMod.DIG_TNT.getDefaultState();
+        return GCMod.DIG_TNT.defaultBlockState();
     }
 }

@@ -1,34 +1,34 @@
 package gcmod.block;
 
+import gcmod.ExplosiveBlockComponent;
 import gcmod.GCMod;
 import gcmod.entity.ExplosiveBlockEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.block.WireOrientation;
-import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class ExplosiveBlock extends Block implements BlockEntityProvider
+public class ExplosiveBlock extends Block implements EntityBlock
 {
     public enum Type
     {
@@ -40,23 +40,23 @@ public class ExplosiveBlock extends Block implements BlockEntityProvider
 
     public final Type type;
 
-    public static final IntProperty TIER = IntProperty.of( "tier", 1, 3 );
+    public static final IntegerProperty TIER = IntegerProperty.create( "tier", 1, 3 );
 
-    public ExplosiveBlock( Type type, Settings settings )
+    public ExplosiveBlock( Type type, Properties settings )
     {
         super( settings );
         this.type = type;
 
-        this.setDefaultState( this.getDefaultState().with( TIER, 2 ) );
+        this.registerDefaultState( this.defaultBlockState().setValue( TIER, 2 ) );
     }
 
     @Override
-    protected void appendProperties( StateManager.Builder<Block, BlockState> builder )
+    protected void createBlockStateDefinition( StateDefinition.Builder<Block, BlockState> builder )
     {
         builder.add( TIER );
     }
 
-    public void explode( World world, BlockPos pos, boolean chain )
+    public void explode( Level world, BlockPos pos, boolean chain )
     {
         ExplosiveBlockEntity blockEntity = (ExplosiveBlockEntity) world.getBlockEntity( pos );
         world.removeBlock( pos, false );
@@ -66,89 +66,86 @@ public class ExplosiveBlock extends Block implements BlockEntityProvider
     }
 
     @Override
-    protected void onBlockAdded( BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify )
+    protected void onPlace( BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify )
     {
-        if ( !oldState.isOf( state.getBlock() ) && world.isReceivingRedstonePower( pos ) )
+        if ( !oldState.is( state.getBlock() ) && world.hasNeighborSignal( pos ) )
             explode( world, pos, false );
     }
 
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
+    protected void neighborChanged( BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify )
     {
-        if ( world.isReceivingRedstonePower( pos ) )
+        if ( world.hasNeighborSignal( pos ) )
             explode( world, pos, false );
     }
 
     @Override
-    protected void onExploded( BlockState state, ServerWorld world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger )
+    protected void onExplosionHit( BlockState state, ServerLevel world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger )
     {
-        if ( explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK )
+        if ( explosion.getBlockInteraction() == Explosion.BlockInteraction.TRIGGER_BLOCK )
         {
-            super.onExploded( state, world, pos, explosion, stackMerger );
+            super.onExplosionHit( state, world, pos, explosion, stackMerger );
             return;
         }
 
-        if ( !world.isClient )
+        if ( !world.isClientSide() )
             explode( world, pos, true );
     }
 
     @Override
-    public void onPlaced( World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack )
+    public void setPlacedBy( Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack )
     {
-        if ( !world.isClient )
+        if ( !world.isClientSide() )
         {
-            NbtComponent explosiveInfo = stack.get( GCMod.DATA_EXPLOSIVE_INFO );
+            ExplosiveBlockComponent explosiveInfo = stack.get( GCMod.DATA_EXPLOSIVE_INFO );
             if ( explosiveInfo != null )
             {
                 ExplosiveBlockEntity te = (ExplosiveBlockEntity) world.getBlockEntity( pos );
-                te.readExplosiveInfo( explosiveInfo.copyNbt() );
-                te.markDirty();
+                te.setExplosiveInfo( explosiveInfo );
+                te.setChanged();
             }
         }
 
-        super.onPlaced( world, pos, state, placer, stack );
+        super.setPlacedBy( world, pos, state, placer, stack );
     }
 
     @Override
-    protected ActionResult onUseWithItem( ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit )
+    protected InteractionResult useItemOn( ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit )
     {
-        if ( !stack.isOf( Items.FLINT_AND_STEEL ) && !stack.isOf( Items.FIRE_CHARGE ) )
-            return super.onUseWithItem( stack, state, world, pos, player, hand, hit );
+        if ( !stack.is( Items.FLINT_AND_STEEL ) && !stack.is( Items.FIRE_CHARGE ) )
+            return super.useItemOn( stack, state, world, pos, player, hand, hit );
 
         explode( world, pos, false );
 
-        if ( !player.isCreative() )
-        {
-            if ( stack.isOf( Items.FLINT_AND_STEEL ) )
-                stack.damage( 1, player, LivingEntity.getSlotForHand( hand ) );
-            else
-                stack.decrement( 1 );
-        }
+        if ( stack.is( Items.FLINT_AND_STEEL ) )
+            stack.hurtAndBreak( 1, player, hand.asEquipmentSlot() );
+        else
+            stack.consume( 1, player );
 
-        player.incrementStat( Stats.USED.getOrCreateStat( stack.getItem() ) );
-        return ActionResult.SUCCESS;
+        player.awardStat( Stats.ITEM_USED.get( stack.getItem() ) );
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    protected void onProjectileHit( World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile )
+    protected void onProjectileHit( Level world, BlockState state, BlockHitResult hit, Projectile projectile )
     {
-        if ( !world.isClient )
+        if ( !world.isClientSide() )
         {
             BlockPos blockPos = hit.getBlockPos();
-            if ( projectile.isOnFire() && projectile.canModifyAt( (ServerWorld)world, blockPos ) )
+            if ( projectile.isOnFire() && projectile.mayInteract( (ServerLevel) world, blockPos ) )
                 explode( world, blockPos, false );
         }
     }
 
     @Override
-    public boolean shouldDropItemsOnExplosion( Explosion explosion )
+    public boolean dropFromExplosion( Explosion explosion )
     {
         return false;
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity( BlockPos pos, BlockState state )
+    public BlockEntity newBlockEntity( BlockPos pos, BlockState state )
     {
         BlockEntityType<ExplosiveBlockEntity> entityType = GCMod.BLAST_TNT_BLOCK_ENTITY;
         switch ( type )

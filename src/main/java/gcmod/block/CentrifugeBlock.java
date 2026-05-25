@@ -3,97 +3,99 @@ package gcmod.block;
 import com.mojang.serialization.MapCodec;
 import gcmod.GCMod;
 import gcmod.entity.CentrifugeEntity;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.block.WireOrientation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class CentrifugeBlock extends BlockWithEntity
+public class CentrifugeBlock extends BaseEntityBlock
 {
-    public static final MapCodec<CentrifugeBlock> CODEC = createCodec( CentrifugeBlock::new );
-    private static VoxelShape BASE = createCuboidShape( 2, 0, 2, 14, 2, 14 );
-    private static VoxelShape BASE_2 = createCuboidShape( 4, 2, 4, 12, 3, 12 );
-    private static VoxelShape ROD = createCuboidShape( 7, 0, 7, 9, 13, 9 );
-    private static VoxelShape TOP = createCuboidShape( 0, 13, 0, 16, 16, 16 );
-    private static VoxelShape SHAPE = VoxelShapes.union( VoxelShapes.union( VoxelShapes.union( BASE, BASE_2 ), ROD ), TOP );
+    public static final MapCodec<CentrifugeBlock> CODEC = simpleCodec( CentrifugeBlock::new );
+    private static VoxelShape BASE = box( 2, 0, 2, 14, 2, 14 );
+    private static VoxelShape BASE_2 = box( 4, 2, 4, 12, 3, 12 );
+    private static VoxelShape ROD = box( 7, 0, 7, 9, 13, 9 );
+    private static VoxelShape TOP = box( 0, 13, 0, 16, 16, 16 );
+    private static VoxelShape SHAPE = Shapes.or( Shapes.or( Shapes.or( BASE, BASE_2 ), ROD ), TOP );
 
-    public CentrifugeBlock( Settings settings )
+    public CentrifugeBlock( Properties settings )
     {
         super( settings );
     }
 
     @Override
-    protected VoxelShape getOutlineShape( BlockState state, BlockView world, BlockPos pos, ShapeContext context )
+    protected VoxelShape getShape( BlockState state, BlockGetter world, BlockPos pos, CollisionContext context )
     {
         return SHAPE;
     }
 
     @Override
-    protected boolean isTransparent( BlockState state )
+    protected boolean propagatesSkylightDown( BlockState state )
     {
         return true;
     }
 
     @Override
-    protected BlockRenderType getRenderType( BlockState state )
-    {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
-    }
+    protected RenderShape getRenderShape( BlockState state ) { return RenderShape.INVISIBLE; }
 
     @Override
-    protected ActionResult onUse( BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit )
+    protected InteractionResult useWithoutItem( BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit )
     {
-        if ( world.isClient )
-            return ActionResult.SUCCESS;
+        if ( world.isClientSide() )
+            return InteractionResult.SUCCESS;
 
         BlockEntity blockEntity = world.getBlockEntity( pos );
         if ( blockEntity instanceof CentrifugeEntity centrifuge )
-            player.openHandledScreen( centrifuge );
+            player.openMenu( centrifuge );
 
-        return ActionResult.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec()
+    protected MapCodec<? extends BaseEntityBlock> codec()
     {
         return CODEC;
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity( BlockPos pos, BlockState state )
+    public BlockEntity newBlockEntity( BlockPos pos, BlockState state )
     {
         return new CentrifugeEntity( pos, state );
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker( World world, BlockState state, BlockEntityType<T> type )
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker( Level world, BlockState state, BlockEntityType<T> type )
     {
-        return validateTicker( type, GCMod.CENTRIFUGE_ENTITY, CentrifugeEntity::tick );
+        return createTickerHelper( type, GCMod.CENTRIFUGE_ENTITY, CentrifugeEntity::tick );
     }
 
     @Override
-    protected void onStateReplaced( BlockState state, World world, BlockPos pos, BlockState newState, boolean moved )
+    protected void affectNeighborsAfterRemoval( BlockState state, ServerLevel world, BlockPos pos, boolean moved )
     {
-        ItemScatterer.onStateReplaced( state, newState, world, pos );
-        super.onStateReplaced( state, world, pos, newState, moved );
+        Containers.updateNeighboursAfterDestroy( state, world, pos );
+        super.affectNeighborsAfterRemoval( state, world, pos, moved );
     }
 
     @Override
-    protected boolean canPathfindThrough( BlockState state, NavigationType type )
+    protected boolean isPathfindable( BlockState state, PathComputationType type )
     {
         return false;
     }
@@ -102,18 +104,18 @@ public class CentrifugeBlock extends BlockWithEntity
     //
 
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
+    protected void neighborChanged( BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify )
     {
-        super.neighborUpdate( state, world, pos, sourceBlock, wireOrientation, notify );
+        super.neighborChanged( state, world, pos, sourceBlock, wireOrientation, notify );
         if ( world.getBlockEntity( pos ) instanceof CentrifugeEntity centrifuge )
-            centrifuge.setPowered( world.isReceivingRedstonePower( pos ) );
+            centrifuge.setPowered( world.hasNeighborSignal( pos ) );
     }
 
     @Override
-    protected void onBlockAdded( BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify )
+    protected void onPlace( BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify )
     {
-        super.onBlockAdded( state, world, pos, oldState, notify );
+        super.onPlace( state, world, pos, oldState, notify );
         if ( world.getBlockEntity( pos ) instanceof CentrifugeEntity centrifuge )
-            centrifuge.setPowered( world.isReceivingRedstonePower( pos ) );
+            centrifuge.setPowered( world.hasNeighborSignal( pos ) );
     }
 }

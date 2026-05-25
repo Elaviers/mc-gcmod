@@ -1,51 +1,57 @@
 package gcmod;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import gcmod.entity.PooEntity;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 
 public class PooEntityRenderer extends EntityRenderer<PooEntity, PooEntityRenderState>
 {
-    public static TexturedModelData getTexturedModelData()
+    public static LayerDefinition getTexturedModelData()
     {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild("bb_main", ModelPartBuilder.create().uv(0, 17).cuboid(-6.0F, 0.0F, -6.0F, 12.0F, 3.0F, 12.0F, new Dilation(0.0F))
-                .uv(0, 6).cuboid(-4.0F, 3.0F, -4.0F, 8.0F, 2.0F, 8.0F, new Dilation(0.0F))
-                .uv(0, 1).cuboid(-2.0F, 5.0F, -2.0F, 4.0F, 1.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+        MeshDefinition modelData = new MeshDefinition();
+        PartDefinition modelPartData = modelData.getRoot();
+        modelPartData.addOrReplaceChild("bb_main", CubeListBuilder.create().texOffs(0, 17).addBox(-6.0F, 0.0F, -6.0F, 12.0F, 3.0F, 12.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 6).addBox(-4.0F, 3.0F, -4.0F, 8.0F, 2.0F, 8.0F, new CubeDeformation(0.0F))
+                .texOffs(0, 1).addBox(-2.0F, 5.0F, -2.0F, 4.0F, 1.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
-        return TexturedModelData.of(modelData, 64, 32);
+        return LayerDefinition.create(modelData, 64, 32);
     }
 
-    public static final Identifier TEXTURE = Identifier.of( "gcmod", "textures/entity/poo.png" );
-    public ModelPart model;
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath( "gcmod", "textures/entity/poo.png" );
+    public net.minecraft.client.model.geom.ModelPart model;
 
-    protected PooEntityRenderer( EntityRendererFactory.Context ctx )
+    protected PooEntityRenderer( EntityRendererProvider.Context ctx )
     {
         super( ctx );
         this.shadowRadius = 0;
-        this.model = ctx.getPart( GCModClient.POO_LAYER );
+        this.model = ctx.bakeLayer( GCModClient.POO_LAYER );
     }
 
     @Override
-    public void render( PooEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
+    public void submit( PooEntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, CameraRenderState cameraState )
     {
-        matrices.push();
-
         if ( state.size > 0 )
         {
+            matrices.pushPose();
             matrices.scale( state.size, state.size, state.size );
-            model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV );
+            queue.submitModelPart( this.model, matrices, RenderTypes.entitySolid( TEXTURE ), state.lightCoords, OverlayTexture.NO_OVERLAY, null );
+            matrices.popPose();
         }
 
-        matrices.pop();
-
-        super.render( state, matrices, vertexConsumers, light );
+        super.submit( state, matrices, queue, cameraState );
     }
 
     @Override
@@ -55,9 +61,9 @@ public class PooEntityRenderer extends EntityRenderer<PooEntity, PooEntityRender
     }
 
     @Override
-    public void updateRenderState( PooEntity entity, PooEntityRenderState state, float tickDelta )
+    public void extractRenderState( PooEntity entity, PooEntityRenderState state, float tickDelta )
     {
-        super.updateRenderState( entity, state, tickDelta );
+        super.extractRenderState( entity, state, tickDelta );
         state.size = entity.prevSize + tickDelta * (entity.size - entity.prevSize);
     }
 }

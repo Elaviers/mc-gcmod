@@ -1,11 +1,11 @@
 package gcmod;
 
 import gcmod.entity.CentrifugeEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.AbstractSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.client.sound.TickableSoundInstance;
-import net.minecraft.sound.SoundCategory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.AbstractSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.resources.sounds.TickableSoundInstance;
+import net.minecraft.sounds.SoundSource;
 
 public class CentrifugeSound extends AbstractSoundInstance implements TickableSoundInstance
 {
@@ -14,20 +14,20 @@ public class CentrifugeSound extends AbstractSoundInstance implements TickableSo
 
     public CentrifugeSound( CentrifugeEntity ent )
     {
-        super( GCMod.CENTRIFUGE_SOUND, SoundCategory.BLOCKS, SoundInstance.createRandom() );
+        super( GCMod.CENTRIFUGE_SOUND, SoundSource.BLOCKS, SoundInstance.createUnseededRandom() );
         this.ent = ent;
 
-        this.x = ent.getPos().getX() + .5f;
-        this.y = ent.getPos().getY() + .5f;
-        this.z = ent.getPos().getZ() + .5f;
+        this.x = ent.getBlockPos().getX() + .5f;
+        this.y = ent.getBlockPos().getY() + .5f;
+        this.z = ent.getBlockPos().getZ() + .5f;
         this.volume = 0.01f;
 
         this.done = false;
-        this.repeat = true;
+        this.looping = true;
     }
 
     @Override
-    public boolean isDone()
+    public boolean isStopped()
     {
         return this.done;
     }
@@ -49,7 +49,7 @@ public class CentrifugeSound extends AbstractSoundInstance implements TickableSo
     {
         if ( !ent.startedAudio && ent.isPowered )
         {
-            MinecraftClient.getInstance().getSoundManager().play( new CentrifugeSound( ent ) );
+            Minecraft.getInstance().getSoundManager().play( new CentrifugeSound( ent ) );
             ent.startedAudio = true;
         }
     }

@@ -4,32 +4,28 @@ import com.sun.jna.platform.unix.X11;
 import gcmod.GCMod;
 import gcmod.PooSplatPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.EntityTrackerEntry;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 public class PooEntity extends Entity
 {
@@ -44,10 +40,10 @@ public class PooEntity extends Entity
 
     boolean wasOnGround;
 
-    public PooEntity( EntityType<?> type, World world )
+    public PooEntity( EntityType<?> type, Level world )
     {
         super( type, world );
-        this.intersectionChecked = true;
+        this.blocksBuilding = true;
 
         this.shrinkRate = 0f;
 
@@ -55,14 +51,14 @@ public class PooEntity extends Entity
         this.targetSize = 1f;
         this.timer = 1000;
 
-        if ( !world.isClient )
+        if ( !world.isClientSide() )
             this.setSizeVariant( world.random.nextInt( 1001 ) );
     }
 
-    public static PooEntity create( World world, Vec3d position )
+    public static PooEntity create( Level world, Vec3 position )
     {
         PooEntity poo = new PooEntity( GCMod.POO_ENTITY, world );
-        poo.setPosition( position );
+        poo.setPos( position );
         return poo;
     }
 
@@ -74,44 +70,42 @@ public class PooEntity extends Entity
     }
 
     @Override
-    public boolean isCollidable()
+    public boolean canBeCollidedWith( @Nullable Entity entity )
     {
-        // return getWorld().getGameRules().getBoolean( GCMod.RULE_SOLID_TURDS )
-        // TODO - gamerules are not inherently replicated to the client, so I need to add a new thing analogous to GameStateChangeS2CPacket to make the above work correctly
+        // TODO - gamerules are not inherently replicated to the client, so I need to add a new thing analogous to GameStateChangeS2CPacket to use the gamerule here
         // For now fecal matter just never collides with mobs, its pretty amusing but can screw up farms.
-
         return false;
     }
 
     @Override
-    public boolean collidesWith( Entity other )
+    public boolean canCollideWith( Entity other )
     {
         if ( other instanceof PooEntity )
             return true;
 
-        return super.collidesWith( other );
+        return super.canCollideWith( other );
     }
 
     @Override
-    public boolean canHit()
+    public boolean isPickable()
     {
         return !this.isRemoved();
     }
 
     @Override
-    public boolean handleAttack( Entity attacker )
+    public boolean skipAttackInteraction( Entity attacker )
     {
-        if ( attacker instanceof PlayerEntity player )
+        if ( attacker instanceof Player player )
         {
             if ( player.isCreative() )
                 return false;
 
-            final boolean isShovel = player.getMainHandStack().getItem() == Items.WOODEN_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.STONE_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.IRON_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.GOLDEN_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.DIAMOND_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.NETHERITE_SHOVEL;
+            final boolean isShovel = player.getMainHandItem().getItem() == Items.WOODEN_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.STONE_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.IRON_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.GOLDEN_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.DIAMOND_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.NETHERITE_SHOVEL;
 
             return !isShovel;
         }
@@ -121,7 +115,7 @@ public class PooEntity extends Entity
 
     private boolean commonDamage( DamageSource source )
     {
-        if ( !(source.getSource() instanceof PlayerEntity player) )
+        if ( !(source.getDirectEntity() instanceof Player player) )
         {
             this.doDrop = false;
             this.shrinkRate = size;
@@ -136,17 +130,17 @@ public class PooEntity extends Entity
             this.shrinkRate = size / 2;
         } else
         {
-            final boolean isShovel = player.getMainHandStack().getItem() == Items.WOODEN_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.STONE_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.IRON_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.GOLDEN_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.DIAMOND_SHOVEL ||
-                    player.getMainHandStack().getItem() == Items.NETHERITE_SHOVEL;
+            final boolean isShovel = player.getMainHandItem().getItem() == Items.WOODEN_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.STONE_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.IRON_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.GOLDEN_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.DIAMOND_SHOVEL ||
+                    player.getMainHandItem().getItem() == Items.NETHERITE_SHOVEL;
 
             if ( isShovel )
             {
-                if ( !this.getWorld().isClient )
-                    player.getMainHandStack().damage( 1, player, EquipmentSlot.MAINHAND );
+                if ( !this.level().isClientSide() )
+                    player.getMainHandItem().hurtAndBreak( 1, player, EquipmentSlot.MAINHAND );
 
                 this.doDrop = true;
                 this.shrinkRate = size / 3;
@@ -156,13 +150,13 @@ public class PooEntity extends Entity
     }
 
     @Override
-    public boolean clientDamage( DamageSource source )
+    public boolean hurtClient( DamageSource source )
     {
         return commonDamage( source );
     }
 
     @Override
-    public boolean damage( ServerWorld world, DamageSource source, float amount )
+    public boolean hurtServer( ServerLevel world, DamageSource source, float amount )
     {
         return commonDamage( source );
     }
@@ -172,39 +166,39 @@ public class PooEntity extends Entity
         this.discard();
 
         if ( this.doDrop )
-            this.dropStack( (ServerWorld)this.getWorld(), new ItemStack( GCMod.POO, this.targetSize > 1.1f ? 2 : 1 ) );
+            this.spawnAtLocation( (ServerLevel)this.level(), new ItemStack( GCMod.POO, this.targetSize > 1.1f ? 2 : 1 ) );
     }
 
     @Override
-    protected Box calculateBoundingBox()
+    protected AABB makeBoundingBox( Vec3 pos )
     {
         final float BB_SCALE = .9f; // the thing shrinks so lets sink in the bb a little
-        return this.getDimensions( this.getPose() ).scaled( this.targetSize * BB_SCALE ).getBoxAt( this.getPos() );
+        return this.getDimensions( this.getPose() ).scale( this.targetSize * BB_SCALE ).makeBoundingBox( this.position() );
     }
 
     @Override
-    protected double getGravity()
+    protected double getDefaultGravity()
     {
         return 0.04;
     }
 
     private void emitPooFX( float severity, float randSeverity )
     {
-        this.getServer().getPlayerManager().sendToAround( null, getX(), getY(), getZ(),
-                100f, this.getWorld().getRegistryKey(),
-                ServerPlayNetworking.createS2CPacket( new PooSplatPayload( this.getPos().toVector3f(), severity + randSeverity * this.getWorld().random.nextFloat() ) )
+        this.level().getServer().getPlayerList().broadcast( null, getX(), getY(), getZ(),
+                100f, this.level().dimension(),
+                ServerPlayNetworking.createS2CPacket( new PooSplatPayload( this.position().toVector3f(), severity + randSeverity * this.level().random.nextFloat() ) )
         );
     }
 
     @Override
     public void tick()
     {
-        if ( !this.getWorld().isClient && this.size <= 0 )
+        if ( !this.level().isClientSide() && this.size <= 0 )
             this.breakPoo();
 
-        this.prevX = this.getX();
-        this.prevY = this.getY();
-        this.prevZ = this.getZ();
+        this.xOld = this.getX();
+        this.yOld = this.getY();
+        this.zOld = this.getZ();
         this.prevSize = this.size;
 
         if ( this.shrinkRate > 0 )
@@ -227,34 +221,34 @@ public class PooEntity extends Entity
             timer--;
 
         this.applyGravity();
-        this.move( MovementType.SELF, this.getVelocity() );
-        this.setVelocity( this.getVelocity().multiply( 0.98 ) );
-        if ( this.isOnGround() )
+        this.move( MoverType.SELF, this.getDeltaMovement() );
+        this.setDeltaMovement( this.getDeltaMovement().scale( 0.98 ) );
+        if ( this.onGround() )
         {
-            if ( !wasOnGround && !this.getWorld().isClient && this.getWorld().getBlockState( this.getBlockPos() ).isOf( Blocks.STONECUTTER ) )
+            if ( !wasOnGround && !this.level().isClientSide() && this.level().getBlockState( this.blockPosition() ).is( Blocks.STONECUTTER ) )
             {
                 this.doDrop = true;
                 this.breakPoo();
-                this.emitPooFX( 1f + 5f * Math.abs( (float)this.getVelocity().y ), .5f );
+                this.emitPooFX( 1f + 5f * Math.abs( (float)this.getDeltaMovement().y ), .5f );
             }
 
-            this.setVelocity( this.getVelocity().multiply( 0.7, -0.5, 0.7 ) );
+            this.setDeltaMovement( this.getDeltaMovement().multiply( 0.7, -0.5, 0.7 ) );
         }
 
-        wasOnGround = this.isOnGround();
+        wasOnGround = this.onGround();
     }
 
     @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket( EntityTrackerEntry entityTrackerEntry )
+    public Packet<ClientGamePacketListener> getAddEntityPacket( ServerEntity entityTrackerEntry )
     {
-        return new EntitySpawnS2CPacket( this, entityTrackerEntry, this.sizeVariant );
+        return new ClientboundAddEntityPacket( this, entityTrackerEntry, this.sizeVariant );
     }
 
     @Override
-    public void onSpawnPacket( EntitySpawnS2CPacket packet )
+    public void recreateFromPacket( ClientboundAddEntityPacket packet )
     {
-        super.onSpawnPacket( packet );
-        this.setSizeVariant( packet.getEntityData() );
+        super.recreateFromPacket( packet );
+        this.setSizeVariant( packet.getData() );
     }
 
     //
@@ -262,32 +256,30 @@ public class PooEntity extends Entity
     //
 
     @Override
-    protected void initDataTracker( DataTracker.Builder builder )
+    protected void defineSynchedData( SynchedEntityData.Builder builder )
     {
     }
 
     @Override
-    protected void readCustomDataFromNbt( NbtCompound nbt )
+    protected void readAdditionalSaveData( ValueInput view )
     {
-
     }
 
     @Override
-    protected void writeCustomDataToNbt( NbtCompound nbt )
+    protected void addAdditionalSaveData( ValueOutput view )
     {
-
     }
 
     @Override
-    protected void onBlockCollision( BlockState state )
+    protected void onInsideBlock( BlockState state )
     {
-        if ( !getWorld().isClient && state.isOf( Blocks.PISTON_HEAD ) && getWorld().getBlockState( this.getBlockPos() ).isOf( Blocks.PISTON_HEAD ) )
+        if ( !level().isClientSide() && state.is( Blocks.PISTON_HEAD ) && level().getBlockState( this.blockPosition() ).is( Blocks.PISTON_HEAD ) )
         {
             this.doDrop = true;
             this.breakPoo();
             this.emitPooFX( 1.25f, 2f );
         }
 
-        super.onBlockCollision( state );
+        super.onInsideBlock( state );
     }
 }

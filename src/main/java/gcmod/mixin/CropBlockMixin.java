@@ -1,18 +1,22 @@
 package gcmod.mixin;
 
 import gcmod.GCMod;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,51 +28,51 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(CropBlock.class)
-public abstract class CropBlockMixin extends PlantBlock implements Fertilizable
+public abstract class CropBlockMixin extends VegetationBlock implements BonemealableBlock
 {
-    @Shadow @Final public static IntProperty AGE;
+    @Shadow @Final public static IntegerProperty AGE;
 
-    @Shadow protected abstract IntProperty getAgeProperty();
+    @Shadow protected abstract IntegerProperty getAgeProperty();
 
-    @Shadow protected abstract ItemConvertible getSeedsItem();
+    @Shadow protected abstract ItemLike getBaseSeedId();
 
-    protected CropBlockMixin( Settings settings )
+    protected CropBlockMixin( Properties settings )
     {
         super( settings );
     }
 
-    @Inject( method = "canPlantOnTop(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)Z", at = @At("HEAD"), cancellable = true)
-    private void canPlantOnTop( BlockState floor, BlockView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir )
+    @Inject( method = "mayPlaceOn(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Z", at = @At("HEAD"), cancellable = true)
+    private void canPlantOnTop( BlockState floor, BlockGetter world, BlockPos pos, CallbackInfoReturnable<Boolean> cir )
     {
-        if ( floor.isOf( GCMod.COMPOST ) )
+        if ( floor.is( GCMod.COMPOST ) )
             cir.setReturnValue( true );
     }
 
     @Override
-    public void onBroken( WorldAccess world, BlockPos pos, BlockState state )
+    public void destroy( LevelAccessor world, BlockPos pos, BlockState state )
     {
-        super.onBroken( world, pos, state );
+        super.destroy( world, pos, state );
 
-        if ( world.getBlockState( pos.down() ).isOf( GCMod.COMPOST ) )
-            world.setBlockState( pos, state.with( this.getAgeProperty(), 0 ), Block.NOTIFY_ALL );
+        if ( world.getBlockState( pos.below() ).is( GCMod.COMPOST ) )
+            world.setBlock( pos, state.setValue( this.getAgeProperty(), 0 ), Block.UPDATE_ALL );
     }
 
     @Override
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool)
+    public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool)
     {
-        player.incrementStat( Stats.MINED.getOrCreateStat(this));
-        player.addExhaustion(0.005F);
+        player.awardStat( Stats.BLOCK_MINED.get(this));
+        player.causeFoodExhaustion(0.005F);
 
-        if ( world instanceof ServerWorld )
+        if ( world instanceof ServerLevel )
         {
-            List<ItemStack> droppedStacks = getDroppedStacks( state, (ServerWorld) world, pos, blockEntity, player, tool );
+            List<ItemStack> droppedStacks = getDrops( state, (ServerLevel) world, pos, blockEntity, player, tool );
 
             if ( !droppedStacks.isEmpty() )
             {
                 int numSeeds = 0;
                 for ( ItemStack stack : droppedStacks )
                 {
-                    if ( stack.isOf( this.getSeedsItem().asItem() ) )
+                    if ( stack.is( this.getBaseSeedId().asItem() ) )
                         ++numSeeds;
                 }
 
@@ -78,13 +82,13 @@ public abstract class CropBlockMixin extends PlantBlock implements Fertilizable
                 }
                 else
                 {
-                    droppedStacks.removeIf( stack -> stack.isOf( this.getSeedsItem().asItem() ) );
+                    droppedStacks.removeIf( stack -> stack.is( this.getBaseSeedId().asItem() ) );
                 }
 
-                droppedStacks.forEach(stack -> dropStack(world, pos, stack));
+                droppedStacks.forEach(stack -> popResource(world, pos, stack));
             }
 
-            state.onStacksDropped((ServerWorld)world, pos, tool, true);
+            state.spawnAfterBreak((ServerLevel)world, pos, tool, true);
         }
     }
 }

@@ -3,51 +3,51 @@ package gcmod.item;
 import com.mojang.datafixers.util.Pair;
 import gcmod.GCMod;
 import gcmod.entity.PooBrickEntity;
-import net.minecraft.component.ComponentType;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.effect.EnchantmentValueEffect;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.item.consume.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.function.Predicate;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.effects.EnchantmentValueEffect;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
-public class PooCannonItem extends RangedWeaponItem
+public class PooCannonItem extends ProjectileWeaponItem
 {
-    public PooCannonItem( Settings settings )
+    public PooCannonItem( Properties settings )
     {
         super( settings );
     }
 
     @Override
-    protected void shoot( LivingEntity shooter, ProjectileEntity projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target )
+    protected void shootProjectile( LivingEntity shooter, Projectile projectile, int index, float speed, float divergence, float yaw, @Nullable LivingEntity target )
     {
         assert false; // kinda dumb that they made me do this
     }
 
-    private static int getEnchantmentValue( ItemStack stack, ComponentType<EnchantmentValueEffect> type )
+    private static int getEnchantmentValue( ItemStack stack, DataComponentType<EnchantmentValueEffect> type )
     {
-        Pair<EnchantmentValueEffect, Integer> pair = EnchantmentHelper.getHighestLevelEffect( stack, GCMod.EFFECT_CONSTIPATION );
+        Pair<EnchantmentValueEffect, Integer> pair = EnchantmentHelper.getHighestLevel( stack, GCMod.EFFECT_CONSTIPATION );
         if ( pair != null )
             return pair.getSecond();
 
         return 0;
     }
 
-    boolean shootPoo( World world, PlayerEntity player, ItemStack stack )
+    boolean shootPoo( Level world, Player player, ItemStack stack )
     {
         ItemStack ammoStack = null;
 
@@ -83,25 +83,25 @@ public class PooCannonItem extends RangedWeaponItem
 
         if ( !player.isCreative() )
         {
-            ammoStack = player.getProjectileType( stack );
+            ammoStack = player.getProjectile( stack );
             if ( ammoStack.isEmpty() )
                 return false;
         }
 
-        if ( !world.isClient )
+        if ( !world.isClientSide() )
         {
             int count;
-            if ( player.isCreative() || EnchantmentHelper.hasAnyEnchantmentsIn( stack, GCMod.ENCH_LAXATIVES ) )
+            if ( player.isCreative() || EnchantmentHelper.hasTag( stack, GCMod.ENCH_LAXATIVES ) )
             {
                 count = maxCount;
             }
             else
             {
-                stack.damage( 1, player, EquipmentSlot.MAINHAND );
+                stack.hurtAndBreak( 1, player, EquipmentSlot.MAINHAND );
 
                 for ( count = 0; count < maxCount; ++count )
                 {
-                    ammoStack = player.getProjectileType( stack );
+                    ammoStack = player.getProjectile( stack );
                     if ( ammoStack.isEmpty() )
                         break;
 
@@ -113,44 +113,44 @@ public class PooCannonItem extends RangedWeaponItem
                 return false;
 
             float speed = 2f;
-            if ( !EnchantmentHelper.hasAnyEnchantmentsIn( stack, GCMod.ENCH_DIARRHOEA ) )
+            if ( !EnchantmentHelper.hasTag( stack, GCMod.ENCH_DIARRHOEA ) )
             {
-                final float charge = Math.min( 1f, player.getItemUseTime() / 45f );
+                final float charge = Math.min( 1f, player.getTicksUsingItem() / 45f );
                 speed = .4f + charge * 1.6f;
                 spread *= .5f + charge * .5f;
             }
 
             for ( int i = 0; i < count; ++i )
             {
-                PooBrickEntity poo = GCMod.EXPLOSIVE_POO_BRICK_ENTITY.create( world, SpawnReason.EVENT );
+                PooBrickEntity poo = GCMod.EXPLOSIVE_POO_BRICK_ENTITY.create( world, EntitySpawnReason.EVENT );
                 poo.explosionRadius = 4 + getEnchantmentValue( stack, GCMod.EFFECT_POOER );
                 poo.thrower = player;
 
-                poo.setPosition( player.getEyePos() );
-                poo.setYaw( player.getYaw() );
-                poo.setPitch( player.getPitch() );
+                poo.setPos( player.getEyePosition() );
+                poo.setYRot( player.getYRot() );
+                poo.setXRot( player.getXRot() );
 
-                final float cosYaw = MathHelper.cos( poo.getYaw() / 180.0F * (float) Math.PI );
-                final float sinYaw = MathHelper.sin( poo.getYaw() / 180.0F * (float) Math.PI );
-                final float pitchRad = poo.getPitch() / 180.0F * (float) Math.PI;
+                final float cosYaw = Mth.cos( poo.getYRot() / 180.0F * (float) Math.PI );
+                final float sinYaw = Mth.sin( poo.getYRot() / 180.0F * (float) Math.PI );
+                final float pitchRad = poo.getXRot() / 180.0F * (float) Math.PI;
 
-                final Vec3d right = new Vec3d( -cosYaw, 0f, -sinYaw );
-                final Vec3d fwd = new Vec3d(
-                        -sinYaw * MathHelper.cos( pitchRad ),
-                        -MathHelper.sin( pitchRad ),
-                        cosYaw * MathHelper.cos( pitchRad )
+                final Vec3 right = new Vec3( -cosYaw, 0f, -sinYaw );
+                final Vec3 fwd = new Vec3(
+                        -sinYaw * Mth.cos( pitchRad ),
+                        -Mth.sin( pitchRad ),
+                        cosYaw * Mth.cos( pitchRad )
                 );
 
                 Vector3f dir = right.toVector3f();
                 new AxisAngle4f( world.random.nextFloat() * 2f * (float) Math.PI, fwd.toVector3f() ).transform( dir );
 
-                poo.setVelocity(
-                        player.getVelocity()
-                                .add( fwd.multiply( Math.max( 0.5f, speed + zDiff * (world.random.nextFloat() * 2.f - 1f) ) ) )
-                                .add( new Vec3d( dir ).multiply( world.random.nextFloat() * spread ) )
+                poo.setDeltaMovement(
+                        player.getDeltaMovement()
+                                .add( fwd.scale( Math.max( 0.5f, speed + zDiff * (world.random.nextFloat() * 2.f - 1f) ) ) )
+                                .add( new Vec3( dir ).scale( world.random.nextFloat() * spread ) )
                 );
 
-                world.spawnEntity( poo );
+                world.addFreshEntity( poo );
             }
         }
         else
@@ -162,47 +162,47 @@ public class PooCannonItem extends RangedWeaponItem
     }
 
     @Override
-    public boolean onStoppedUsing( ItemStack stack, World world, LivingEntity user, int remainingUseTicks )
+    public boolean releaseUsing( ItemStack stack, Level world, LivingEntity user, int remainingUseTicks )
     {
-        if ( user instanceof PlayerEntity player )
+        if ( user instanceof Player player )
             return shootPoo( world, player, stack );
 
         return false;
     }
 
     @Override
-    public int getMaxUseTime( ItemStack stack, LivingEntity user )
+    public int getUseDuration( ItemStack stack, LivingEntity user )
     {
         return 72000;
     }
 
     @Override
-    public UseAction getUseAction( ItemStack stack )
+    public ItemUseAnimation getUseAnimation( ItemStack stack )
     {
-        return UseAction.BOW;
+        return ItemUseAnimation.BOW;
     }
 
     @Override
-    public ActionResult use( World world, PlayerEntity user, Hand hand )
+    public InteractionResult use( Level world, Player user, InteractionHand hand )
     {
-        ItemStack stack = user.getStackInHand( hand );
-        if ( !user.isInCreativeMode() && user.getProjectileType( stack ).isEmpty() )
+        ItemStack stack = user.getItemInHand( hand );
+        if ( !user.hasInfiniteMaterials() && user.getProjectile( stack ).isEmpty() )
         {
-            return ActionResult.FAIL;
+            return InteractionResult.FAIL;
         }
 
-        user.setCurrentHand( hand );
-        return ActionResult.CONSUME;
+        user.startUsingItem( hand );
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    public Predicate<ItemStack> getProjectiles()
+    public Predicate<ItemStack> getAllSupportedProjectiles()
     {
-        return stack -> stack.isOf( GCMod.POO_BRICK );
+        return stack -> stack.is( GCMod.POO_BRICK );
     }
 
     @Override
-    public int getRange()
+    public int getDefaultProjectileRange()
     {
         return 20;
     }

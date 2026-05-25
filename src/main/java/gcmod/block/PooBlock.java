@@ -1,43 +1,43 @@
 package gcmod.block;
 
 import gcmod.GCMod;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class PooBlock extends Block
 {
-    public PooBlock( Settings settings )
+    public PooBlock( Properties settings )
     {
         super( settings );
     }
 
     @Override
-    protected void randomTick( BlockState state, ServerWorld world, BlockPos pos, Random random )
+    protected void randomTick( BlockState state, ServerLevel world, BlockPos pos, RandomSource random )
     {
-        BlockPos abovePos = pos.up();
-        BlockPos belowPos = pos.down();
-        if ( world.getLightLevel( pos ) < 10
+        BlockPos abovePos = pos.above();
+        BlockPos belowPos = pos.below();
+        if ( world.getMaxLocalRawBrightness( pos ) < 10
                 && world.getBlockState( abovePos ).getBlock() instanceof RopeBlock
-                && world.getBlockState( abovePos ).get( RopeBlock.WET )
-                && !world.getBlockState( belowPos ).isSolidBlock( world, belowPos )
+                && world.getBlockState( abovePos ).getValue( RopeBlock.WET )
+                && !world.getBlockState( belowPos ).isRedstoneConductor( world, belowPos )
         )
         {
-            world.setBlockState( pos, GCMod.FERMENTED_POO_BLOCK.getDefaultState() );
+            world.setBlockAndUpdate( pos, GCMod.FERMENTED_POO_BLOCK.defaultBlockState() );
             return;
         }
 
-        for ( Direction direction : Direction.Type.HORIZONTAL )
+        for ( Direction direction : Direction.Plane.HORIZONTAL )
         {
-            if ( world.getBlockState( belowPos.offset( direction ) ).getFluidState().isIn( FluidTags.WATER ) )
+            if ( world.getBlockState( belowPos.relative( direction ) ).getFluidState().is( FluidTags.WATER ) )
             {
-                if ( world.getLightLevel( pos ) < 5 )
+                if ( world.getMaxLocalRawBrightness( pos ) < 5 )
                     if ( world.random.nextInt( 5 ) == 0 )
-                        world.setBlockState( pos, GCMod.FERMENTED_POO_BLOCK.getDefaultState() );
+                        world.setBlockAndUpdate( pos, GCMod.FERMENTED_POO_BLOCK.defaultBlockState() );
 
                 break;
             }

@@ -1,39 +1,45 @@
 package gcmod.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.*;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.WorldView;
-import net.minecraft.world.tick.ScheduledTickView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.BaseTorchBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.WallTorchBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class WallWirelessTorchBlock extends WirelessTorchBlock
 {
-    public static final MapCodec<WallWirelessTorchBlock> CODEC = createCodec( WallWirelessTorchBlock::new );
-    public static final EnumProperty<Direction> FACING = HorizontalFacingBlock.FACING;
+    public static final MapCodec<WallWirelessTorchBlock> CODEC = simpleCodec( WallWirelessTorchBlock::new );
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
-    public WallWirelessTorchBlock( Settings settings )
+    public WallWirelessTorchBlock( Properties settings )
     {
         super( settings );
-        this.setDefaultState( this.getDefaultState().with( FACING, Direction.NORTH ).with( WirelessTorchBlock.LIT, Boolean.FALSE ) );
+        this.registerDefaultState( this.defaultBlockState().setValue( FACING, Direction.NORTH ).setValue( WirelessTorchBlock.LIT, Boolean.FALSE ) );
     }
 
     @Override
-    protected void appendProperties( StateManager.Builder<Block, BlockState> builder )
+    protected void createBlockStateDefinition( StateDefinition.Builder<Block, BlockState> builder )
     {
-        super.appendProperties( builder );
+        super.createBlockStateDefinition( builder );
         builder.add( FACING );
     }
 
     @Override
-    protected MapCodec<? extends AbstractTorchBlock> getCodec()
+    protected MapCodec<? extends BaseTorchBlock> codec()
     {
         return CODEC;
     }
@@ -41,22 +47,22 @@ public class WallWirelessTorchBlock extends WirelessTorchBlock
     @Override
     Direction getFacing( BlockState state )
     {
-        return state.get( FACING );
+        return state.getValue( FACING );
     }
 
     @Override
-    protected VoxelShape getOutlineShape( BlockState state, BlockView world, BlockPos pos, ShapeContext context )
+    protected VoxelShape getShape( BlockState state, BlockGetter world, BlockPos pos, CollisionContext context )
     {
-        return WallTorchBlock.getBoundingShape( state );
+        return WallTorchBlock.getShape( state );
     }
 
 
     @Nullable
     @Override
-    public BlockState getPlacementState( ItemPlacementContext ctx )
+    public BlockState getStateForPlacement( BlockPlaceContext ctx )
     {
-        BlockState blockState = Blocks.WALL_TORCH.getPlacementState( ctx );
-        return blockState == null ? null : this.getDefaultState().with( FACING, blockState.get( FACING ) );
+        BlockState blockState = Blocks.WALL_TORCH.getStateForPlacement( ctx );
+        return blockState == null ? null : this.defaultBlockState().setValue( FACING, blockState.getValue( FACING ) );
     }
 
     //
@@ -64,17 +70,17 @@ public class WallWirelessTorchBlock extends WirelessTorchBlock
 
 
     @Override
-    protected BlockState getStateForNeighborUpdate( BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random )
+    protected BlockState updateShape( BlockState state, LevelReader world, ScheduledTickAccess tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random )
     {
-        return direction == getFacing( state ).getOpposite() && !this.canPlaceAt( state, world, pos )
-                ? Blocks.AIR.getDefaultState()
-                : super.getStateForNeighborUpdate( state, world, tickView, pos, direction, neighborPos, neighborState, random );
+        return direction == getFacing( state ).getOpposite() && !this.canSurvive( state, world, pos )
+                ? Blocks.AIR.defaultBlockState()
+                : super.updateShape( state, world, tickView, pos, direction, neighborPos, neighborState, random );
     }
 
     @Override
-    protected boolean canPlaceAt( BlockState state, WorldView world, BlockPos pos )
+    protected boolean canSurvive( BlockState state, LevelReader world, BlockPos pos )
     {
         final Direction facing = getFacing( state );
-        return world.getBlockState( pos.offset( facing.getOpposite() ) ).isSideSolidFullSquare( world, pos, facing );
+        return world.getBlockState( pos.relative( facing.getOpposite() ) ).isFaceSturdy( world, pos, facing );
     }
 }

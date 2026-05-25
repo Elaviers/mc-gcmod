@@ -1,97 +1,98 @@
 package gcmod.entity;
 
 import gcmod.GCMod;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class ExplosiveEntity extends Entity
 {
-    protected static final TrackedData<Integer> FUSE = DataTracker.registerData( ExplosiveEntity.class, TrackedDataHandlerRegistry.INTEGER );
+    protected static final EntityDataAccessor<Integer> FUSE = SynchedEntityData.defineId( ExplosiveEntity.class, EntityDataSerializers.INT );
 
     protected int explosionRadius;
 
     public LivingEntity instigator;
 
-    public ExplosiveEntity( EntityType<?> type, World world )
+    public ExplosiveEntity( EntityType<?> type, Level world )
     {
         super( type, world );
 
-        this.dataTracker.set( FUSE, 80 );
+        this.entityData.set( FUSE, 80 );
         this.explosionRadius = 1;
-        this.intersectionChecked = true;
+        this.blocksBuilding = true;
     }
 
     public void startFuse( int fuseIn )
     {
-        this.dataTracker.set( FUSE, fuseIn );
+        this.entityData.set( FUSE, fuseIn );
 
         if ( fuseIn <= 0 )
         {
             onFuseComplete();
         }
-        else if ( !getWorld().isClient )
+        else if ( !level().isClientSide() )
         {
-            float randAngle = getWorld().random.nextFloat() * (float) (Math.PI * 2);
-            this.setVelocity( -Math.sin( randAngle ) * 0.02, 0.2F, -Math.cos( randAngle ) * 0.02 );
+            float randAngle = level().random.nextFloat() * (float) (Math.PI * 2);
+            this.setDeltaMovement( -Math.sin( randAngle ) * 0.02, 0.2F, -Math.cos( randAngle ) * 0.02 );
         }
     }
 
     public int getFuse()
     {
-        return this.dataTracker.get( FUSE );
+        return this.entityData.get( FUSE );
     }
 
     @Override
-    protected void initDataTracker( DataTracker.Builder builder )
+    protected void defineSynchedData( SynchedEntityData.Builder builder )
     {
-        builder.add( FUSE, 80 );
+        builder.define( FUSE, 80 );
     }
 
     @Override
-    protected void readCustomDataFromNbt( NbtCompound nbt )
+    protected void readAdditionalSaveData( ValueInput view )
     {
-        this.dataTracker.set( FUSE, (int)nbt.getShort( "Fuse" ) );
-        this.explosionRadius = nbt.getShort( "Strength" );
+        this.entityData.set( FUSE, (int)view.getShortOr( "Fuse", (short)0 ) );
+        this.explosionRadius = view.getShortOr( "Strength", (short)0 );
     }
 
     @Override
-    protected void writeCustomDataToNbt( NbtCompound nbt )
+    protected void addAdditionalSaveData( ValueOutput view )
     {
-        nbt.putShort( "Fuse", (short) this.getFuse() );
-        nbt.putShort( "Strength", (short) this.explosionRadius );
+        view.putShort( "Fuse", (short) this.getFuse() );
+        view.putShort( "Strength", (short) this.explosionRadius );
     }
 
     @Override
-    protected Entity.MoveEffect getMoveEffect()
+    protected Entity.MovementEmission getMovementEmission()
     {
-        return Entity.MoveEffect.NONE;
+        return Entity.MovementEmission.NONE;
     }
 
     @Override
-    public boolean damage( ServerWorld world, DamageSource source, float amount )
+    public boolean hurtServer( ServerLevel world, DamageSource source, float amount )
     {
         return false;
     }
 
     @Override
-    public boolean canHit()
+    public boolean isPickable()
     {
         return !this.isRemoved();
     }
 
     @Override
-    protected double getGravity()
+    protected double getDefaultGravity()
     {
         return 0.04;
     }
@@ -100,20 +101,20 @@ public class ExplosiveEntity extends Entity
     public void tick()
     {
         this.applyGravity();
-        this.move( MovementType.SELF, this.getVelocity() );
-        this.setVelocity( this.getVelocity().multiply( 0.98 ) );
-        if ( this.isOnGround() )
-            this.setVelocity( this.getVelocity().multiply( 0.7, -0.5, 0.7 ) );
+        this.move( MoverType.SELF, this.getDeltaMovement() );
+        this.setDeltaMovement( this.getDeltaMovement().scale( 0.98 ) );
+        if ( this.onGround() )
+            this.setDeltaMovement( this.getDeltaMovement().multiply( 0.7, -0.5, 0.7 ) );
 
         final int fuse = this.getFuse();
 
-        this.dataTracker.set( FUSE, fuse - 1 );
+        this.entityData.set( FUSE, fuse - 1 );
 
         if ( fuse > 0 )
         {
-            this.updateWaterState();
-            if ( this.getWorld().isClient )
-                this.getWorld().addParticle( ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0 );
+            this.updateInWaterStateAndDoFluidPushing();
+            if ( this.level().isClientSide() )
+                this.level().addParticle( ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0 );
         }
         else if ( fuse == 0 )
         {
@@ -123,15 +124,15 @@ public class ExplosiveEntity extends Entity
 
     protected void onFuseComplete()
     {
-        if ( !this.getWorld().isClient )
+        if ( !this.level().isClientSide() )
         {
             this.discard();
-            this.getWorld().createExplosion( this, this.getX(), this.getBodyY( 0.0625 ), this.getZ(), this.explosionRadius, World.ExplosionSourceType.TNT );
+            this.level().explode( this, this.getX(), this.getY( 0.0625 ), this.getZ(), this.explosionRadius, Level.ExplosionInteraction.TNT );
         }
     }
 
     public BlockState getBlockState()
     {
-        return GCMod.BLAST_TNT.getDefaultState();
+        return GCMod.BLAST_TNT.defaultBlockState();
     }
 }

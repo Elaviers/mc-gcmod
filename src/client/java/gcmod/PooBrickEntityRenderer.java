@@ -1,55 +1,60 @@
 package gcmod;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import gcmod.entity.PooBrickEntity;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.*;
-import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 
 public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity, PooBrickEntityRenderState>
 {
-    public static TexturedModelData getTexturedModelData()
+    public static LayerDefinition getTexturedModelData()
     {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(
+        MeshDefinition modelData = new MeshDefinition();
+        PartDefinition modelPartData = modelData.getRoot();
+        modelPartData.addOrReplaceChild(
                 "brick",
-                ModelPartBuilder.create().uv(0, 0).cuboid(-4, -2, -2, 8, 4, 4, new Dilation(0.0F)),
-                ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs( 0, 0 ).addBox( -4, -2, -2, 8, 4, 4, new CubeDeformation( 0.0F ) ),
+                PartPose.offset( 0.0F, 0.0F, 0.0F ) );
 
-        return TexturedModelData.of(modelData, 64, 32);
+        return LayerDefinition.create( modelData, 64, 32 );
     }
 
-    public static final Identifier TEXTURE = Identifier.of( "gcmod", "textures/item/poo_brick.png" );
-    public ModelPart model;
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath( "gcmod", "textures/item/poo_brick.png" );
+    public net.minecraft.client.model.geom.ModelPart model;
 
-    protected PooBrickEntityRenderer( EntityRendererFactory.Context ctx )
+    protected PooBrickEntityRenderer( EntityRendererProvider.Context ctx )
     {
         super( ctx );
         this.shadowRadius = .25f;
-        this.model = ctx.getPart( GCModClient.POO_BRICK_LAYER );
+        this.model = ctx.bakeLayer( GCModClient.POO_BRICK_LAYER );
     }
 
     @Override
-    public void render( PooBrickEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
+    public void submit( PooBrickEntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, CameraRenderState cameraState )
     {
-        matrices.push();
+        matrices.pushPose();
 
-        matrices.translate(0.0, 0.125, 0.0);
-        matrices.multiply( RotationAxis.POSITIVE_X.rotationDegrees( state.angleX ) );
-        matrices.multiply( RotationAxis.POSITIVE_Y.rotationDegrees( state.angleY ) );
-        matrices.multiply( RotationAxis.POSITIVE_Z.rotationDegrees( state.angleZ ) );
+        matrices.translate( 0.0, 0.125, 0.0 );
+        matrices.mulPose( Axis.XP.rotationDegrees( state.angleX ) );
+        matrices.mulPose( Axis.YP.rotationDegrees( state.angleY ) );
+        matrices.mulPose( Axis.ZP.rotationDegrees( state.angleZ ) );
+        queue.submitModelPart( this.model, matrices, RenderTypes.entitySolid( TEXTURE ), state.lightCoords, OverlayTexture.NO_OVERLAY, null );
+        matrices.popPose();
 
-        model.render( matrices, vertexConsumers.getBuffer( RenderLayer.getEntitySolid( TEXTURE ) ), light, OverlayTexture.DEFAULT_UV );
-
-        matrices.pop();
-
-        super.render( state, matrices, vertexConsumers, light );
+        super.submit( state, matrices, queue, cameraState );
     }
 
     @Override
@@ -59,11 +64,11 @@ public class PooBrickEntityRenderer extends EntityRenderer<PooBrickEntity, PooBr
     }
 
     @Override
-    public void updateRenderState( PooBrickEntity entity, PooBrickEntityRenderState state, float tickDelta )
+    public void extractRenderState( PooBrickEntity entity, PooBrickEntityRenderState state, float tickDelta )
     {
-        super.updateRenderState( entity, state, tickDelta );
-        state.angleX = entity.prevAngleX + tickDelta * (entity.angleX - entity.prevAngleX );
-        state.angleY = entity.prevAngleY + tickDelta * (entity.angleY - entity.prevAngleY );
-        state.angleZ = entity.prevAngleZ + tickDelta * (entity.angleZ - entity.prevAngleZ );
+        super.extractRenderState( entity, state, tickDelta );
+        state.angleX = entity.prevAngleX + tickDelta * (entity.angleX - entity.prevAngleX);
+        state.angleY = entity.prevAngleY + tickDelta * (entity.angleY - entity.prevAngleY);
+        state.angleZ = entity.prevAngleZ + tickDelta * (entity.angleZ - entity.prevAngleZ);
     }
 }

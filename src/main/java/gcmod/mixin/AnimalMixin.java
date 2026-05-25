@@ -3,11 +3,11 @@ package gcmod.mixin;
 import gcmod.GCMod;
 import gcmod.MobTurdInfo;
 import gcmod.entity.PooEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.HoglinEntity;
-import net.minecraft.entity.passive.*;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
 
-@Mixin(AnimalEntity.class)
-public abstract class AnimalMixin extends PassiveEntity
+@Mixin(Animal.class)
+public abstract class AnimalMixin extends AgeableMob
 {
     @Unique
     private static final int INVALID_TIMER = -Integer.MAX_VALUE;
@@ -30,9 +30,9 @@ public abstract class AnimalMixin extends PassiveEntity
     {
         MobTurdInfo info = MobTurdInfo.forClass( this );
         this.pooDropTimer = INVALID_TIMER;
-        if ( !this.getWorld().isClient && info != null )
+        if ( !this.level().isClientSide() && info != null )
         {
-            final int turdRate = ((ServerWorld)this.getWorld()).getGameRules().getInt( GCMod.RULE_TURD_RATE );
+            final int turdRate = ((ServerLevel)this.level()).getGameRules().get( GCMod.RULE_TURD_RATE );
             if ( turdRate > 0 )
             {
                 this.pooDropTimer = this.random.nextInt( info.maxInterval ) * turdRate;
@@ -40,26 +40,26 @@ public abstract class AnimalMixin extends PassiveEntity
         }
     }
 
-    @Inject(method = "mobTick", at = @At("TAIL"))
+    @Inject(method = "customServerAiStep", at = @At("TAIL"))
     public void mobTick( CallbackInfo ci )
     {
-        if ( !this.getWorld().isClient && pooDropTimer != INVALID_TIMER && --pooDropTimer <= 0 )
+        if ( !this.level().isClientSide() && pooDropTimer != INVALID_TIMER && --pooDropTimer <= 0 )
         {
             if ( !this.isBaby() )
             {
                 this.playSound( GCMod.FART_SOUND, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 1.8F + 0.1F );
-                this.getWorld().spawnEntity( PooEntity.create( this.getWorld(), this.getPos() ) );
+                this.level().addFreshEntity( PooEntity.create( this.level(), this.position() ) );
             }
 
             MobTurdInfo info = MobTurdInfo.forClass( this );
             assert info != null;
 
-            final int turdRate = ((ServerWorld)this.getWorld()).getGameRules().getInt( GCMod.RULE_TURD_RATE );
-            this.pooDropTimer = turdRate > 0 ? (this.random.nextBetween( info.minInterval, info.maxInterval ) * turdRate) : INVALID_TIMER;
+            final int turdRate = ((ServerLevel)this.level()).getGameRules().get( GCMod.RULE_TURD_RATE );
+            this.pooDropTimer = turdRate > 0 ? (this.random.nextIntBetweenInclusive( info.minInterval, info.maxInterval ) * turdRate) : INVALID_TIMER;
         }
     }
 
-    protected AnimalMixin( EntityType<? extends AnimalEntity> entityType, World world )
+    protected AnimalMixin( EntityType<? extends Animal> entityType, Level world )
     {
         super( entityType, world );
     }

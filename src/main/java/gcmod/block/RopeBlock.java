@@ -1,163 +1,191 @@
 package gcmod.block;
 
 import gcmod.GCMod;
-import net.minecraft.block.*;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
-import net.minecraft.world.block.WireOrientation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SupportType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class RopeBlock extends Block
 {
-    public static final BooleanProperty END = BooleanProperty.of( "end" );
-    public static final BooleanProperty WET = BooleanProperty.of( "wet" );
+    public static final BooleanProperty END = BooleanProperty.create( "end" );
+    public static final BooleanProperty WET = BooleanProperty.create( "wet" );
 
-    private static final VoxelShape SHAPE = Block.createCuboidShape( 7, 0, 7, 9, 16, 9 );
+    private static final VoxelShape SHAPE = Block.box( 7, 0, 7, 9, 16, 9 );
 
-    public RopeBlock( Settings settings )
+    public RopeBlock( Properties settings )
     {
         super( settings );
 
-        this.setDefaultState( this.getDefaultState().with( END, false ).with( WET, false ) );
+        this.registerDefaultState( this.defaultBlockState().setValue( END, false ).setValue( WET, false ) );
     }
 
     @Override
-    protected void appendProperties( StateManager.Builder<Block, BlockState> builder )
+    protected void createBlockStateDefinition( StateDefinition.Builder<Block, BlockState> builder )
     {
         builder.add( END, WET );
     }
 
     @Override
-    protected VoxelShape getCollisionShape( BlockState state, BlockView world, BlockPos pos, ShapeContext context )
+    protected VoxelShape getCollisionShape( BlockState state, BlockGetter world, BlockPos pos, CollisionContext context )
     {
         return SHAPE;
     }
 
     @Override
-    protected VoxelShape getOutlineShape( BlockState state, BlockView world, BlockPos pos, ShapeContext context )
+    protected VoxelShape getShape( BlockState state, BlockGetter world, BlockPos pos, CollisionContext context )
     {
         return SHAPE;
     }
 
     @Override
-    protected boolean isShapeFullCube( BlockState state, BlockView world, BlockPos pos )
+    protected boolean isCollisionShapeFullBlock( BlockState state, BlockGetter world, BlockPos pos )
     {
         return false;
     }
 
     @Override
-    protected boolean isTransparent( BlockState state )
+    protected boolean propagatesSkylightDown( BlockState state )
     {
         return true;
     }
 
     @Override
-    protected boolean canPathfindThrough( BlockState state, NavigationType type )
+    protected boolean isPathfindable( BlockState state, PathComputationType type )
     {
         return false;
     }
 
     @Override
-    protected boolean canPlaceAt( BlockState state, WorldView world, BlockPos pos )
+    protected boolean canSurvive( BlockState state, LevelReader world, BlockPos pos )
     {
-        final BlockPos posAbove = pos.up();
+        final BlockPos posAbove = pos.above();
         final BlockState stateAbove = world.getBlockState( posAbove );
 
-        return stateAbove.getBlock() == GCMod.ROPE || stateAbove.isSideSolid( world, posAbove, Direction.DOWN, SideShapeType.CENTER );
+        return stateAbove.getBlock() == GCMod.ROPE || stateAbove.isFaceSturdy( world, posAbove, Direction.DOWN, SupportType.CENTER );
     }
 
     @Override
-    protected ActionResult onUse( BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit )
+    protected InteractionResult useWithoutItem( BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit )
     {
-        return super.onUse( state, world, pos, player, hit );
+        return super.useWithoutItem( state, world, pos, player, hit );
     }
 
     @Override
-    protected ActionResult onUseWithItem( ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit )
+    protected InteractionResult useItemOn( ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit )
     {
-        if ( stack.isOf( GCMod.ROPE_ITEM ) )
+        if ( stack.is( GCMod.ROPE_ITEM ) )
         {
-            BlockPos posBelow = pos.down();
+            BlockPos posBelow = pos.below();
             while ( world.getBlockState( posBelow ).getBlock() == GCMod.ROPE )
-                posBelow = posBelow.down();
+                posBelow = posBelow.below();
 
             if ( world.getBlockState( posBelow ).isAir() )
             {
-                if ( !world.isClient )
+                if ( !world.isClientSide() )
                 {
                     if ( !player.isCreative() )
-                        stack.decrement( 1 );
+                        stack.shrink( 1 );
 
-                    world.setBlockState( posBelow, GCMod.ROPE.getDefaultState() );
+                    world.setBlockAndUpdate( posBelow, GCMod.ROPE.defaultBlockState() );
                 }
 
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
 
-        return super.onUseWithItem( stack, state, world, pos, player, hand, hit );
+        return super.useItemOn( stack, state, world, pos, player, hand, hit );
     }
 
-    private void updateState( World world, BlockPos pos, BlockState state )
+    private void updateState( Level world, BlockPos pos, BlockState state )
     {
-        BlockPos testPos = pos.up();
+        BlockPos testPos = pos.above();
         final boolean wet =
-                (world.getBlockState( testPos ).getBlock() == this && world.getBlockState( testPos ).get( WET ))
-                        || world.getBlockState( testPos.offset( Direction.UP ) ).getBlock() == Blocks.WATER;
+                (world.getBlockState( testPos ).getBlock() == this && world.getBlockState( testPos ).getValue( WET ))
+                        || world.getBlockState( testPos.relative( Direction.UP ) ).getBlock() == Blocks.WATER;
 
-        testPos = pos.down();
-        final boolean end = world.getBlockState( testPos ).getBlock() != this && world.getBlockState( testPos ).isSideSolid( world, testPos, Direction.UP, SideShapeType.RIGID );
+        testPos = pos.below();
+        final boolean end = world.getBlockState( testPos ).getBlock() != this && world.getBlockState( testPos ).isFaceSturdy( world, testPos, Direction.UP, SupportType.RIGID );
 
-        if ( state.get( WET ) != wet || state.get( END ) != end )
-            world.setBlockState( pos, this.getDefaultState().with( END, end ).with( WET, wet ) );
+        if ( state.getValue( WET ) != wet || state.getValue( END ) != end )
+            world.setBlockAndUpdate( pos, this.defaultBlockState().setValue( END, end ).setValue( WET, wet ) );
     }
 
     @Override
-    protected void onBlockAdded( BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify )
+    protected void onPlace( BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify )
     {
-        if ( !world.isClient && stabilityTest( world, pos, state ) )
+        if ( !world.isClientSide() && stabilityTest( world, pos, state ) )
             updateState( world, pos, state );
     }
 
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
+    protected void randomTick( BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource )
     {
-        if ( !world.isClient && stabilityTest( world, pos, state ) )
+        updateState( serverLevel, blockPos, blockState );
+    }
+
+    @Override
+    protected void neighborChanged( BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify )
+    {
+        if ( !world.isClientSide() && stabilityTest( world, pos, state ) )
             updateState( world, pos, state );
     }
 
     @Override
-    protected void onStateReplaced( BlockState state, World world, BlockPos pos, BlockState newState, boolean moved )
+    protected BlockState updateShape( BlockState blockState, LevelReader levelReader, ScheduledTickAccess scheduledTickAccess, BlockPos blockPos, Direction direction, BlockPos blockPos2, BlockState blockState2, RandomSource randomSource )
     {
-        if ( !world.isClient && newState.getBlock() != this )
+        if ( !levelReader.isClientSide() && !canSurvive( blockState, levelReader, blockPos ) )
+            scheduledTickAccess.scheduleTick( blockPos, this, 0 );
+
+        return super.updateShape( blockState, levelReader, scheduledTickAccess, blockPos, direction, blockPos2, blockState2, randomSource );
+    }
+
+    @Override
+    protected void tick( BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource )
+    {
+        stabilityTest( serverLevel, blockPos, serverLevel.getBlockState( blockPos ) );
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval( BlockState state, ServerLevel world, BlockPos pos, boolean moved )
+    {
+        if ( !world.isClientSide() )
         {
-            final BlockPos posBelow = pos.down();
+            final BlockPos posBelow = pos.below();
             final BlockState stateBelow = world.getBlockState( posBelow );
-            final BlockPos posBelowHeld = posBelow.down();
+            final BlockPos posBelowHeld = posBelow.below();
 
-            if ( stateBelow.isSideSolid( world, pos, Direction.UP, SideShapeType.RIGID ) && world.getBlockState( posBelowHeld ).isAir() )
-                FallingBlockEntity.spawnFromBlock( world, posBelow, stateBelow );
+            if ( stateBelow.isFaceSturdy( world, pos, Direction.UP, SupportType.RIGID ) && world.getBlockState( posBelowHeld ).isAir() )
+                FallingBlockEntity.fall( world, posBelow, stateBelow );
         }
 
-        super.onStateReplaced( state, world, pos, newState, moved );
+        super.affectNeighborsAfterRemoval( state, world, pos, moved );
     }
 
-    private boolean stabilityTest( World world, BlockPos pos, BlockState state )
+    private boolean stabilityTest( Level world, BlockPos pos, BlockState state )
     {
-        if ( !canPlaceAt( state, world, pos ) )
+        if ( !canSurvive( state, world, pos ) )
         {
             fall( world, pos, state );
             return false;
@@ -166,16 +194,16 @@ public class RopeBlock extends Block
         return true;
     }
 
-    private void fall( World world, BlockPos pos, BlockState state )
+    private void fall( Level world, BlockPos pos, BlockState state )
     {
-        final BlockPos posBelow = pos.down();
+        final BlockPos posBelow = pos.below();
         final BlockState stateBelow = world.getBlockState( posBelow );
 
-        FallingBlockEntity.spawnFromBlock( world, pos, state );
+        FallingBlockEntity.fall( world, pos, state );
 
-        if ( stateBelow.isSideSolid( world, posBelow, Direction.UP, SideShapeType.RIGID ) )
+        if ( stateBelow.isFaceSturdy( world, posBelow, Direction.UP, SupportType.RIGID ) )
         {
-            BlockPos belowHeldPos = posBelow.down();
+            BlockPos belowHeldPos = posBelow.below();
             BlockState belowHeld = world.getBlockState( belowHeldPos );
 
             if ( belowHeld.isAir() && belowHeld.getBlock() != this )
@@ -184,7 +212,7 @@ public class RopeBlock extends Block
                 return;
             }
 
-            FallingBlockEntity.spawnFromBlock( world, posBelow, stateBelow );
+            FallingBlockEntity.fall( world, posBelow, stateBelow );
         }
     }
 }

@@ -1,31 +1,28 @@
 package gcmod;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import gcmod.entity.ExplosiveEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.TntMinecartEntityRenderer;
-import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.TntMinecartRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 public class ExplosiveEntityRenderer extends EntityRenderer<ExplosiveEntity, ExplosiveEntityRenderState>
 {
-    private final BlockRenderManager blockRenderManager;
+    private final BlockRenderDispatcher blockRenderManager;
 
-    public ExplosiveEntityRenderer( EntityRendererFactory.Context context )
+    public ExplosiveEntityRenderer( EntityRendererProvider.Context context )
     {
         super( context );
         this.shadowRadius = 0.5F;
-        this.blockRenderManager = context.getBlockRenderManager();
+        this.blockRenderManager = context.getBlockRenderDispatcher();
     }
 
     @Override
@@ -35,38 +32,40 @@ public class ExplosiveEntityRenderer extends EntityRenderer<ExplosiveEntity, Exp
     }
 
     @Override
-    public void render( ExplosiveEntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light )
+    public void submit( ExplosiveEntityRenderState state, PoseStack matrices, SubmitNodeCollector commands, CameraRenderState cameraRenderState )
     {
-        matrices.push();
-        matrices.translate(0.0F, 0.5F, 0.0F);
+        matrices.pushPose();
+        matrices.translate( 0.0F, 0.5F, 0.0F );
         float f = state.fuse;
-        if (state.fuse < 10.0F) {
+        if ( state.fuse < 10.0F )
+        {
             float g = 1.0F - state.fuse / 10.0F;
-            g = MathHelper.clamp(g, 0.0F, 1.0F);
+            g = Mth.clamp( g, 0.0F, 1.0F );
             g *= g;
             g *= g;
             float h = 1.0F + g * 0.3F;
-            matrices.scale(h, h, h);
+            matrices.scale( h, h, h );
         }
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-        matrices.translate(-0.5F, -0.5F, 0.5F);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-        if (state.blockState != null) {
-            TntMinecartEntityRenderer.renderFlashingBlock(
-                    this.blockRenderManager, state.blockState, matrices, vertexConsumers, light, (int)f / 5 % 2 == 0
+        matrices.mulPose( Axis.YP.rotationDegrees( -90.0F ) );
+        matrices.translate( -0.5F, -0.5F, 0.5F );
+        matrices.mulPose( Axis.YP.rotationDegrees( 90.0F ) );
+        if ( state.blockState != null )
+        {
+            TntMinecartRenderer.submitWhiteSolidBlock(
+                    state.blockState, matrices, commands, state.lightCoords, (int) f / 5 % 2 == 0, state.outlineColor
             );
         }
 
-        matrices.pop();
-        super.render(state, matrices, vertexConsumers, light);
+        matrices.popPose();
+        super.submit( state, matrices, commands, cameraRenderState );
     }
 
     @Override
-    public void updateRenderState( ExplosiveEntity entity, ExplosiveEntityRenderState state, float tickDelta )
+    public void extractRenderState( ExplosiveEntity entity, ExplosiveEntityRenderState state, float tickDelta )
     {
-        super.updateRenderState(entity, state, tickDelta);
-        state.fuse = (float)entity.getFuse() - tickDelta + 1.0F;
+        super.extractRenderState( entity, state, tickDelta );
+        state.fuse = (float) entity.getFuse() - tickDelta + 1.0F;
         state.blockState = entity.getBlockState();
     }
 }

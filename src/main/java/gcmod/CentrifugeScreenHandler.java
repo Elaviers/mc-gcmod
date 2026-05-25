@@ -1,53 +1,53 @@
 package gcmod;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public class CentrifugeScreenHandler extends ScreenHandler
+public class CentrifugeScreenHandler extends AbstractContainerMenu
 {
     static class CentrifugeSlot extends Slot
     {
-        private final PropertyDelegate properties;
+        private final ContainerData properties;
 
-        public CentrifugeSlot( Inventory inventory, int index, int x, int y, PropertyDelegate properties )
+        public CentrifugeSlot( Container inventory, int index, int x, int y, ContainerData properties )
         {
             super( inventory, index, x, y );
             this.properties = properties;
         }
 
         @Override
-        public int getMaxItemCount()
+        public int getMaxStackSize()
         {
             return (properties == null || properties.get( 0 ) == 0 ) ? 1 : 0;
         }
 
         @Override
-        public boolean canInsert( ItemStack stack )
+        public boolean mayPlace( ItemStack stack )
         {
-            return stack.isOf( GCMod.FERMENTED_POO );
+            return stack.is( GCMod.FERMENTED_POO );
         }
     }
 
-    public final PropertyDelegate properties;
-    Inventory inventory;
+    public final ContainerData properties;
+    Container inventory;
 
-    public CentrifugeScreenHandler( int syncId, PlayerInventory playerInventory )
+    public CentrifugeScreenHandler( int syncId, Inventory playerInventory )
     {
-        this( syncId, playerInventory, new SimpleInventory( 12 ), new ArrayPropertyDelegate( 1 ) );
+        this( syncId, playerInventory, new SimpleContainer( 12 ), new SimpleContainerData( 1 ) );
     }
 
-    public CentrifugeScreenHandler( int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate properties )
+    public CentrifugeScreenHandler( int syncId, Inventory playerInventory, Container inventory, ContainerData properties )
     {
         super( GCMod.CENTRIFUGE_SCREEN_HANDLER, syncId );
 
-        assert inventory.size() == 6;
+        assert inventory.getContainerSize() == 6;
 
         this.properties = properties;
         this.inventory = inventory;
@@ -59,7 +59,7 @@ public class CentrifugeScreenHandler extends ScreenHandler
         this.addSlot( new CentrifugeSlot( inventory, 4, 8, 52, null ) );
         this.addSlot( new CentrifugeSlot( inventory, 5, 152, 52, null ) );
 
-        this.addProperties( properties );
+        this.addDataSlots( properties );
 
         // Player Inventory, Slot 9-35, Slot IDs 6-32
         for ( int y = 0; y < 3; ++y )
@@ -74,19 +74,19 @@ public class CentrifugeScreenHandler extends ScreenHandler
 
 
     @Override
-    public ItemStack quickMove( PlayerEntity player, int fromSlot )
+    public ItemStack quickMoveStack( Player player, int fromSlot )
     {
         ItemStack result = ItemStack.EMPTY;
         Slot slot = this.slots.get( fromSlot );
 
-        if ( slot.hasStack() )
+        if ( slot.hasItem() )
         {
-            ItemStack current = slot.getStack();
+            ItemStack current = slot.getItem();
             result = current.copy();
 
             if ( fromSlot < 6 )
             {
-                if ( !this.insertItem( current, 6, 42, true ) )
+                if ( !this.moveItemStackTo( current, 6, 42, true ) )
                     return ItemStack.EMPTY;
             }
             else if ( this.properties.get( 0 ) == 0 )
@@ -94,7 +94,7 @@ public class CentrifugeScreenHandler extends ScreenHandler
                 boolean merged = false;
                 for ( int i = 0; i < 4 && !current.isEmpty(); ++i )
                 {
-                    if ( this.insertItem( current, 0, 4, false ) )
+                    if ( this.moveItemStackTo( current, 0, 4, false ) )
                         merged = true;
                 }
 
@@ -105,9 +105,9 @@ public class CentrifugeScreenHandler extends ScreenHandler
                 return ItemStack.EMPTY; //locked
 
             if ( current.isEmpty() )
-                slot.insertStack( ItemStack.EMPTY );
+                slot.safeInsert( ItemStack.EMPTY );
             else
-                slot.markDirty();
+                slot.setChanged();
         }
 
         return result;
@@ -115,8 +115,8 @@ public class CentrifugeScreenHandler extends ScreenHandler
     }
 
     @Override
-    public boolean canUse( PlayerEntity player )
+    public boolean stillValid( Player player )
     {
-        return this.inventory.canPlayerUse( player );
+        return this.inventory.stillValid( player );
     }
 }

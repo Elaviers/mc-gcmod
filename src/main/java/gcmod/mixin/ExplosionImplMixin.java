@@ -1,18 +1,18 @@
 package gcmod.mixin;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.explosion.ExplosionImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ServerExplosion;
 
-@Mixin(ExplosionImpl.class)
+@Mixin(ServerExplosion.class)
 public interface ExplosionImplMixin
 {
-    @Invoker("getBlocksToDestroy")
+    @Invoker("calculateExplodedPositions")
     List<BlockPos> callGetBlocksToDestroy();
 
-    @Invoker("damageEntities")
+    @Invoker("hurtEntities")
     void callDamageEntities();
 }

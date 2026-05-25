@@ -2,73 +2,65 @@ package gcmod.block;
 
 import com.mojang.serialization.MapCodec;
 import gcmod.entity.WirelessTorchEntity;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.block.WireOrientation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseTorchBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.ExperimentalRedstoneUtils;
+import net.minecraft.world.level.redstone.Orientation;
 import org.jetbrains.annotations.Nullable;
 
-public class WirelessTorchBlock extends AbstractTorchBlock implements BlockEntityProvider
+public class WirelessTorchBlock extends BaseTorchBlock implements EntityBlock
 {
-    private static final MapCodec<WirelessTorchBlock> CODEC = createCodec( WirelessTorchBlock::new );
-    public static final BooleanProperty LIT = Properties.LIT;
+    private static final MapCodec<WirelessTorchBlock> CODEC = simpleCodec( WirelessTorchBlock::new );
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    public WirelessTorchBlock( Settings settings )
+    public WirelessTorchBlock( Properties settings )
     {
         super( settings );
-        this.setDefaultState( this.getDefaultState().with( LIT, false ) );
+        this.registerDefaultState( this.defaultBlockState().setValue( LIT, false ) );
     }
 
     @Override
-    protected MapCodec<? extends AbstractTorchBlock> getCodec()
+    protected MapCodec<? extends BaseTorchBlock> codec()
     {
         return CODEC;
     }
 
     @Override
-    protected void appendProperties( StateManager.Builder<Block, BlockState> builder )
+    protected void createBlockStateDefinition( StateDefinition.Builder<Block, BlockState> builder )
     {
         builder.add( LIT );
     }
 
     @Override
-    protected void onBlockAdded( BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify )
+    protected void onPlace( BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify )
     {
         for ( Direction direction : Direction.values() )
-            world.updateNeighborsAlways( pos.offset( direction ), this );
+            world.updateNeighborsAt( pos.relative( direction ), this, ExperimentalRedstoneUtils.initialOrientation(world, null, Direction.UP) );
 
-        super.onBlockAdded( state, world, pos, oldState, notify );
+        super.onPlace( state, world, pos, oldState, notify );
     }
 
     @Override
-    protected void onStateReplaced( BlockState state, World world, BlockPos pos, BlockState newState, boolean moved )
+    protected void affectNeighborsAfterRemoval( BlockState state, ServerLevel world, BlockPos pos, boolean moved )
     {
-        WirelessTorchEntity te = (WirelessTorchEntity) world.getBlockEntity( pos );
-        if ( !(newState.getBlock() instanceof WirelessTorchBlock) )
-        {
-            te.linkedPositions.remove( pos );
-            te.markDirty();
-
-            te.updateNetworkState( world );
-        }
-        else
-        {
-            te.side = getFacing( newState );
-        }
-
         if ( !moved )
             for ( Direction direction : Direction.values() )
-                world.updateNeighborsAlways( pos.offset( direction ), this );
+                world.updateNeighborsAt( pos.relative( direction ), this, ExperimentalRedstoneUtils.initialOrientation(world, null, Direction.UP) );
 
-        super.onStateReplaced( state, world, pos, newState, moved );
+        super.affectNeighborsAfterRemoval( state, world, pos, moved );
     }
 
     Direction getFacing( BlockState state )
@@ -77,45 +69,45 @@ public class WirelessTorchBlock extends AbstractTorchBlock implements BlockEntit
     }
 
     @Override
-    protected void neighborUpdate( BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify )
+    protected void neighborChanged( BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify )
     {
-        super.neighborUpdate( state, world, pos, sourceBlock, wireOrientation, notify );
+        super.neighborChanged( state, world, pos, sourceBlock, wireOrientation, notify );
 
         Direction dir = this.getFacing( state ).getOpposite();
-        final boolean shouldBeOn = world.isEmittingRedstonePower( pos.offset( dir ), dir );
+        final boolean shouldBeOn = world.hasSignal( pos.relative( dir ), dir );
 
         WirelessTorchEntity te = (WirelessTorchEntity) world.getBlockEntity( pos );
-        if ( !te.changingState && !te.locked && state.get( LIT ) != shouldBeOn )
+        if ( !te.changingState && !te.locked && state.getValue( LIT ) != shouldBeOn )
             te.updateNetworkState( world );
     }
 
     @Override
-    protected int getWeakRedstonePower( BlockState state, BlockView world, BlockPos pos, Direction direction )
+    protected int getSignal( BlockState state, BlockGetter world, BlockPos pos, Direction direction )
     {
-        return state.get( LIT ) && getFacing( state ) != direction ? 15 : 0;
+        return state.getValue( LIT ) && getFacing( state ) != direction ? 15 : 0;
     }
 
     @Override
-    protected int getStrongRedstonePower( BlockState state, BlockView world, BlockPos pos, Direction direction )
+    protected int getDirectSignal( BlockState state, BlockGetter world, BlockPos pos, Direction direction )
     {
-        return direction == getFacing( state ).getOpposite() ? state.getWeakRedstonePower( world, pos, direction ) : 0;
+        return direction == getFacing( state ).getOpposite() ? state.getSignal( world, pos, direction ) : 0;
     }
 
     @Override
-    protected boolean emitsRedstonePower( BlockState state )
+    protected boolean isSignalSource( BlockState state )
     {
         return true;
     }
 
     @Override
-    public void randomDisplayTick( BlockState state, World world, BlockPos pos, Random random )
+    public void animateTick( BlockState state, Level world, BlockPos pos, RandomSource random )
     {
-        if ( state.get( LIT ) )
+        if ( state.getValue( LIT ) )
         {
             double d = (double) pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
             double e = (double) pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2;
             double f = (double) pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
-            world.addParticle( DustParticleEffect.DEFAULT, d, e, f, 0.0, 0.0, 0.0 );
+            world.addParticle( DustParticleOptions.REDSTONE, d, e, f, 0.0, 0.0, 0.0 );
         }
     }
 
@@ -125,7 +117,7 @@ public class WirelessTorchBlock extends AbstractTorchBlock implements BlockEntit
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity( BlockPos pos, BlockState state )
+    public BlockEntity newBlockEntity( BlockPos pos, BlockState state )
     {
         WirelessTorchEntity te = new WirelessTorchEntity( pos, state );
         te.side = getFacing( state );

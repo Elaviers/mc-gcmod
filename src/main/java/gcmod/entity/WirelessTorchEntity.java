@@ -1,16 +1,19 @@
 package gcmod.entity;
 
 import gcmod.GCMod;
+import gcmod.TorchNetworkComponent;
 import gcmod.block.WirelessTorchBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.*;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
-
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class WirelessTorchEntity extends BlockEntity
 {
@@ -28,50 +31,39 @@ public class WirelessTorchEntity extends BlockEntity
         this.side = Direction.UP;
     }
 
-    public NbtList getTorchNetwork()
+    public TorchNetworkComponent getTorchNetwork()
     {
-        NbtList list = new NbtList();
-        for ( BlockPos pos : linkedPositions )
-            list.add( NbtHelper.fromBlockPos( pos ) );
-
-        return list;
+        return new TorchNetworkComponent( linkedPositions );
     }
 
-    public void setTorchNetwork( NbtList positions )
+    public void setTorchNetwork( List<BlockPos> positions )
     {
-        if ( positions.getType() == NbtElement.END_TYPE )
-            return;;
+        this.linkedPositions = new ArrayList<>( positions );
+    }
 
-        assert positions.getType() == NbtElement.INT_ARRAY_TYPE;
-
+    @Override
+    protected void loadAdditional( ValueInput view )
+    {
+        super.loadAdditional( view );
+        this.side = Direction.from3DDataValue( view.getByteOr( "Side", (byte)0 ) );
         this.linkedPositions.clear();
-        this.linkedPositions.ensureCapacity( positions.size() );
-        for ( int i = 0; i < positions.size(); ++i )
+        view.list( "Torches", BlockPos.CODEC ).ifPresent( torches -> torches.forEach( pos -> this.linkedPositions.add( pos ) ) );
+    }
+
+    @Override
+    protected void saveAdditional( ValueOutput view )
+    {
+        super.saveAdditional( view );
+        view.putByte( "Side", (byte)side.get3DDataValue() );
+        if ( !linkedPositions.isEmpty() )
         {
-            int[] pos = positions.getIntArray( i );
-            if ( pos.length == 3 ) // should always be true unless people are screwing around
-                this.linkedPositions.add( new BlockPos( pos[0], pos[1], pos[2] ) );
+            ValueOutput.TypedOutputList<BlockPos> torches = view.list( "Torches", BlockPos.CODEC );
+            for ( BlockPos position : this.linkedPositions )
+                torches.add( position );
         }
     }
 
-    @Override
-    protected void readNbt( NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup )
-    {
-        super.readNbt( nbt, registryLookup );
-        this.side = Direction.byId( nbt.getByte( "Side" ) );
-        this.setTorchNetwork( nbt.getList( "Torches", NbtElement.INT_ARRAY_TYPE ) );
-    }
-
-    @Override
-    protected void writeNbt( NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup )
-    {
-        super.writeNbt( nbt, registryLookup );
-        nbt.putByte( "Side", (byte) side.getId() );
-        if ( !linkedPositions.isEmpty() )
-            nbt.put( "Torches", this.getTorchNetwork() );
-    }
-
-    public void updateNetworkState( World world )
+    public void updateNetworkState( Level world )
     {
         boolean netPowered = false;
 
@@ -91,16 +83,16 @@ public class WirelessTorchEntity extends BlockEntity
 
     public void removeInvalidPositionsFromNetwork()
     {
-        this.removeInvalidPositions( getWorld() );
+        this.removeInvalidPositions( getLevel() );
 
         for ( int i = 0; i < this.linkedPositions.size(); ++i )
         {
-            WirelessTorchEntity te = (WirelessTorchEntity) world.getBlockEntity( this.linkedPositions.get( i ) );
+            WirelessTorchEntity te = (WirelessTorchEntity)level.getBlockEntity( this.linkedPositions.get( i ) );
             te.linkedPositions = this.linkedPositions;
         }
     }
 
-    private void removeInvalidPositions( World world )
+    private void removeInvalidPositions( Level world )
     {
         final int initialSize = this.linkedPositions.size();
 
@@ -112,10 +104,10 @@ public class WirelessTorchEntity extends BlockEntity
         }
 
         if ( initialSize != this.linkedPositions.size() )
-            this.markDirty();
+            this.setChanged();
     }
 
-    private void setNetworkState( World world, boolean state )
+    private void setNetworkState( Level world, boolean state )
     {
         if ( linkedPositions == null )
             return;
@@ -127,21 +119,31 @@ public class WirelessTorchEntity extends BlockEntity
         }
     }
 
-    private static boolean positionIsPowered( World world, BlockPos pos )
+    private static boolean positionIsPowered( Level world, BlockPos pos )
     {
-        final WirelessTorchEntity te = (WirelessTorchEntity) world.getBlockEntity( pos );
+        final WirelessTorchEntity te = (WirelessTorchEntity)world.getBlockEntity( pos );
         final Direction dir = te.side.getOpposite();
-        return world.isEmittingRedstonePower( pos.offset( dir ), dir );
+        return world.hasSignal( pos.relative( dir ), dir );
     }
 
-    private static WirelessTorchEntity setIndividualState( World world, BlockPos pos, boolean state )
+    private static WirelessTorchEntity setIndividualState( Level world, BlockPos pos, boolean state )
     {
-        WirelessTorchEntity td = (WirelessTorchEntity) world.getBlockEntity( pos );
+        WirelessTorchEntity td = (WirelessTorchEntity)world.getBlockEntity( pos );
 
         td.changingState = true;
-        world.setBlockState( pos, world.getBlockState( pos ).with( WirelessTorchBlock.LIT, state ) );
+        world.setBlockAndUpdate( pos, world.getBlockState( pos ).setValue( WirelessTorchBlock.LIT, state ) );
         td.changingState = false;
 
         return td;
+    }
+
+    @Override
+    public void preRemoveSideEffects( BlockPos pos, BlockState state )
+    {
+        super.preRemoveSideEffects( pos, state );
+
+        this.linkedPositions.remove( pos );
+        this.setChanged();
+        this.updateNetworkState( getLevel() );
     }
 }

@@ -1,7 +1,11 @@
 package gcmod;
 
-import net.minecraft.entity.mob.HoglinEntity;
-import net.minecraft.entity.passive.*;
+import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.equine.Horse;
+import net.minecraft.world.entity.animal.goat.Goat;
+import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
 
 public class MobTurdInfo
 {
@@ -22,13 +26,13 @@ public class MobTurdInfo
     public static MobTurdInfo forClass( Object animal )
     {
         assert animal != null;
-        if ( animal instanceof CowEntity )
+        if ( animal instanceof Cow )
             return COW_INFO;
-        if ( animal instanceof HorseEntity )
+        if ( animal instanceof Horse )
             return HORSE_INFO;
-        if ( animal instanceof PigEntity || animal instanceof HoglinEntity )
+        if ( animal instanceof Pig || animal instanceof Hoglin )
             return PIG_INFO;
-        if ( animal instanceof SheepEntity || animal instanceof GoatEntity )
+        if ( animal instanceof Sheep || animal instanceof Goat )
             return SHEEP_INFO;
 
         return null;

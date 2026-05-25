@@ -5,29 +5,31 @@ import gcmod.GCMod;
 import gcmod.block.PooBlock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
-public class CentrifugeEntity extends LockableContainerBlockEntity implements SidedInventory
+public class CentrifugeEntity extends BaseContainerBlockEntity implements WorldlyContainer
 {
-    protected final PropertyDelegate propertyDelegate = new PropertyDelegate()
+    protected final ContainerData propertyDelegate = new ContainerData()
     {
         @Override
         public int get( int index )
@@ -42,7 +44,7 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
         }
 
         @Override
-        public int size()
+        public int getCount()
         {
             return 1;
         }
@@ -62,7 +64,7 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
     @Environment( EnvType.CLIENT )
     public boolean startedAudio;
 
-    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize( 6, ItemStack.EMPTY );
+    private NonNullList<ItemStack> inventory = NonNullList.withSize( 6, ItemStack.EMPTY );
 
     private static final int[] SPIN_SLOTS = new int[]{ 0, 1, 2, 3 };
     private static final int[] OUTPUT_SLOTS = new int[]{ 4, 5 };
@@ -75,31 +77,31 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
 
 
     @Override
-    protected Text getContainerName()
+    protected Component getDefaultName()
     {
-        return Text.translatable( "tileentity.gcmod.centrifuge" );
+        return Component.translatable( "tileentity.gcmod.centrifuge" );
     }
 
     @Override
-    protected DefaultedList<ItemStack> getHeldStacks()
+    protected NonNullList<ItemStack> getItems()
     {
         return this.inventory;
     }
 
     @Override
-    protected void setHeldStacks( DefaultedList<ItemStack> inventory )
+    protected void setItems( NonNullList<ItemStack> inventory )
     {
         this.inventory = inventory;
     }
 
     @Override
-    protected ScreenHandler createScreenHandler( int syncId, PlayerInventory playerInventory )
+    protected AbstractContainerMenu createMenu( int syncId, Inventory playerInventory )
     {
         return new CentrifugeScreenHandler( syncId, playerInventory, this, this.propertyDelegate );
     }
 
     @Override
-    public int[] getAvailableSlots( Direction side )
+    public int[] getSlotsForFace( Direction side )
     {
         if ( side != Direction.DOWN )
             return SPIN_SLOTS;
@@ -108,22 +110,22 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
     }
 
     @Override
-    public boolean canInsert( int slot, ItemStack stack, @Nullable Direction dir )
+    public boolean canPlaceItemThroughFace( int slot, ItemStack stack, @Nullable Direction dir )
     {
-        if ( this.spinRate > 0.01 || slot >= 4 || dir == Direction.DOWN || !this.getStack( slot ).isEmpty() )
+        if ( this.spinRate > 0.01 || slot >= 4 || dir == Direction.DOWN || !this.getItem( slot ).isEmpty() )
             return false;
 
-        return stack.isOf( GCMod.FERMENTED_POO );
+        return stack.is( GCMod.FERMENTED_POO );
     }
 
     @Override
-    public boolean canExtract( int slot, ItemStack stack, Direction dir )
+    public boolean canTakeItemThroughFace( int slot, ItemStack stack, Direction dir )
     {
-        return stack.isOf( GCMod.POO_POWDER ) || stack.isOf( GCMod.POO_PROTEIN );
+        return stack.is( GCMod.POO_POWDER ) || stack.is( GCMod.POO_PROTEIN );
     }
 
     @Override
-    public int size()
+    public int getContainerSize()
     {
         return this.inventory.size();
     }
@@ -132,17 +134,17 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
     {
         for ( int i = 0; i < 4; i++ )
         {
-            ItemStack stack = this.getStack( i );
+            ItemStack stack = this.getItem( i );
             if ( stack.getItem() == GCMod.FERMENTED_POO )
             {
-                ItemStack powderStack = this.getStack( 4 );
-                ItemStack proteinStack = this.getStack( 5 );
+                ItemStack powderStack = this.getItem( 4 );
+                ItemStack proteinStack = this.getItem( 5 );
 
                 if ( powderStack.isEmpty() )
                     powderStack = new ItemStack( GCMod.POO_POWDER );
                 else
                 {
-                    if ( powderStack.getCount() >= powderStack.getMaxCount() )
+                    if ( powderStack.getCount() >= powderStack.getMaxStackSize() )
                         return;
 
                     powderStack.setCount( powderStack.getCount() + 1 );
@@ -152,16 +154,16 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
                     proteinStack = new ItemStack( GCMod.POO_PROTEIN );
                 else
                 {
-                    if ( proteinStack.getCount() >= proteinStack.getMaxCount() )
+                    if ( proteinStack.getCount() >= proteinStack.getMaxStackSize() )
                         return;
 
                     proteinStack.setCount( proteinStack.getCount() + 1 );
                 }
 
-                this.setStack( i, ItemStack.EMPTY );
-                this.setStack( 4, powderStack );
-                this.setStack( 5, proteinStack );
-                this.markDirty();
+                this.setItem( i, ItemStack.EMPTY );
+                this.setItem( 4, powderStack );
+                this.setItem( 5, proteinStack );
+                this.setChanged();
             }
         }
     }
@@ -173,16 +175,16 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
 
         this.isPowered = powered;
 
-        if ( !getWorld().isClient )
+        if ( !getLevel().isClientSide() )
         {
             // update clients:
-            getWorld().updateListeners( this.pos, this.getCachedState(), this.getCachedState(), PooBlock.NOTIFY_LISTENERS );
+            getLevel().sendBlockUpdated( this.worldPosition, this.getBlockState(), this.getBlockState(), PooBlock.UPDATE_CLIENTS );
         }
 
         // btw, sound is handled via a client mixin that picks up BlockEntityUpdateS2CPacket. see the CentrifugeSound.updateSoundForEntity flow
     }
 
-    public static void tick( World world, BlockPos blockPos, BlockState blockState, CentrifugeEntity centrifuge )
+    public static void tick( Level world, BlockPos blockPos, BlockState blockState, CentrifugeEntity centrifuge )
     {
         if ( centrifuge.isPowered )
         {
@@ -197,7 +199,7 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
         else
             centrifuge.ticksUntilDone--;
 
-        if ( world.isClient )
+        if ( world.isClientSide() )
         {
             centrifuge.prevAngle = centrifuge.angle;
             centrifuge.angle = centrifuge.prevAngle + centrifuge.spinRate * 40f;
@@ -209,35 +211,32 @@ public class CentrifugeEntity extends LockableContainerBlockEntity implements Si
     //
 
     @Override
-    protected void readNbt( NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup )
+    protected void loadAdditional( ValueInput view )
     {
-        super.readNbt( nbt, registryLookup );
-        this.inventory = DefaultedList.ofSize( this.size(), ItemStack.EMPTY );
-        Inventories.readNbt( nbt, this.inventory, registryLookup );
-        //this.setPowered( nbt.getBoolean( "Powered" ) );
-        this.isPowered = ( nbt.getBoolean( "Powered" ) );
+        super.loadAdditional( view );
+        this.inventory = NonNullList.withSize( this.getContainerSize(), ItemStack.EMPTY );
+        ContainerHelper.loadAllItems( view, this.inventory );
+        this.isPowered = ( view.getBooleanOr( "Powered", false ) );
     }
 
     @Override
-    protected void writeNbt( NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup )
+    protected void saveAdditional( ValueOutput view )
     {
-        super.writeNbt( nbt, registryLookup );
-        Inventories.writeNbt( nbt, this.inventory, registryLookup );
-        nbt.putBoolean( "Powered", this.isPowered );
+        super.saveAdditional( view );
+        ContainerHelper.saveAllItems( view, this.inventory );
+        view.putBoolean( "Powered", this.isPowered );
     }
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket()
+    public Packet<ClientGamePacketListener> getUpdatePacket()
     {
-        return BlockEntityUpdateS2CPacket.create( this );
+        return ClientboundBlockEntityDataPacket.create( this );
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt( RegistryWrapper.WrapperLookup registryLookup )
+    public CompoundTag getUpdateTag( HolderLookup.Provider registryLookup )
     {
-        NbtCompound nbt = new NbtCompound();
-        this.writeNbt( nbt, registryLookup );
-        return nbt;
+        return this.saveCustomOnly( registryLookup );
     }
 }

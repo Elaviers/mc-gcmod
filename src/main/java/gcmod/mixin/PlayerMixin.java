@@ -3,13 +3,12 @@ package gcmod.mixin;
 import gcmod.GCMod;
 import gcmod.entity.PooBrickEntity;
 import gcmod.entity.PooEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,11 +16,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin( PlayerEntity.class )
+@Mixin( Player.class )
 public abstract class PlayerMixin extends LivingEntity
 {
-    @Shadow public abstract void playSoundToPlayer( SoundEvent sound, SoundCategory category, float volume, float pitch );
-
     @Unique
     private static final int NUM_SNEAKS_FOR_ACCIDENT = 10;
 
@@ -46,24 +43,24 @@ public abstract class PlayerMixin extends LivingEntity
     }
 
     @Override
-    public boolean collidesWith( Entity other )
+    public boolean canCollideWith( Entity other )
     {
-        if ( other instanceof PooBrickEntity brick && (PlayerEntity)(Object)this == brick.thrower )
-            return brick.age > 5; // stops throwers from hitting themself
+        if ( other instanceof PooBrickEntity brick && (Player)(Object)this == brick.thrower )
+            return brick.tickCount > 5; // stops throwers from hitting themself
 
-        return super.collidesWith( other );
+        return super.canCollideWith( other );
     }
 
     @Override
-    public void setSneaking( boolean sneaking )
+    public void setShiftKeyDown( boolean sneaking )
     {
-        if ( !getWorld().isClient && sneaking && !isSneaking() )
+        if ( !level().isClientSide() && sneaking && !isShiftKeyDown() )
         {
             ++sneakIdx;
             if ( sneakIdx == NUM_SNEAKS_FOR_ACCIDENT )
                 sneakIdx = 0;
 
-            final long now = getWorld().getTime();
+            final long now = level().getGameTime();
             final long oldestSneakTime = sneakRing[sneakIdx];
 
             sneakRing[sneakIdx] = now;
@@ -73,16 +70,16 @@ public abstract class PlayerMixin extends LivingEntity
                 timeOfLastAccident = now;
 
                 final float pitch = (this.random.nextFloat() - this.random.nextFloat()) * 1.8F + 0.1F;
-                this.playSound( GCMod.FART_SOUND, 2.0f, pitch );
-                this.playSoundToPlayer( GCMod.FART_SOUND, SoundCategory.PLAYERS, 2.0f, pitch );
-                this.getWorld().spawnEntity( PooEntity.create( this.getWorld(), this.getPos() ) );
+                PooEntity poo = PooEntity.create( this.level(), this.position() );
+                this.level().addFreshEntity( poo );
+                this.level().playSound( poo, this.position().x, this.position().y + 0.3, this.position().z, GCMod.FART_SOUND, SoundSource.PLAYERS, 2.0f, pitch );
             }
         }
 
-        super.setSneaking( sneaking );
+        super.setShiftKeyDown( sneaking );
     }
 
-    protected PlayerMixin( EntityType<? extends LivingEntity> entityType, World world )
+    protected PlayerMixin( EntityType<? extends LivingEntity> entityType, Level world )
     {
         super( entityType, world );
     }

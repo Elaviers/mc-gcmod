@@ -1,7 +1,7 @@
 package gcmod;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -9,28 +9,32 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SpitParticle;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+
+import java.util.List;
 
 public class GCModClient implements ClientModInitializer
 {
-    public static final EntityModelLayer POO_LAYER = new EntityModelLayer( Identifier.of( "gcmod", "poo" ), "main" );
-    public static final EntityModelLayer POO_BRICK_LAYER = new EntityModelLayer( Identifier.of( "gcmod", "poo_brick" ), "main" );
-    public static final EntityModelLayer CENTRIFUGE_LAYER = new EntityModelLayer( Identifier.of( "gcmod", "centrifuge" ), "main" );
+    public static final ModelLayerLocation POO_LAYER = new ModelLayerLocation( Identifier.fromNamespaceAndPath( "gcmod", "poo" ), "main" );
+    public static final ModelLayerLocation POO_BRICK_LAYER = new ModelLayerLocation( Identifier.fromNamespaceAndPath( "gcmod", "poo_brick" ), "main" );
+    public static final ModelLayerLocation CENTRIFUGE_LAYER = new ModelLayerLocation( Identifier.fromNamespaceAndPath( "gcmod", "centrifuge" ), "main" );
 
     @Override
     public void onInitializeClient()
     {
         FabricLoader.getInstance().getModContainer("gcmod").ifPresent(container -> {
-            ResourceManagerHelper.registerBuiltinResourcePack( Identifier.of( "gcmod", "tileable_textures" ), container, Text.translatable("resourcepack.tileable_textures.name"), ResourcePackActivationType.NORMAL );
+            ResourceManagerHelper.registerBuiltinResourcePack( Identifier.fromNamespaceAndPath( "gcmod", "tileable_textures" ), container, Component.translatable("resourcepack.tileable_textures.name"), ResourcePackActivationType.NORMAL );
         });
 
         EntityRendererRegistry.register( GCMod.POO_ENTITY, PooEntityRenderer::new );
@@ -46,28 +50,39 @@ public class GCModClient implements ClientModInitializer
         EntityModelLayerRegistry.registerModelLayer( POO_BRICK_LAYER, PooBrickEntityRenderer::getTexturedModelData );
         EntityModelLayerRegistry.registerModelLayer( CENTRIFUGE_LAYER, CentrifugeEntityRenderer::getTexturedModelData );
 
-        BlockEntityRendererFactories.register( GCMod.CENTRIFUGE_ENTITY, CentrifugeEntityRenderer::new );
+        BlockEntityRenderers.register( GCMod.CENTRIFUGE_ENTITY, CentrifugeEntityRenderer::new );
 
-        HandledScreens.register( GCMod.CENTRIFUGE_SCREEN_HANDLER, CentrifugeScreen::new );
+        MenuScreens.register( GCMod.CENTRIFUGE_SCREEN_HANDLER, CentrifugeScreen::new );
 
-        BlockRenderLayerMap.INSTANCE.putBlock( GCMod.WIRELESS_TORCH, RenderLayer.getCutout() );
-        BlockRenderLayerMap.INSTANCE.putBlock( GCMod.WIRELESS_TORCH_WALL, RenderLayer.getCutout() );
+        // BlockRenderLayerMap.INSTANCE.putBlock( GCMod.WIRELESS_TORCH, RenderLayer.getCutout() );
+        // BlockRenderLayerMap.INSTANCE.putBlock( GCMod.WIRELESS_TORCH_WALL, RenderLayer.getCutout() );
 
-        ParticleFactoryRegistry.getInstance().register( GCMod.PARTICLE_POO_SPLAT, SpitParticle.Factory::new );
+        ParticleFactoryRegistry.getInstance().register( GCMod.PARTICLE_POO_SPLAT, SpitParticle.Provider::new );
 
         ClientPlayNetworking.registerGlobalReceiver( PooSplatPayload.ID, GCModClient::HandlePooSplat );
+
+        ItemTooltipCallback.EVENT.register(
+                ( ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> lines) ->
+                {
+                    if ( stack.has( GCMod.DATA_EXPLOSIVE_INFO ) )
+                        stack.get( GCMod.DATA_EXPLOSIVE_INFO ).addToTooltip( tooltipContext, lines::add, tooltipType, stack.getComponents() );
+
+                    if ( stack.has( GCMod.DATA_TORCH_NETWORK ) )
+                        stack.get( GCMod.DATA_TORCH_NETWORK ).addToTooltip( tooltipContext, lines::add, tooltipType, stack.getComponents() );
+                }
+        );
     }
 
     private static void HandlePooSplat( PooSplatPayload payload, ClientPlayNetworking.Context ctx )
     {
-        ClientWorld world = ctx.client().world;
+        ClientLevel world = ctx.client().level;
         final int numParticles = (int)(10f + payload.severity() * 20f);
 
-        final float x = payload.position().x;
-        final float y = payload.position().y;
-        final float z = payload.position().z;
+        final float x = payload.position().x();
+        final float y = payload.position().y();
+        final float z = payload.position().z();
         final float impulse = payload.severity() * payload.severity() * .25f;
-        Random rand = Random.create();
+        RandomSource rand = RandomSource.create();
 
         for ( int i = 0; i < numParticles; ++i )
         {
@@ -78,6 +93,6 @@ public class GCModClient implements ClientModInitializer
                     );
         }
 
-        world.playSound( x, y, z, GCMod.POO_BLOCK_SOUND, SoundCategory.BLOCKS, 2f, 1f, true );
+        world.playLocalSound( x, y, z, GCMod.POO_BLOCK_SOUND, SoundSource.BLOCKS, 2f, 1f, true );
     }
 }

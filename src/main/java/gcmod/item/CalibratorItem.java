@@ -1,97 +1,53 @@
 package gcmod.item;
 
 import gcmod.GCMod;
+import gcmod.TorchNetworkComponent;
 import gcmod.block.WirelessTorchBlock;
 import gcmod.entity.WirelessTorchEntity;
-import net.minecraft.block.Block;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 public class CalibratorItem extends Item
 {
-    public CalibratorItem( Settings settings )
+    public CalibratorItem( Properties settings )
     {
         super( settings );
     }
 
     @Override
-    public ActionResult useOnBlock( ItemUsageContext context )
+    public InteractionResult useOn( UseOnContext context )
     {
-        World world = context.getWorld();
-
-        if ( world.isClient )
-            return ActionResult.FAIL;
-
-        BlockPos pos = context.getBlockPos();
-        Block block = world.getBlockState( pos ).getBlock();
+        final Level world = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+        final Block block = world.getBlockState( pos ).getBlock();
         if ( block instanceof WirelessTorchBlock )
         {
-            final int[] newLocation = { pos.getX(), pos.getY(), pos.getZ() };
+            if ( world.isClientSide() )
+                return InteractionResult.SUCCESS;
 
-            ItemStack stack = context.getStack();
+            ItemStack stack = context.getItemInHand();
 
-            NbtCompound nbt;
-            {
-                NbtComponent torchNetwork = stack.get( GCMod.DATA_TORCH_NETWORK );
-                nbt = torchNetwork != null ? torchNetwork.copyNbt() : new NbtCompound();
-            }
-
-            NbtList list = nbt.getList( "Torches", NbtElement.INT_ARRAY_TYPE );
-
-            boolean alreadyInList = false;
-            for ( int i = 0; i < list.size(); ++i )
-            {
-                if ( Arrays.equals( list.getIntArray( i ), newLocation ) )
-                {
-                    alreadyInList = true;
-                    break;
-                }
-            }
-
-            if ( !alreadyInList )
-                list.add( new NbtIntArray( newLocation ) );
+            TorchNetworkComponent torchNetwork = stack.get( GCMod.DATA_TORCH_NETWORK );
+            ArrayList<BlockPos> list = torchNetwork != null ? new ArrayList<>( torchNetwork.positions() ) : new ArrayList<>();
+            if ( !list.contains( pos ))
+                list.add( pos );
 
             WirelessTorchEntity te = (WirelessTorchEntity) world.getBlockEntity( pos );
             te.setTorchNetwork( list );
             te.removeInvalidPositionsFromNetwork();
-            nbt.put( "Torches", te.getTorchNetwork() );
-            stack.set( GCMod.DATA_TORCH_NETWORK, NbtComponent.of( nbt ) );
-            return ActionResult.SUCCESS;
+            stack.set( GCMod.DATA_TORCH_NETWORK, te.getTorchNetwork() );
+            return InteractionResult.SUCCESS;
         }
 
-        return ActionResult.FAIL;
-    }
-
-    @Override
-    public void appendTooltip( ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type )
-    {
-        NbtComponent torchNetwork = stack.get( GCMod.DATA_TORCH_NETWORK );
-        if ( torchNetwork == null )
-            return;
-
-        tooltip.add( Text.translatable( "item.gcmod.calibrator.tooltip1" ) );
-
-        NbtCompound nbt = torchNetwork.copyNbt();
-        NbtList list = nbt.getList( "Torches", NbtElement.INT_ARRAY_TYPE );
-        for ( int i = 0; i < list.size(); ++i )
-        {
-            int[] pos = list.getIntArray( i );
-            if ( pos.length == 3 )
-                tooltip.add( Text.translatable( "item.gcmod.calibrator.tooltipentry", pos[0], pos[1], pos[2] ) );
-        }
+        return InteractionResult.FAIL;
     }
 }

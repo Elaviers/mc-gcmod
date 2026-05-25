@@ -1,56 +1,55 @@
 package gcmod.recipe;
 
+import gcmod.ExplosiveBlockComponent;
 import gcmod.GCMod;
 import gcmod.block.ExplosiveBlock;
 import gcmod.item.ExplosiveBlockItem;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.world.World;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class ExplosiveRecipe extends SpecialCraftingRecipe
+public class ExplosiveRecipe extends CustomRecipe
 {
     ItemStack outputStack = ItemStack.EMPTY;
 
-    public ExplosiveRecipe( CraftingRecipeCategory category )
+    public ExplosiveRecipe( CraftingBookCategory category )
     {
         super( category );
     }
 
     @Override
-    public boolean matches( CraftingRecipeInput inv, World world )
+    public boolean matches( CraftingInput inv, Level world )
     {
         outputStack = ItemStack.EMPTY;
 
         boolean validForDigConversion = false;
         boolean tntInCenter = false;
-        short strength, fuse, spread, pieces, height;
-        short powder, string, arrow, coal, feather;
+        int strength, fuse, spread, pieces, height;
+        int powder, string, arrow, coal, feather;
         strength = fuse = spread = pieces = height = feather = 0;
         powder = string = arrow = coal = 0;
 
         BlockState constructiveBlockState = null;
         BlockState blockStateMod = null;
 
-        short strength_AS = 0;
+        int strength_AS = 0;
 
         ExplosiveBlock.Type finalType = null;
         int TNTCount = 0;
 
         for ( int i = 0; i < inv.size(); ++i )
         {
-            ItemStack stack = inv.getStackInSlot( i );
+            ItemStack stack = inv.getItem( i );
 
             if ( !stack.isEmpty() )
             {
@@ -58,21 +57,22 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
 
                 if ( currentItem instanceof ExplosiveBlockItem && stack.get( GCMod.DATA_EXPLOSIVE_INFO ) != null )
                 {
-                    NbtCompound nbt = stack.get( GCMod.DATA_EXPLOSIVE_INFO ).copyNbt();
+                    ExplosiveBlockComponent info = stack.get( GCMod.DATA_EXPLOSIVE_INFO );
+                    assert info != null;
 
-                    fuse += nbt.getShort( "Fuse" );
+                    fuse += info.fuse();
 
-                    final ExplosiveBlock.Type type = ((ExplosiveBlock) Block.getBlockFromItem( currentItem )).type;
+                    final ExplosiveBlock.Type type = ((ExplosiveBlock) Block.byItem( currentItem )).type;
                     if ( type == ExplosiveBlock.Type.AIRSTRIKE )
-                        strength_AS += nbt.getShort( "Strength" );
+                        strength_AS += info.strength();
                     else
-                        strength += nbt.getShort( "Strength" );
+                        strength += info.strength();
 
                     switch ( type )
                     {
                         case CONSTRUCTIVE:
                         {
-                            final BlockState bs = NbtHelper.toBlockState( world.createCommandRegistryWrapper( RegistryKeys.BLOCK ), nbt.getCompound( "Block" ) );
+                            final BlockState bs = info.block();
                             if ( constructiveBlockState == null )
                                 constructiveBlockState = bs;
                             else if ( bs != constructiveBlockState )
@@ -81,9 +81,9 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
                         break;
 
                         case AIRSTRIKE:
-                            spread += nbt.getShort( "Spread" );
-                            pieces += nbt.getShort( "Pieces" );
-                            height += nbt.getShort( "Height" );
+                            spread += info.spread();
+                            pieces += info.pieces();
+                            height += info.height();
                             break;
 
                     }
@@ -93,8 +93,8 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
 
                     if ( !tntInCenter )
                     {
-                        final int w = inv.getWidth();
-                        final int h = inv.getHeight();
+                        final int w = inv.width();
+                        final int h = inv.height();
                         final int slotX = i % w;
                         final int slotY = i / w;
                         if ( slotX > 0 && slotY > 0 && slotX < w - 1 && slotY < h - 1 )
@@ -115,7 +115,7 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
                     validForDigConversion = true;
                 else if ( currentItem instanceof BlockItem )
                 {
-                    final BlockState bs = Block.getBlockFromItem( currentItem ).getDefaultState();
+                    final BlockState bs = Block.byItem( currentItem ).defaultBlockState();
                     if ( blockStateMod == null )
                         blockStateMod = bs;
                     else if ( bs != blockStateMod )
@@ -177,36 +177,40 @@ public class ExplosiveRecipe extends SpecialCraftingRecipe
         switch ( finalType )
         {
             case BLAST:
-                this.outputStack = ExplosiveBlockItem.makeStackBlast( fuse, strength );
-                return true;
+                this.outputStack = new ItemStack( GCMod.BLAST_TNT );
+                break;
 
             case CONSTRUCTIVE:
                 if ( blockStateMod != null )
                     constructiveBlockState = blockStateMod;
 
-                this.outputStack = ExplosiveBlockItem.makeStackConstructive( fuse, strength, constructiveBlockState );
-                return true;
+                this.outputStack = new ItemStack( GCMod.CONSTRUCTIVE_TNT );
+                break;
 
             case DIG:
-                this.outputStack = ExplosiveBlockItem.makeStackDig( fuse, strength );
-                return true;
+                this.outputStack = new ItemStack( GCMod.DIG_TNT );
+                break;
 
             case AIRSTRIKE:
-                this.outputStack = ExplosiveBlockItem.makeStackAirstrike( fuse, strength, spread, pieces, height );
-                return true;
+                this.outputStack = new ItemStack( GCMod.AIRSTRIKE_TNT );
+                break;
         }
 
+        if ( constructiveBlockState == null )
+            constructiveBlockState = Blocks.AIR.defaultBlockState();
+
+        this.outputStack.set( GCMod.DATA_EXPLOSIVE_INFO, new ExplosiveBlockComponent( fuse, strength, constructiveBlockState, spread, pieces, height ) );
         return true;
     }
 
     @Override
-    public ItemStack craft( CraftingRecipeInput inventory, RegistryWrapper.WrapperLookup lookup )
+    public ItemStack assemble( CraftingInput inventory, HolderLookup.Provider lookup )
     {
         return this.outputStack.copy();
     }
 
     @Override
-    public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer()
+    public RecipeSerializer<? extends CustomRecipe> getSerializer()
     {
         return GCMod.FERTILIZER_RECIPE_SERIALIZER;
     }

@@ -14,7 +14,7 @@
     "id": "gcmod:blast_tnt",
     "components": {
       "gcmod:explosive_info": {
-        "Strength": 2
+        "strength": 2
       }
     }
   }
