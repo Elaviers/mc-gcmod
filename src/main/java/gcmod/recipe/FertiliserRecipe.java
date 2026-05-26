@@ -1,38 +1,30 @@
 package gcmod.recipe;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import gcmod.GCMod;
 import gcmod.item.FertiliserItem;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
 public class FertiliserRecipe extends CustomRecipe
 {
-    private static final ItemStack defaultStack;
+    public static final FertiliserRecipe INSTANCE = new FertiliserRecipe();
+    public static final MapCodec<FertiliserRecipe> MAP_CODEC = MapCodec.unit( INSTANCE );
+    public static final StreamCodec<RegistryFriendlyByteBuf, FertiliserRecipe> STREAM_CODEC = StreamCodec.unit( INSTANCE );
 
-    static
+    private static int calculateDamageResult( CraftingInput inv )
     {
-        defaultStack = new ItemStack( GCMod.FERTILISER );
-        defaultStack.setDamageValue( FertiliserItem.MAX_DAMAGE - 8 );
-    }
-
-    ItemStack outputStack = defaultStack;
-
-    public FertiliserRecipe( CraftingBookCategory category )
-    {
-        super( category );
-    }
-
-    @Override
-    public boolean matches( CraftingInput inv, Level world )
-    {
-        outputStack = defaultStack.copy();
-
         int prevDamage = 0;
         float pooValue = 0;
 
@@ -43,30 +35,26 @@ public class FertiliserRecipe extends CustomRecipe
             if ( stack.getItem() == Items.BUCKET )
             {
                 if ( prevDamage > 0 )
-                    return false;
+                    return -1;
 
                 prevDamage = FertiliserItem.MAX_DAMAGE;
-            }
-            else if ( stack.getItem() == GCMod.FERTILISER )
+            } else if ( stack.getItem() == GCMod.FERTILISER )
             {
                 if ( prevDamage > 0 )
-                    return false;
+                    return -1;
 
                 prevDamage = stack.getDamageValue();
                 if ( prevDamage == 0 )
-                    return false;
-            }
-            else if ( stack.getItem() == GCMod.POO )
+                    return -1;
+            } else if ( stack.getItem() == GCMod.POO )
             {
                 pooValue += .25f;
-            }
-            else if ( stack.getItem() == GCMod.FERMENTED_POO )
+            } else if ( stack.getItem() == GCMod.FERMENTED_POO )
             {
                 pooValue += 1.25f;
-            }
-            else if ( !stack.isEmpty() )
+            } else if ( !stack.isEmpty() )
             {
-                return false;
+                return -1;
             }
         }
 
@@ -75,17 +63,27 @@ public class FertiliserRecipe extends CustomRecipe
         {
             final int newDmg = prevDamage - extra;
             if ( newDmg <= 0 )
-                return false;
+                return -1;
 
-            outputStack.setDamageValue( newDmg );
-            return true;
+            return newDmg;
         }
 
-        return false;
+        return -1;
     }
 
     @Override
-    public ItemStack assemble( CraftingInput recipeInput, HolderLookup.Provider provider ) { return this.outputStack.copy(); }
+    public boolean matches( CraftingInput inv, Level world )
+    {
+        return calculateDamageResult( inv ) > 0;
+    }
+
+    @Override
+    public ItemStack assemble( CraftingInput inv )
+    {
+        ItemStack stack = new ItemStack( GCMod.FERTILISER );
+        stack.setDamageValue( calculateDamageResult( inv ) );
+        return stack;
+    }
 
     @Override
     public RecipeSerializer<? extends CustomRecipe> getSerializer()

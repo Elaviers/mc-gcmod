@@ -2,6 +2,7 @@ package gcmod;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,5 @@ import org.jetbrains.annotations.Nullable;
 public class ExplosiveEntityRenderState extends EntityRenderState
 {
     public float fuse;
-    @Nullable
-    public BlockState blockState;
+    public BlockModelRenderState blockRenderState = new BlockModelRenderState();
 }

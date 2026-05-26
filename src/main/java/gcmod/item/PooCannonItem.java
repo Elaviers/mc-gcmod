@@ -142,12 +142,12 @@ public class PooCannonItem extends ProjectileWeaponItem
                 );
 
                 Vector3f dir = right.toVector3f();
-                new AxisAngle4f( world.random.nextFloat() * 2f * (float) Math.PI, fwd.toVector3f() ).transform( dir );
+                new AxisAngle4f( world.getRandom().nextFloat() * 2f * (float) Math.PI, fwd.toVector3f() ).transform( dir );
 
                 poo.setDeltaMovement(
                         player.getDeltaMovement()
-                                .add( fwd.scale( Math.max( 0.5f, speed + zDiff * (world.random.nextFloat() * 2.f - 1f) ) ) )
-                                .add( new Vec3( dir ).scale( world.random.nextFloat() * spread ) )
+                                .add( fwd.scale( Math.max( 0.5f, speed + zDiff * (world.getRandom().nextFloat() * 2.f - 1f) ) ) )
+                                .add( new Vec3( dir ).scale( world.getRandom().nextFloat() * spread ) )
                 );
 
                 world.addFreshEntity( poo );
@@ -155,7 +155,7 @@ public class PooCannonItem extends ProjectileWeaponItem
         }
         else
         {
-            player.playSound( GCMod.POO_CANNON_SOUND, 1 + world.random.nextFloat() * 0.2f, 1 + (world.random.nextFloat() * 0.5f - 0.25f) );
+            player.playSound( GCMod.POO_CANNON_SOUND, 1 + world.getRandom().nextFloat() * 0.2f, 1 + (world.getRandom().nextFloat() * 0.5f - 0.25f) );
         }
 
         return true;

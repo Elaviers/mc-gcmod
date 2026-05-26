@@ -17,12 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.BaseCoralWallFanBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.FarmBlock;
-import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +47,7 @@ public class FertiliserItem extends Item
             if ( !world.isClientSide() )
             {
                 context.getPlayer().gameEvent( GameEvent.ITEM_INTERACT_FINISH );
-                world.setBlockAndUpdate( blockPos, GCMod.COMPOST.defaultBlockState().setValue( FarmBlock.MOISTURE, blockState.getValue( FarmBlock.MOISTURE ) ) );
+                world.setBlockAndUpdate( blockPos, GCMod.COMPOST.defaultBlockState().setValue( FarmlandBlock.MOISTURE, blockState.getValue( FarmlandBlock.MOISTURE ) ) );
                 context.getItemInHand().hurtAndBreak( 1, context.getPlayer(), EquipmentSlot.MAINHAND );
             }
 
@@ -92,8 +87,8 @@ public class FertiliserItem extends Item
             if ( world instanceof ServerLevel )
             {
                 final int GROW_COUNT = 3;
-                for ( int c = 0; c < GROW_COUNT && fertilizable.isBonemealSuccess( world, world.random, pos, blockState ); ++c )
-                    fertilizable.performBonemeal( (ServerLevel) world, world.random, pos, blockState );
+                for ( int c = 0; c < GROW_COUNT && fertilizable.isBonemealSuccess( world, world.getRandom(), pos, blockState ); ++c )
+                    fertilizable.performBonemeal( (ServerLevel) world, world.getRandom(), pos, blockState );
 
                 stack.hurtAndBreak( 1, user, EquipmentSlot.MAINHAND );
             }
@@ -137,7 +132,7 @@ public class FertiliserItem extends Item
                     if ( i == 0 && facing != null && facing.getAxis().isHorizontal() )
                     {
                         blockState = (BlockState) BuiltInRegistries.BLOCK
-                                .getRandomElementOf( BlockTags.WALL_CORALS, world.random )
+                                .getRandomElementOf( BlockTags.WALL_CORALS, world.getRandom() )
                                 .map( blockEntry -> ((Block) blockEntry.value()).defaultBlockState() )
                                 .orElse( blockState );
                         if ( blockState.hasProperty( BaseCoralWallFanBlock.FACING ) )
@@ -148,7 +143,7 @@ public class FertiliserItem extends Item
                     else if ( random.nextInt( 4 ) == 0 )
                     {
                         blockState = (BlockState) BuiltInRegistries.BLOCK
-                                .getRandomElementOf( BlockTags.UNDERWATER_BONEMEALS, world.random )
+                                .getRandomElementOf( BlockTags.UNDERWATER_BONEMEALS, world.getRandom() )
                                 .map( blockEntry -> ((Block) blockEntry.value()).defaultBlockState() )
                                 .orElse( blockState );
                     }

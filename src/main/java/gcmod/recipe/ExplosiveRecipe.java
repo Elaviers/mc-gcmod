@@ -1,18 +1,18 @@
 package gcmod.recipe;
 
+import com.mojang.serialization.MapCodec;
 import gcmod.ExplosiveBlockComponent;
 import gcmod.GCMod;
 import gcmod.block.ExplosiveBlock;
 import gcmod.item.ExplosiveBlockItem;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -20,18 +20,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class ExplosiveRecipe extends CustomRecipe
 {
-    ItemStack outputStack = ItemStack.EMPTY;
+    public static final ExplosiveRecipe INSTANCE = new ExplosiveRecipe();
+    public static final MapCodec<ExplosiveRecipe> MAP_CODEC = MapCodec.unit( INSTANCE );
+    public static final StreamCodec<RegistryFriendlyByteBuf, ExplosiveRecipe> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public ExplosiveRecipe( CraftingBookCategory category )
+    private static ItemStack getResult( CraftingInput inv )
     {
-        super( category );
-    }
-
-    @Override
-    public boolean matches( CraftingInput inv, Level world )
-    {
-        outputStack = ItemStack.EMPTY;
-
         boolean validForDigConversion = false;
         boolean tntInCenter = false;
         int strength, fuse, spread, pieces, height;
@@ -76,7 +70,7 @@ public class ExplosiveRecipe extends CustomRecipe
                             if ( constructiveBlockState == null )
                                 constructiveBlockState = bs;
                             else if ( bs != constructiveBlockState )
-                                return false;
+                                return null;
                         }
                         break;
 
@@ -119,15 +113,15 @@ public class ExplosiveRecipe extends CustomRecipe
                     if ( blockStateMod == null )
                         blockStateMod = bs;
                     else if ( bs != blockStateMod )
-                        return false;
+                        return null;
                 }
                 else
-                    return false;
+                    return null;
             }
         }
 
         if ( TNTCount == 0 )
-            return false;
+            return null;
 
         final boolean validForAirstrikeConversion = finalType == ExplosiveBlock.Type.BLAST && feather == 8 && tntInCenter;
         validForDigConversion = validForDigConversion && finalType == ExplosiveBlock.Type.BLAST;
@@ -138,12 +132,12 @@ public class ExplosiveRecipe extends CustomRecipe
         validModification = validModification || (modifyingAirstrike && (string + arrow + coal > 0));
 
         if ( !validModification && !validForAirstrikeConversion && !validForDigConversion )
-            return false;
+            return null;
 
         if (validForAirstrikeConversion )
         {
             if ( validForDigConversion || validModification )
-                return false;
+                return null;
 
             finalType = ExplosiveBlock.Type.AIRSTRIKE;
             spread += 3;
@@ -160,53 +154,60 @@ public class ExplosiveRecipe extends CustomRecipe
         {
             strength += (short) (strength_AS + powder);
             if ( arrow + coal + feather > 0 )
-                return false;
+                return null;
         }
         else
         {
             pieces += strength;
             strength = (short) (strength_AS + powder);
             if ( feather > 0 )
-                return false;
+                return null;
         }
 
         fuse += (short) (string * 20);
         spread += arrow;
         height += (short) (coal * 5);
 
+        ItemStack result = null;
         switch ( finalType )
         {
             case BLAST:
-                this.outputStack = new ItemStack( GCMod.BLAST_TNT );
+                result = new ItemStack( GCMod.BLAST_TNT );
                 break;
 
             case CONSTRUCTIVE:
                 if ( blockStateMod != null )
                     constructiveBlockState = blockStateMod;
 
-                this.outputStack = new ItemStack( GCMod.CONSTRUCTIVE_TNT );
+                result = new ItemStack( GCMod.CONSTRUCTIVE_TNT );
                 break;
 
             case DIG:
-                this.outputStack = new ItemStack( GCMod.DIG_TNT );
+                result = new ItemStack( GCMod.DIG_TNT );
                 break;
 
             case AIRSTRIKE:
-                this.outputStack = new ItemStack( GCMod.AIRSTRIKE_TNT );
+                result = new ItemStack( GCMod.AIRSTRIKE_TNT );
                 break;
         }
 
         if ( constructiveBlockState == null )
             constructiveBlockState = Blocks.AIR.defaultBlockState();
 
-        this.outputStack.set( GCMod.DATA_EXPLOSIVE_INFO, new ExplosiveBlockComponent( fuse, strength, constructiveBlockState, spread, pieces, height ) );
-        return true;
+        result.set( GCMod.DATA_EXPLOSIVE_INFO, new ExplosiveBlockComponent( fuse, strength, constructiveBlockState, spread, pieces, height ) );
+        return result;
     }
 
     @Override
-    public ItemStack assemble( CraftingInput inventory, HolderLookup.Provider lookup )
+    public boolean matches( CraftingInput inv, Level world )
     {
-        return this.outputStack.copy();
+        return getResult( inv ) != null;
+    }
+
+    @Override
+    public ItemStack assemble( CraftingInput inv )
+    {
+        return getResult( inv );
     }
 
     @Override

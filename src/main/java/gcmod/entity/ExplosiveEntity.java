@@ -43,7 +43,7 @@ public class ExplosiveEntity extends Entity
         }
         else if ( !level().isClientSide() )
         {
-            float randAngle = level().random.nextFloat() * (float) (Math.PI * 2);
+            float randAngle = level().getRandom().nextFloat() * (float) (Math.PI * 2);
             this.setDeltaMovement( -Math.sin( randAngle ) * 0.02, 0.2F, -Math.cos( randAngle ) * 0.02 );
         }
     }
@@ -100,19 +100,21 @@ public class ExplosiveEntity extends Entity
     @Override
     public void tick()
     {
+        this.handlePortal();
         this.applyGravity();
-        this.move( MoverType.SELF, this.getDeltaMovement() );
-        this.setDeltaMovement( this.getDeltaMovement().scale( 0.98 ) );
-        if ( this.onGround() )
-            this.setDeltaMovement( this.getDeltaMovement().multiply( 0.7, -0.5, 0.7 ) );
+        this.move(MoverType.SELF, this.getDeltaMovement());
+        this.applyEffectsFromBlocks();
+        this.setDeltaMovement(this.getDeltaMovement().scale(0.98));
+        if (this.onGround()) {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.7, -0.5, 0.7));
+        }
 
         final int fuse = this.getFuse();
-
         this.entityData.set( FUSE, fuse - 1 );
 
         if ( fuse > 0 )
         {
-            this.updateInWaterStateAndDoFluidPushing();
+            this.updateFluidInteraction();
             if ( this.level().isClientSide() )
                 this.level().addParticle( ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0 );
         }

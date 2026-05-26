@@ -55,7 +55,7 @@ public class ExplosiveBlockEntity extends BlockEntity
 
         int fuse = this.explosiveInfo.fuse();
         if ( chainReaction )
-            fuse = (short)(fuse * getLevel().random.nextFloat() * .5f);
+            fuse = (short)(fuse * getLevel().getRandom().nextFloat() * .5f);
 
         if ( getType() == GCMod.BLAST_TNT_BLOCK_ENTITY )
         {

@@ -36,7 +36,7 @@ public class PooBlock extends Block
             if ( world.getBlockState( belowPos.relative( direction ) ).getFluidState().is( FluidTags.WATER ) )
             {
                 if ( world.getMaxLocalRawBrightness( pos ) < 5 )
-                    if ( world.random.nextInt( 5 ) == 0 )
+                    if ( world.getRandom().nextInt( 5 ) == 0 )
                         world.setBlockAndUpdate( pos, GCMod.FERMENTED_POO_BLOCK.defaultBlockState() );
 
                 break;

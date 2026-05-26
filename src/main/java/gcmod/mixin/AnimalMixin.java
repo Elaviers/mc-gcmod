@@ -35,7 +35,7 @@ public abstract class AnimalMixin extends AgeableMob
             final int turdRate = ((ServerLevel)this.level()).getGameRules().get( GCMod.RULE_TURD_RATE );
             if ( turdRate > 0 )
             {
-                this.pooDropTimer = this.random.nextInt( info.maxInterval ) * turdRate;
+                this.pooDropTimer = this.getRandom().nextInt( info.maxInterval ) * turdRate;
             }
         }
     }
@@ -47,7 +47,7 @@ public abstract class AnimalMixin extends AgeableMob
         {
             if ( !this.isBaby() )
             {
-                this.playSound( GCMod.FART_SOUND, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 1.8F + 0.1F );
+                this.playSound( GCMod.FART_SOUND, 1.0f, (this.getRandom().nextFloat() - this.getRandom().nextFloat()) * 1.8F + 0.1F );
                 this.level().addFreshEntity( PooEntity.create( this.level(), this.position() ) );
             }
 
@@ -55,7 +55,7 @@ public abstract class AnimalMixin extends AgeableMob
             assert info != null;
 
             final int turdRate = ((ServerLevel)this.level()).getGameRules().get( GCMod.RULE_TURD_RATE );
-            this.pooDropTimer = turdRate > 0 ? (this.random.nextIntBetweenInclusive( info.minInterval, info.maxInterval ) * turdRate) : INVALID_TIMER;
+            this.pooDropTimer = turdRate > 0 ? (this.getRandom().nextIntBetweenInclusive( info.minInterval, info.maxInterval ) * turdRate) : INVALID_TIMER;
         }
     }
 

@@ -69,7 +69,7 @@ public abstract class PlayerMixin extends LivingEntity
             {
                 timeOfLastAccident = now;
 
-                final float pitch = (this.random.nextFloat() - this.random.nextFloat()) * 1.8F + 0.1F;
+                final float pitch = (this.getRandom().nextFloat() - this.getRandom().nextFloat()) * 1.8F + 0.1F;
                 PooEntity poo = PooEntity.create( this.level(), this.position() );
                 this.level().addFreshEntity( poo );
                 this.level().playSound( poo, this.position().x, this.position().y + 0.3, this.position().z, GCMod.FART_SOUND, SoundSource.PLAYERS, 2.0f, pitch );

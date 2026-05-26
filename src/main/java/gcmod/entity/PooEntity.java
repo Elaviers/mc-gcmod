@@ -52,7 +52,7 @@ public class PooEntity extends Entity
         this.timer = 1000;
 
         if ( !world.isClientSide() )
-            this.setSizeVariant( world.random.nextInt( 1001 ) );
+            this.setSizeVariant( world.getRandom().nextInt( 1001 ) );
     }
 
     public static PooEntity create( Level world, Vec3 position )
@@ -186,7 +186,7 @@ public class PooEntity extends Entity
     {
         this.level().getServer().getPlayerList().broadcast( null, getX(), getY(), getZ(),
                 100f, this.level().dimension(),
-                ServerPlayNetworking.createS2CPacket( new PooSplatPayload( this.position().toVector3f(), severity + randSeverity * this.level().random.nextFloat() ) )
+                ServerPlayNetworking.createClientboundPacket( new PooSplatPayload( this.position().toVector3f(), severity + randSeverity * this.level().getRandom().nextFloat() ) )
         );
     }
 

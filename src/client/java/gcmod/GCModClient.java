@@ -3,19 +3,24 @@ package gcmod;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
+import net.fabricmc.fabric.impl.resource.ResourceLoaderImpl;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SpitParticle;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
@@ -33,22 +38,23 @@ public class GCModClient implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
+
         FabricLoader.getInstance().getModContainer("gcmod").ifPresent(container -> {
-            ResourceManagerHelper.registerBuiltinResourcePack( Identifier.fromNamespaceAndPath( "gcmod", "tileable_textures" ), container, Component.translatable("resourcepack.tileable_textures.name"), ResourcePackActivationType.NORMAL );
+            ResourceLoader.registerBuiltinPack( Identifier.fromNamespaceAndPath( "gcmod", "tileable_textures" ), container, Component.translatable("resourcepack.tileable_textures.name" ), PackActivationType.NORMAL );
         });
 
-        EntityRendererRegistry.register( GCMod.POO_ENTITY, PooEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.POO_BRICK_ENTITY, PooBrickEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.EXPLOSIVE_POO_BRICK_ENTITY, PooBrickEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.EXPLOSIVE_BOMB_ENTITY, ExplosiveBombEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.AIRSTRIKE_EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.CONSTRUCTIVE_EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
-        EntityRendererRegistry.register( GCMod.DIG_EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
+        EntityRenderers.register( GCMod.POO_ENTITY, PooEntityRenderer::new );
+        EntityRenderers.register( GCMod.POO_BRICK_ENTITY, PooBrickEntityRenderer::new );
+        EntityRenderers.register( GCMod.EXPLOSIVE_POO_BRICK_ENTITY, PooBrickEntityRenderer::new );
+        EntityRenderers.register( GCMod.EXPLOSIVE_BOMB_ENTITY, ExplosiveBombEntityRenderer::new );
+        EntityRenderers.register( GCMod.EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
+        EntityRenderers.register( GCMod.AIRSTRIKE_EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
+        EntityRenderers.register( GCMod.CONSTRUCTIVE_EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
+        EntityRenderers.register( GCMod.DIG_EXPLOSIVE_ENTITY, ExplosiveEntityRenderer::new );
 
-        EntityModelLayerRegistry.registerModelLayer( POO_LAYER, PooEntityRenderer::getTexturedModelData );
-        EntityModelLayerRegistry.registerModelLayer( POO_BRICK_LAYER, PooBrickEntityRenderer::getTexturedModelData );
-        EntityModelLayerRegistry.registerModelLayer( CENTRIFUGE_LAYER, CentrifugeEntityRenderer::getTexturedModelData );
+        ModelLayerRegistry.registerModelLayer( POO_LAYER, PooEntityRenderer::getTexturedModelData );
+        ModelLayerRegistry.registerModelLayer( POO_BRICK_LAYER, PooBrickEntityRenderer::getTexturedModelData );
+        ModelLayerRegistry.registerModelLayer( CENTRIFUGE_LAYER, CentrifugeEntityRenderer::getTexturedModelData );
 
         BlockEntityRenderers.register( GCMod.CENTRIFUGE_ENTITY, CentrifugeEntityRenderer::new );
 
@@ -56,8 +62,7 @@ public class GCModClient implements ClientModInitializer
 
         // BlockRenderLayerMap.INSTANCE.putBlock( GCMod.WIRELESS_TORCH, RenderLayer.getCutout() );
         // BlockRenderLayerMap.INSTANCE.putBlock( GCMod.WIRELESS_TORCH_WALL, RenderLayer.getCutout() );
-
-        ParticleFactoryRegistry.getInstance().register( GCMod.PARTICLE_POO_SPLAT, SpitParticle.Provider::new );
+        ParticleProviderRegistry.getInstance().register( GCMod.PARTICLE_POO_SPLAT, SpitParticle.Provider::new );
 
         ClientPlayNetworking.registerGlobalReceiver( PooSplatPayload.ID, GCModClient::HandlePooSplat );
 

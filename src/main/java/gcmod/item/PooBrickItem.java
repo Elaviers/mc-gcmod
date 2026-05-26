@@ -49,21 +49,21 @@ public class PooBrickItem extends Item
             );
 
             Vector3f dir = right.toVector3f();
-            new AxisAngle4f( world.random.nextFloat() * 2f * (float)Math.PI, fwd.toVector3f() ).transform( dir );
+            new AxisAngle4f( world.getRandom().nextFloat() * 2f * (float)Math.PI, fwd.toVector3f() ).transform( dir );
 
             brick.setPos( new Vec3( player.getX(), player.getEyeY() - .1f, player.getZ() ).add( fwd.scale( -.2f ) ).add( right.scale( .2f ) ) );
 
             brick.setDeltaMovement(
                     player.getKnownMovement()
-                            .add( fwd.scale( .6f + world.random.nextFloat() * .8f ) )
-                            .add( new Vec3( dir ).scale( world.random.nextFloat() * .1f ) )
+                            .add( fwd.scale( .6f + world.getRandom().nextFloat() * .8f ) )
+                            .add( new Vec3( dir ).scale( world.getRandom().nextFloat() * .1f ) )
             );
 
 
             world.addFreshEntity( brick );
         }
 
-        player.playSound( SoundEvents.EGG_THROW, 1f, .5f + world.random.nextFloat() * .2f );
+        player.playSound( SoundEvents.EGG_THROW, 1f, .5f + world.getRandom().nextFloat() * .2f );
 
         return InteractionResult.SUCCESS;
     }

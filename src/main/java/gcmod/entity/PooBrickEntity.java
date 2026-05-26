@@ -34,9 +34,9 @@ public class PooBrickEntity extends Entity
     public PooBrickEntity( EntityType<?> type, Level world )
     {
         super( type, world );
-        this.spinX = world.random.nextFloat() * 30 - 15;
-        this.spinY = world.random.nextFloat() * 20 - 10;
-        this.spinZ = world.random.nextFloat() * 30 - 15;
+        this.spinX = world.getRandom().nextFloat() * 30 - 15;
+        this.spinY = world.getRandom().nextFloat() * 20 - 10;
+        this.spinZ = world.getRandom().nextFloat() * 30 - 15;
         this.angleX += this.spinX * 5;
         this.angleY += this.spinY * 5;
         this.angleZ += this.spinZ * 5;
@@ -148,7 +148,7 @@ public class PooBrickEntity extends Entity
                 for ( Entity ent : overlaps )
                 {
                     ent.hurtServer( (ServerLevel)level(), level().damageSources().fallingBlock( this.thrower ), (float) (8 * this.getDeltaMovement().length()) );
-                    ent.playSound( SoundEvents.PLAYER_BIG_FALL, 1.f, .5f + level().random.nextFloat() * .4f );
+                    ent.playSound( SoundEvents.PLAYER_BIG_FALL, 1.f, .5f + level().getRandom().nextFloat() * .4f );
                 }
             }
         }

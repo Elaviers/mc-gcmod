@@ -3,26 +3,25 @@ package gcmod;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import gcmod.entity.ExplosiveEntity;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.TntMinecartRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
 
 public class ExplosiveEntityRenderer extends EntityRenderer<ExplosiveEntity, ExplosiveEntityRenderState>
 {
-    private final BlockRenderDispatcher blockRenderManager;
+    private final BlockModelResolver blockModelResolver;
+    public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
 
     public ExplosiveEntityRenderer( EntityRendererProvider.Context context )
     {
         super( context );
         this.shadowRadius = 0.5F;
-        this.blockRenderManager = context.getBlockRenderDispatcher();
+        this.blockModelResolver = context.getBlockModelResolver();
     }
 
     @Override
@@ -50,12 +49,9 @@ public class ExplosiveEntityRenderer extends EntityRenderer<ExplosiveEntity, Exp
         matrices.mulPose( Axis.YP.rotationDegrees( -90.0F ) );
         matrices.translate( -0.5F, -0.5F, 0.5F );
         matrices.mulPose( Axis.YP.rotationDegrees( 90.0F ) );
-        if ( state.blockState != null )
-        {
-            TntMinecartRenderer.submitWhiteSolidBlock(
-                    state.blockState, matrices, commands, state.lightCoords, (int) f / 5 % 2 == 0, state.outlineColor
-            );
-        }
+        TntMinecartRenderer.submitWhiteSolidBlock(
+                state.blockRenderState, matrices, commands, state.lightCoords, (int) f / 5 % 2 == 0, state.outlineColor
+        );
 
         matrices.popPose();
         super.submit( state, matrices, commands, cameraRenderState );
@@ -66,6 +62,6 @@ public class ExplosiveEntityRenderer extends EntityRenderer<ExplosiveEntity, Exp
     {
         super.extractRenderState( entity, state, tickDelta );
         state.fuse = (float) entity.getFuse() - tickDelta + 1.0F;
-        state.blockState = entity.getBlockState();
+        blockModelResolver.update( state.blockRenderState, entity.getBlockState(), BLOCK_DISPLAY_CONTEXT );
     }
 }

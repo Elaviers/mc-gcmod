@@ -9,8 +9,8 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -43,11 +43,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.effects.EnchantmentValueEffect;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DropExperienceBlock;
-import net.minecraft.world.level.block.FarmBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.gamerules.GameRule;
@@ -165,7 +161,7 @@ public class GCMod implements ModInitializer
     public static final Block WIRELESS_TORCH_WALL = new WallWirelessTorchBlock( BlockBehaviour.Properties.of()
             .sound( SoundType.METAL ).noCollision().instabreak().lightLevel( Blocks.litBlockEmission( 14 ) ).setId( BLOCKKEY_WIRELESSWALLTORCH ) );
 
-    public static final Block COMPOST = new FarmBlock( BlockBehaviour.Properties.of()
+    public static final Block COMPOST = new FarmlandBlock( BlockBehaviour.Properties.of()
             .sound( SoundType.GRAVEL ).mapColor( MapColor.DIRT ).strength( 0.6f ).randomTicks().isViewBlocking(Blocks::always).isSuffocating(Blocks::always).setId( BLOCKKEY_COMPOST ) );
 
     public static final FoodProperties FOOD_POO_PROTEIN = new FoodProperties.Builder().alwaysEdible().saturationModifier( 5f ).nutrition( 0 ).build();
@@ -309,7 +305,7 @@ public class GCMod implements ModInitializer
             new MenuType<>( CentrifugeScreenHandler::new, FeatureFlagSet.of() )
     );
 
-    private static final CreativeModeTab ITEM_GROUP = FabricItemGroup.builder()
+    private static final CreativeModeTab ITEM_GROUP = FabricCreativeModeTab.builder()
             .icon( () -> new ItemStack( POO_BLOCK ) )
             .title( Component.translatable( "itemGroup.gcmod" ) )
             .displayItems( ( context, entries ) -> {
@@ -477,13 +473,13 @@ public class GCMod implements ModInitializer
                 FabricBlockEntityTypeBuilder.create( ( p, s ) -> new ExplosiveBlockEntity( DIG_TNT_BLOCK_ENTITY, p, s ), DIG_TNT ).build()
         );
 
-        CENTRIFUGE_ENTITY.addSupportedBlock( CENTRIFUGE );
-        WIRELESS_TORCH_ENTITY.addSupportedBlock( WIRELESS_TORCH );
-        WIRELESS_TORCH_ENTITY.addSupportedBlock( WIRELESS_TORCH_WALL );
-        AIRSTRIKE_TNT_BLOCK_ENTITY.addSupportedBlock( AIRSTRIKE_TNT );
-        BLAST_TNT_BLOCK_ENTITY.addSupportedBlock( BLAST_TNT );
-        CONSTRUCTIVE_TNT_BLOCK_ENTITY.addSupportedBlock( CONSTRUCTIVE_TNT );
-        DIG_TNT_BLOCK_ENTITY.addSupportedBlock( DIG_TNT );
+        CENTRIFUGE_ENTITY.addValidBlock( CENTRIFUGE );
+        WIRELESS_TORCH_ENTITY.addValidBlock( WIRELESS_TORCH );
+        WIRELESS_TORCH_ENTITY.addValidBlock( WIRELESS_TORCH_WALL );
+        AIRSTRIKE_TNT_BLOCK_ENTITY.addValidBlock( AIRSTRIKE_TNT );
+        BLAST_TNT_BLOCK_ENTITY.addValidBlock( BLAST_TNT );
+        CONSTRUCTIVE_TNT_BLOCK_ENTITY.addValidBlock( CONSTRUCTIVE_TNT );
+        DIG_TNT_BLOCK_ENTITY.addValidBlock( DIG_TNT );
 
         Registry.register( BuiltInRegistries.RECIPE_TYPE, Identifier.fromNamespaceAndPath( "gcmod", "crafting_fertilizer" ), new RecipeType<FertiliserRecipe>()
         {
@@ -493,7 +489,6 @@ public class GCMod implements ModInitializer
                 return "<FERTILIZER_RECIPE>";
             }
         } );
-
         Registry.register( BuiltInRegistries.RECIPE_TYPE, Identifier.fromNamespaceAndPath( "gcmod", "crafting_explosive" ), new RecipeType<ExplosiveRecipe>()
         {
             @Override
@@ -503,14 +498,12 @@ public class GCMod implements ModInitializer
             }
         } );
 
-
-
-        FERTILIZER_RECIPE_SERIALIZER = Registry.register( BuiltInRegistries.RECIPE_SERIALIZER, Identifier.fromNamespaceAndPath( "gcmod", "crafting_fertiliser" ), new CustomRecipe.Serializer<>( FertiliserRecipe::new ) );
-        EXPLOSIVE_RECIPE_SERIALIZER = Registry.register( BuiltInRegistries.RECIPE_SERIALIZER, Identifier.fromNamespaceAndPath( "gcmod", "crafting_explosive" ), new CustomRecipe.Serializer<>( ExplosiveRecipe::new ) );
+        FERTILIZER_RECIPE_SERIALIZER = Registry.register( BuiltInRegistries.RECIPE_SERIALIZER, Identifier.fromNamespaceAndPath( "gcmod", "crafting_fertiliser" ), new RecipeSerializer<>( FertiliserRecipe.MAP_CODEC, FertiliserRecipe.STREAM_CODEC ) );
+        EXPLOSIVE_RECIPE_SERIALIZER = Registry.register( BuiltInRegistries.RECIPE_SERIALIZER, Identifier.fromNamespaceAndPath( "gcmod", "crafting_explosive" ), new RecipeSerializer<>( ExplosiveRecipe.MAP_CODEC, ExplosiveRecipe.STREAM_CODEC ) );
 
         BiomeModifications.addFeature( BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_ORES, SULPHUR_ORE_PLACEMENT );
         BiomeModifications.addFeature( BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_ORES, NOAH_ORE_PLACEMENT );
 
-        PayloadTypeRegistry.playS2C().register( PooSplatPayload.ID, PooSplatPayload.CODEC );
+        PayloadTypeRegistry.clientboundPlay().register( PooSplatPayload.ID, PooSplatPayload.CODEC );
     }
 }
